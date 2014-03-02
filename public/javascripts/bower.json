@@ -1,0 +1,22 @@
+{
+  "name": "plowderhye",
+  "version": "1.0.0",
+  "authors": [
+    "Bastian Krol <bastian.krol@web.de>"
+  ],
+  "description": "front end code for plowderhye",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "~1.2.13",
+    "jquery": "~2.1.0",
+    "jquery-cookie": "~1.4.0"
+  }
+}
