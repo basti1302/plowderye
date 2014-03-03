@@ -48,7 +48,7 @@ Chat = (function() {
       case 'nick':
         words.shift();
         var name = words.join(' ');
-        this.socket.emit('nameAttempt', name);
+        this.socket.emit('set-name', name);
         break;
       default:
         message = 'Unrecognized command.';

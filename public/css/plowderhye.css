@@ -1,0 +1,52 @@
+body {
+  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  padding: 20px;
+}
+
+.content {
+  max-width: 960px;
+}
+
+.current-room {
+  background-color: #ddd;
+}
+
+.conv-log {
+  height: 400px;
+  overflow: auto;
+  background-color: #eee;
+  margin-bottom: 1em;
+}
+
+.message-time {
+  padding-top: 5px;
+  font-size: x-small;
+}
+
+.message-from {
+  color: #F00;
+}
+
+.edit-text {
+  width: 100%;
+  display: table-cell;
+}
+
+.edit-text-area {
+  width: 100%;
+}
+
+.span-send {
+  display: table-cell;
+  padding-left: 20px;
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+.help {
+  font: 10px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+#sound {
+  display: none;
+}

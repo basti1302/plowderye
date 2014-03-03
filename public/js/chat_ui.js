@@ -1,12 +1,15 @@
 (function() {
   'use strict';
 
+  var refreshRate = 5000;
   var nick = 'You';
   var room = 'Lobby';
+
   var soundEnabled = true;
 
   var notificationsChecked = false;
-  var notificationsEnabled = true;
+  // TODO make that opt-out
+  var notificationsEnabled = false;
   var notificationMessageCount = 0;
   var notificationMessage;
   var notificationTimeoutId;
@@ -156,7 +159,7 @@
       path: '/',
     };
 
-    socket.on('nameResult', function(result) {
+    socket.on('set-name-result', function(result) {
       var message;
 
       if (result.success) {
@@ -169,7 +172,7 @@
       $('#messages').append(divSystemContentElement(message));
     });
 
-    socket.on('joinResult', function(result) {
+    socket.on('join-result', function(result) {
       room = result.room;
       $('#room').text(room);
       $('#messages')
@@ -179,7 +182,16 @@
       $.cookie('room', room);
     });
 
-    socket.on('setSoundEnabled', function(enabled) {
+    socket.on('fetch-users-result', function(users) {
+      $('#user-list').empty();
+      users.forEach(function(user) {
+        if (user !== nick) {
+          $('#user-list').append(divEscapedContentElement(user));
+        }
+      });
+    });
+
+    socket.on('set-sound-enabled', function(enabled) {
       soundEnabled = enabled;
       onSoundEnabledChange();
     });
@@ -190,7 +202,7 @@
       notifyLater(message);
     });
 
-    socket.on('rooms', function(rooms) {
+    socket.on('fetch-rooms-result', function(rooms) {
       $('#room-list').empty();
 
       for(var room in rooms) {
@@ -232,8 +244,13 @@
     });
 
     setInterval(function() {
-      socket.emit('rooms');
-    }, 1000);
+      socket.emit('fetch-rooms');
+    }, refreshRate);
+
+    setInterval(function() {
+      socket.emit('fetch-users');
+    }, refreshRate);
+
 
     $('#send-message').focus();
 
