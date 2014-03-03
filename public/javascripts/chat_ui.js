@@ -5,6 +5,12 @@
   var room = 'Lobby';
   var soundEnabled = true;
 
+  var notificationsChecked = false;
+  var notificationsEnabled = true;
+  var notificationMessageCount = 0;
+  var notificationMessage;
+  var notificationTimeoutId;
+
   function divEscapedContentElement(message) {
     return $('<div></div>').text(message);
   }
@@ -55,7 +61,6 @@
     scrollToEnd();
   }
 
-
   function scrollToEnd() {
     $('#messages')
       .scrollTop($('#messages').prop('scrollHeight'));
@@ -74,14 +79,56 @@
       var message = chatApp.createMessage(text, nick, room);
       chatApp.sendMessage(message);
       renderMessage(message);
-      //$('#messages').append(divEscapedContentElement(message));
       scrollToEnd();
     }
 
     $('#send-message').val('');
   }
 
-  var socket = io.connect();
+  function notifyLater(message) {
+    if (!notificationsEnabled) {
+      return;
+    }
+    if (!notificationsChecked) {
+      notificationsEnabled = notificationsEnabled &&
+          Notify.prototype.isSupported();
+
+      // TODO Does not work in Chrome because we are not in a onClick handler:
+      // https://code.google.com/p/chromium/issues/detail?id=274284
+      requestNotificationPermission();
+
+      notificationsChecked = true;
+      if (!notificationsEnabled) {
+        return;
+      }
+    }
+    // Overwrite current notificationMessage on purpose - only notify for
+    // message received last in time period.
+    notificationMessage = message;
+    notificationMessageCount++;
+    if (!notificationTimeoutId) {
+      notificationTimeoutId = setTimeout(notifyNow, 3000);
+    }
+  }
+
+  function requestNotificationPermission() {
+    if (Notify.prototype.needsPermission()) {
+      Notify.prototype.requestPermission();
+    }
+  }
+
+  function notifyNow() {
+    notificationTimeoutId = null;
+    var title = 'New Message';
+    if (notificationMessageCount >= 2) {
+      title = notificationMessageCount + ' New Messages';
+    }
+    var notification = new Notify(title, {
+      body: notificationMessage.sender + ': ' + notificationMessage.text,
+    });
+    notification.show();
+    notificationMessageCount = 0;
+  }
 
   function playSound(filename){
     $('#sound').empty();
@@ -140,6 +187,7 @@
     socket.on('message', function (message) {
       renderMessage(message);
       playSound('ping');
+      notifyLater(message);
     });
 
     socket.on('rooms', function(rooms) {
@@ -178,6 +226,11 @@
       $.cookie('sound', soundEnabled);
     }
 
+    $('#enable-notifications').click(function() {
+      requestNotificationPermission();
+      return false;
+    });
+
     setInterval(function() {
       socket.emit('rooms');
     }, 1000);
@@ -189,4 +242,7 @@
       return false;
     });
   });
+
+  var socket = io.connect();
+
 })();
