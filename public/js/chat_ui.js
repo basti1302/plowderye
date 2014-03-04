@@ -8,7 +8,6 @@
   var soundEnabled = true;
 
   var notificationsChecked = false;
-  // TODO make that opt-out
   var notificationsEnabled = false;
   var notificationMessageCount = 0;
   var notificationMessage;
@@ -89,21 +88,14 @@
   }
 
   function notifyLater(message) {
-    if (!notificationsEnabled) {
-      return;
-    }
+    if (!notificationsEnabled) { return; }
     if (!notificationsChecked) {
-      notificationsEnabled = notificationsEnabled &&
-          Notify.prototype.isSupported();
+      if (!notificationsEnabled) { return; }
 
       // TODO Does not work in Chrome because we are not in a onClick handler:
       // https://code.google.com/p/chromium/issues/detail?id=274284
       requestNotificationPermission();
-
-      notificationsChecked = true;
-      if (!notificationsEnabled) {
-        return;
-      }
+      if (!notificationsEnabled) { return; }
     }
     // Overwrite current notificationMessage on purpose - only notify for
     // message received last in time period.
@@ -115,9 +107,16 @@
   }
 
   function requestNotificationPermission() {
+    if (notificationsChecked) {
+      return;
+    }
+    notificationsEnabled = notificationsEnabled &&
+        Notify.prototype.isSupported();
+    if (!notificationsEnabled) { return; }
     if (Notify.prototype.needsPermission()) {
       Notify.prototype.requestPermission();
     }
+    notificationsChecked = true;
   }
 
   function notifyNow() {
@@ -218,6 +217,27 @@
       });
     });
 
+    $('#toggle-notifications').click(function() {
+      notificationsEnabled = !notificationsEnabled;
+      requestNotificationPermission();
+      onNotificationsEnabledChange();
+    });
+
+    function onNotificationsEnabledChange() {
+      if (notificationsEnabled) {
+        $('#toggle-notifications')
+          .attr('src', '/images/notifications-enabled.png')
+          .attr('title', 'currently showing notifications - click to disable')
+        ;
+      } else {
+        $('#toggle-notifications')
+          .attr('src', '/images/notifications-disabled.png')
+          .attr('title', 'currently not showing notifications - click to enable')
+        ;
+      }
+      $.cookie('sound', soundEnabled);
+    }
+
     $('#toggle-sound').click(function() {
       soundEnabled = !soundEnabled;
       onSoundEnabledChange();
@@ -227,12 +247,12 @@
       if (soundEnabled) {
         $('#toggle-sound')
           .attr('src', '/images/unmute.png')
-          .attr('alt', 'currently not muted - click to mute')
+          .attr('title', 'currently not muted - click to mute')
         ;
       } else {
         $('#toggle-sound')
           .attr('src', '/images/mute.png')
-          .attr('alt', 'currently muted - click to unmute')
+          .attr('title', 'currently muted - click to unmute')
         ;
       }
       $.cookie('sound', soundEnabled);
@@ -250,7 +270,6 @@
     setInterval(function() {
       socket.emit('fetch-users');
     }, refreshRate);
-
 
     $('#send-message').focus();
 

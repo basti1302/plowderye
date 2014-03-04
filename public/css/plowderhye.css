@@ -3,18 +3,71 @@ body {
   padding: 20px;
 }
 
+/* CONTAINER */
+
 .content {
   max-width: 960px;
 }
 
-.current-room {
-  background-color: #ddd;
+.expand-left-container {
+  width: 100%;
+  display: table-cell;
+}
+
+.expand-left-left {
+  width: 100%;
+}
+
+.expand-left-right {
+  display: table-cell;
+  padding-left: 5px;
+}
+
+.config-controls {
+  width: 70px;
+}
+
+.span-send {
+  text-decoration: none;
+  vertical-align: middle;
+}
+
+/* LAYOUT */
+
+.mgr {
+  margin-right: 2px;
+}
+
+.mgb {
+  margin-bottom: 3px;
+}
+
+.rd-border {
+  border-radius: 4px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #999;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+/* SKIN */
+
+.light-grey-bg {
+  background-color: #f0f0f0;
+  padding-right: 4px;
+}
+
+.medium-grey-bg {
+  background-color: #ccc;
+  padding-right: 4px;
 }
 
 .conv-log {
   height: 400px;
   overflow: auto;
-  background-color: #eee;
   margin-bottom: 1em;
 }
 
@@ -27,24 +80,14 @@ body {
   color: #F00;
 }
 
-.edit-text {
-  width: 100%;
-  display: table-cell;
-}
-
-.edit-text-area {
-  width: 100%;
-}
-
-.span-send {
-  display: table-cell;
-  padding-left: 20px;
-  text-decoration: none;
-  vertical-align: middle;
-}
-
 .help {
   font: 10px "Lucida Grande", Helvetica, Arial, sans-serif;
+}
+
+/* inline element styled like h2 */
+.h2 {
+  font-size: 1.5em;
+  font-weight: bold;
 }
 
 #sound {

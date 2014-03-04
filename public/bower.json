@@ -17,8 +17,6 @@
   "dependencies": {
     "angular": "~1.2.13",
     "jquery": "~2.1.0",
-    "jquery-cookie": "~1.4.0",
-    "normalize-css": "~3.0.0",
-    "unsemantic": "*"
+    "jquery-cookie": "~1.4.0"
   }
 }
