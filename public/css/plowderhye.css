@@ -65,7 +65,20 @@ body {
   padding-right: 4px;
 }
 
+.ctrl-img {
+  background-color: #fff;
+  border-radius: 2px;
+  border-width: 1px;
+  border-style: solid;
+  border-color: #ddd;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  padding-left: 2px;
+  padding-right: 2px;
+}
+
 /* SPECIFIC ELEMENT SKINNING */
+
 .current-room {
   font-size: 18px;
   font-weight: bold;
