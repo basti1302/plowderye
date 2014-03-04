@@ -12,18 +12,19 @@
 
 <body>
 <div class="content grid-container">
-  <!-- room list -->
-  <div class="grid-20 mgr rd-border medium-grey-bg">
-    <h2>Rooms</h2>
-    <div id="room-list"></div>
+
+  <!-- list of conversations -->
+  <div class="grid-20 grid-parent mgr panel panel-default"> <!--mgr rd-border medium-grey-bg"-->
+    <div class="panel-heading">Your Conversations</div>
+    <div id="room-list" class="list-group"></div>
   </div>
 
   <!-- current room headline and config controls -->
   <div class="grid-parent grid-75">
     <div class="mgb rd-border light-grey-bg">
       <div class="current-room expand-left-container">
-        <span class="h2 expand-left-left">Current Room:</span>
-        <span id='current-room-span' class="h2 expand-left-left">Lobby</span>
+        <span class="expand-left-left">Current Room:</span>
+        <span id='current-room' class="h2 expand-left-left">Lobby</span>
       </div>
       <div class="expand-left-right">
         <div class="config-controls">
@@ -41,15 +42,17 @@
       </div>
     </div>
 
-    <!-- conversation area -->
+    <!-- area for current conversation -->
     <div class="conv-area grid-75 grid-parent">
-      <div id="messages" class="conv-log rd-border light-grey-bg"></div>
+
+      <!-- conversation log - displays past chat messages -->
+      <div id="messages" class="conv-log rd-border"></div>
 
       <!-- compose new message -->
       <form id="send-form" role="form">
          <div class="expand-left-container form-group">
           <label class="sr-only" for="message">What's up?</label>
-          <input type="text" class="expand-left-left form-control" id="message" placeholder="What's up?">
+          <input id="message" type="text" class="expand-left-left form-control" placeholder="What's up?">
         </div>
         <span class="span-send expand-left-right">
           <input id="send-button" type="submit" value="Send" class="btn btn-primary"/>
@@ -61,17 +64,20 @@
           <li>Change nickname: <code>/nick [username]</code></li>
           <li>Join/create room: <code>/join [room name]</code></li>
         </ul>
-        powered by <em>plowderhye</em>.<br>
-        <a href id="enable-notifications">Enabled notifications in Chrome</a>
+        powered by <em>plowderhye</em>.
       </div>
     </div>
 
     <!-- user list -->
-    <div class="grid-20 prefix-5 rd-border medium-grey-bg">
-      <h3>Users</h3>
-      <div id="user-list"></div>
+    <div class="grid-20 grid-parent prefix-5 panel panel-default">
+      <div class="panel-heading">Users</div>
+      <div class="panel-body">
+        <div id="user-list"></div>
+      </div>
     </div>
   </div>
+
+  <!-- sound div to add and remove audio element -->
   <div id="sound"></div>
 </div>
 

@@ -3,7 +3,7 @@
 
   var refreshRate = 5000;
   var nick = 'You';
-  var room = 'Lobby';
+  var currentRoom = 'Lobby';
 
   var soundEnabled = true;
 
@@ -69,7 +69,7 @@
   }
 
   function processUserInput(chatApp, socket) {
-    var text = $('#send-message').val();
+    var text = $('#message').val();
     var systemMessage;
 
     if (text.charAt(0) == '/') {
@@ -78,13 +78,13 @@
         $('#messages').append(divSystemContentElement(systemMessage));
       }
     } else {
-      var message = chatApp.createMessage(text, nick, room);
+      var message = chatApp.createMessage(text, nick, currentRoom);
       chatApp.sendMessage(message);
       renderMessage(message);
       scrollToEnd();
     }
 
-    $('#send-message').val('');
+    $('#message').val('');
   }
 
   function notifyLater(message) {
@@ -172,13 +172,15 @@
     });
 
     socket.on('join-result', function(result) {
-      room = result.room;
-      $('#room').text(room);
+      currentRoom = result.room;
+      $('#current-room').text(currentRoom);
+      $('#room-list > a.active').removeClass('active');
+      $('#room-list > a:' + currentRoom).addClass('active');
       $('#messages')
         .empty()
         .append(divSystemContentElement('Room changed.'))
       ;
-      $.cookie('room', room);
+      $.cookie('room', currentRoom);
     });
 
     socket.on('fetch-users-result', function(users) {
@@ -207,15 +209,19 @@
       for(var room in rooms) {
         room = room.substring(1, room.length);
         if (room != '') {
-          $('#room-list').append(divEscapedContentElement(room));
+          var roomLink = $('<a href="#" class="list-group-item"></a>').text(room);
+          if (room === currentRoom) {
+            roomLink.addClass('active');
+          } else {
+            roomLink.click(function() {
+              chatApp.processCommand('/join ' + $(this).text());
+              $('#message').focus();
+            });
+          }
+          $('#room-list').append(roomLink);
         }
       }
-
-      $('#room-list div').click(function() {
-        chatApp.processCommand('/join ' + $(this).text());
-        $('#send-message').focus();
-      });
-    });
+   });
 
     $('#toggle-notifications').click(function() {
       notificationsEnabled = !notificationsEnabled;
@@ -258,11 +264,6 @@
       $.cookie('sound', soundEnabled);
     }
 
-    $('#enable-notifications').click(function() {
-      requestNotificationPermission();
-      return false;
-    });
-
     setInterval(function() {
       socket.emit('fetch-rooms');
     }, refreshRate);
@@ -271,7 +272,7 @@
       socket.emit('fetch-users');
     }, refreshRate);
 
-    $('#send-message').focus();
+    $('#message').focus();
 
     $('#send-form').submit(function() {
       processUserInput(chatApp, socket);
