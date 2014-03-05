@@ -34,12 +34,11 @@ body {
 
 /* LAYOUT */
 
-.mgr {
-  margin-right: 3px;
-}
-
-.mgb {
-  margin-bottom: 3px;
+.margins {
+  margin-top: 2px;
+  margin-bottom: 2px;
+  margin-left: 2px;
+  margin-right: 2px;
 }
 
 .rd-border {

@@ -14,15 +14,17 @@
 <div class="content grid-container">
 
   <!-- list of conversations -->
-  <div class="grid-20 grid-parent mgr panel panel-default"> <!--mgr rd-border medium-grey-bg"-->
-    <div class="panel-heading">Your Conversations</div>
-    <div id="room-list" class="list-group"></div>
+  <div class="grid-20 grid-parent">
+    <div class="margins panel panel-default">
+      <div class="panel-heading">Your Conversations</div>
+      <div id="room-list" class="list-group"></div>
+    </div>
   </div>
 
   <!-- current room headline and config controls -->
-  <div class="grid-parent grid-75">
-    <div class="mgb rd-border light-grey-bg">
-      <div class="current-room expand-left-container">
+  <div class="grid-80 grid-parent">
+    <div class="margins rd-border light-grey-bg">
+      <div class="expand-left-container current-room">
         <span class="expand-left-left">Current Room:</span>
         <span id='current-room' class="expand-left-left">Lobby</span>
       </div>
@@ -44,36 +46,40 @@
     </div>
 
     <!-- area for current conversation -->
-    <div class="conv-area grid-75 grid-parent">
+    <div class="grid-80 grid-parent">
+      <div class="margins">
 
-      <!-- conversation log - displays past chat messages -->
-      <div id="messages" class="conv-log rd-border"></div>
+        <!-- conversation log - displays past chat messages -->
+        <div id="messages" class="conv-log rd-border"></div>
 
-      <!-- compose new message -->
-      <form id="send-form" role="form">
-         <div class="expand-left-container form-group">
-          <label class="sr-only" for="message">What's up?</label>
-          <input id="message" type="text" class="expand-left-left form-control" placeholder="What's up?">
+        <!-- compose new message -->
+        <form id="send-form" role="form">
+           <div class="expand-left-container form-group">
+            <label class="sr-only" for="message">What's up?</label>
+            <input id="message" type="text" class="expand-left-left form-control" placeholder="What's up?">
+          </div>
+          <span class="span-send expand-left-right">
+            <input id="send-button" type="submit" value="Send" class="btn btn-primary"/>
+          </span>
+        </form>
+        <div class="help">
+          Chat commands:
+          <ul>
+            <li>Change nickname: <code>/nick [username]</code></li>
+            <li>Join/create room: <code>/join [room name]</code></li>
+          </ul>
+          powered by <em>plowderhye</em>.
         </div>
-        <span class="span-send expand-left-right">
-          <input id="send-button" type="submit" value="Send" class="btn btn-primary"/>
-        </span>
-      </form>
-      <div class="help">
-        Chat commands:
-        <ul>
-          <li>Change nickname: <code>/nick [username]</code></li>
-          <li>Join/create room: <code>/join [room name]</code></li>
-        </ul>
-        powered by <em>plowderhye</em>.
       </div>
     </div>
 
     <!-- user list -->
-    <div class="grid-20 grid-parent prefix-5 panel panel-default">
-      <div class="panel-heading">Users</div>
-      <div class="panel-body">
-        <div id="user-list"></div>
+    <div class="grid-20 grid-parent">
+      <div class="margins panel panel-default">
+        <div class="panel-heading">Users</div>
+        <div class="panel-body">
+          <div id="user-list"></div>
+        </div>
       </div>
     </div>
   </div>
