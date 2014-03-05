@@ -173,9 +173,19 @@
 
     socket.on('join-result', function(result) {
       currentRoom = result.room;
+      console.log('joined room: ' + currentRoom);
       $('#current-room').text(currentRoom);
-      $('#room-list > a.active').removeClass('active');
-      $('#room-list > a:' + currentRoom).addClass('active');
+      var oldRoom = $('#room-list > a.active');
+      if (oldRoom.length > 0) {
+        oldRoom.removeClass('active');
+      }
+      var newRoom = $('#room-list > a:contains("' + currentRoom + '")')
+          .filter(function() { return $(this).text() === currentRoom });
+      if (newRoom.length > 0) {
+        newRoom.addClass('active');
+      } else if (newRoom.length === 0) {
+        appendRoom(currentRoom);
+      }
       $('#messages')
         .empty()
         .append(divSystemContentElement('Room changed.'))
@@ -205,22 +215,7 @@
 
     socket.on('fetch-rooms-result', function(rooms) {
       $('#room-list').empty();
-
-      for(var room in rooms) {
-        room = room.substring(1, room.length);
-        if (room != '') {
-          var roomLink = $('<a href="#" class="list-group-item"></a>').text(room);
-          if (room === currentRoom) {
-            roomLink.addClass('active');
-          } else {
-            roomLink.click(function() {
-              chatApp.processCommand('/join ' + $(this).text());
-              $('#message').focus();
-            });
-          }
-          $('#room-list').append(roomLink);
-        }
-      }
+      rooms.forEach(appendRoom);
    });
 
     $('#toggle-notifications').click(function() {
@@ -228,6 +223,20 @@
       requestNotificationPermission();
       onNotificationsEnabledChange();
     });
+
+    function appendRoom(room) {
+      var roomLink = $('<a href="#" class="list-group-item"></a>').text(room);
+      if (room === currentRoom) {
+        roomLink.addClass('active');
+      } else {
+        roomLink.click(function() {
+          chatApp.processCommand('/join ' + $(this).text());
+          $('#message').focus();
+        });
+      }
+      $('#room-list').append(roomLink);
+    }
+
 
     function onNotificationsEnabledChange() {
       if (notificationsEnabled) {
