@@ -2,40 +2,50 @@
 <html lang="en">
 
 <head>
-  <title>Plowderhye</title>
+  <title>plowderye</title>
   <link rel="stylesheet" href="/bower_components/normalize-css/normalize.css"></link>
   <link rel="stylesheet" href="/bower_components/unsemantic/assets/stylesheets/unsemantic-grid-responsive.css"></link>
   <link rel="stylesheet"
   href="/css/custom-bootstrap/bootstrap.min.css"></link>
-  <link rel="stylesheet" href="/css/plowderhye.css"></link>
+  <link rel="stylesheet" href="/css/plowderye.css"></link>
 </head>
 
 <body>
-<div class="content grid-container">
+<div class="content grid-container" ng-app="plowderye">
 
   <!-- list of conversations -->
   <div class="grid-20 grid-parent">
     <div class="margins panel panel-default">
       <div class="panel-heading">Your Conversations</div>
-      <div id="room-list" class="list-group"></div>
+      <div class="list-group" ng-controller="ConvListCtrl">
+        <a href="#" ng-repeat="room in rooms"
+          ng-class="room.cssClass"
+          ng-bind="room.name">
+        </a>
+      </div>
     </div>
   </div>
 
   <!-- current room headline and config controls -->
   <div class="grid-80 grid-parent">
     <div class="margins rd-border light-grey-bg">
-      <div class="expand-left-container current-room">
+      <div ng-controller="HeadlineCtrl"
+         class="expand-left-container current-room">
         <span class="expand-left-left">Current Room:</span>
-        <span id='current-room' class="expand-left-left">Lobby</span>
+        <span
+          ng-bind="currentRoom"
+          class="expand-left-left">
+        </span>
       </div>
       <div class="expand-left-right">
-        <div class="config-controls">
-          <img id="toggle-notifications"
+        <div ng-controller="ConfigCtrl"
+          class="config-controls">
+          <img ng-click"toggle-notifications"
             class="ctrl-img"
             src="/images/notifications-disabled.png"
             alt="toggle notifications"
             title="currently not showing notifications - click to enable"
-          ><img id="toggle-sound"
+          ><img ng-click"toggle-sound"
             class="ctrl-img"
             src="/images/unmute.png"
             alt="toggle sound"
@@ -50,7 +60,22 @@
       <div class="margins">
 
         <!-- conversation log - displays past chat messages -->
-        <div id="messages" class="conv-log rd-border"></div>
+        <div ng-controller="MessageLogCtrl" class="conv-log rd-border">
+          <div ng-repeat="message in messages" class="message">
+            <div
+              ng-bind="message.time"
+              class="message-time">
+            </div>
+            <span
+              ng-bind="message.from"
+              class="message-from">
+            </span>
+            <span
+              ng-bind="message.text"
+              class="message-text">
+            </span>
+          </div>
+        </div>
 
         <!-- compose new message -->
         <form id="send-form" role="form">
@@ -68,7 +93,7 @@
             <li>Change nickname: <code>/nick [username]</code></li>
             <li>Join/create room: <code>/join [room name]</code></li>
           </ul>
-          powered by <em>plowderhye</em>.
+          powered by <em>plowderye</em>.
         </div>
       </div>
     </div>
@@ -77,8 +102,10 @@
     <div class="grid-20 grid-parent">
       <div class="margins panel panel-default">
         <div class="panel-heading">Users</div>
-        <div class="panel-body">
-          <div id="user-list"></div>
+        <div class="panel-body" ng-controller="UserListCtrl">
+          <div ng-repeat="user in users"
+            ng-bind="user">
+          </div>
         </div>
       </div>
     </div>
@@ -91,6 +118,7 @@
 <script src="/socket.io/socket.io.js" type="text/javascript"></script>
 <script src="/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
 <script src="/bower_components/jquery-cookie/jquery.cookie.js" type="text/javascript"></script>
+<script src="/bower_components/angular/angular.min.js" type="text/javascript"></script>
 <script src="/bower_components/notify.js/notify.js" type="text/javascript"></script>
 <script src="/js/chat.js" type="text/javascript"></script>
 <script src="/js/chat_ui.js" type="text/javascript"></script>
