@@ -18,9 +18,11 @@
     <div class="margins panel panel-default">
       <div class="panel-heading">Your Conversations</div>
       <div class="list-group" ng-controller="ConvListCtrl">
-        <a href="#" ng-repeat="room in rooms"
-          ng-class="room.cssClass"
-          ng-bind="room.name">
+        <a href="#" ng-repeat="conversation in conversations"
+          ng-bind="conversation.name"
+          ng-click="join(conversation)"
+          ng-class="conversation.getCssClasses()"
+          >
         </a>
       </div>
     </div>
@@ -32,24 +34,23 @@
       <div ng-controller="HeadlineCtrl"
          class="expand-left-container current-room">
         <span class="expand-left-left">Current Room:</span>
-        <span
-          ng-bind="currentRoom"
+        <span ng-bind="currentRoom"
           class="expand-left-left">
         </span>
       </div>
       <div class="expand-left-right">
         <div ng-controller="ConfigCtrl"
           class="config-controls">
-          <img ng-click"toggle-notifications"
+          <img ng-click="toggleNotifications()"
             class="ctrl-img"
-            src="/images/notifications-disabled.png"
+            ng-src="/images/{{notificationsImage}}"
             alt="toggle notifications"
-            title="currently not showing notifications - click to enable"
-          ><img ng-click"toggle-sound"
+            title="{{notificationsTooltip}}"
+          ><img ng-click="toggleSound()"
             class="ctrl-img"
-            src="/images/unmute.png"
+            ng-src="/images/{{soundImage}}"
             alt="toggle sound"
-            title="currently not muted - click to mute"
+            title="{{soundTooltip}}"
           >
         </div>
       </div>
@@ -62,29 +63,30 @@
         <!-- conversation log - displays past chat messages -->
         <div ng-controller="MessageLogCtrl" class="conv-log rd-border">
           <div ng-repeat="message in messages" class="message">
-            <div
-              ng-bind="message.time"
+            <div ng-bind="message.time"
               class="message-time">
             </div>
-            <span
-              ng-bind="message.from"
+            <span ng-bind="message.from"
               class="message-from">
             </span>
-            <span
-              ng-bind="message.text"
+            <span ng-bind="message.text"
               class="message-text">
             </span>
           </div>
         </div>
 
         <!-- compose new message -->
-        <form id="send-form" role="form">
+        <form id="send-form" role="form" ng-controller="SendMessageCtrl">
            <div class="expand-left-container form-group">
             <label class="sr-only" for="message">What's up?</label>
-            <input id="message" type="text" class="expand-left-left form-control" placeholder="What's up?">
+            <input ng-model="message"
+              type="text"
+              class="expand-left-left form-control"
+              placeholder="What's up?">
           </div>
           <span class="span-send expand-left-right">
-            <input id="send-button" type="submit" value="Send" class="btn btn-primary"/>
+            <button ng-click="sendMessage()"
+              class="btn btn-primary">Send</button>
           </span>
         </form>
         <div class="help">
