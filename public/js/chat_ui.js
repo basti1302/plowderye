@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  angular.module('plowderye', []);
+  angular.module('plowderye', ['btford.socket-io']);
 
   function Conversation(name, active) {
     this.name = name;
@@ -16,6 +16,10 @@
     }
   };
 
+  angular.module('plowderye').factory('sock', function (socketFactory) {
+    return socketFactory();
+  });
+
   angular.module('plowderye').controller('ConvListCtrl', function ($scope) {
 
     var lobby = new Conversation('Lobby', true);
@@ -29,7 +33,7 @@
     ];
 
     $scope.join = function(conversation) {
-      // TODO Acutally join conversation via socket.io
+      // TODO Actually join conversation via socket.io
       if ($scope.currentConversation) {
         $scope.currentConversation.active = false;
       }
@@ -81,17 +85,50 @@
     };
   });
 
-  angular.module('plowderye').controller('MessageLogCtrl', function ($scope) {
+  angular
+    .module('plowderye')
+    .controller('MessageLogCtrl',
+      function ($scope, sock) {
+
+
+    function formatTime(message) {
+      if (message.serverTime || message.clientTime) {
+        var date = new Date(message.serverTime || message.clientTime);
+        message.formattedTime =
+        ' [' +
+        date.toLocaleDateString() +
+        ' - ' +
+        date.toLocaleTimeString() +
+        ']:'
+        ;
+      } else {
+        message.formattedTime = '[?]';
+      }
+      return message;
+    }
+
     $scope.messages = [{
-      from: 'Alice',
-      time: new Date().toLocaleDateString(),
+      sender: 'Alice',
+      clientTime: new Date(),
       text: 'Hello Bob! :-)',
     },
     {
-      from: 'Bob',
-      time: new Date().toLocaleDateString(),
+      sender: 'Bob',
+      clientTime: new Date(),
       text: 'Hello Alice. How are you today?',
     }];
+
+    $scope.messages.forEach(formatTime);
+
+    sock.on('message', function (message) {
+      console.log('incoming message');
+      console.log(message);
+      $scope.messages.push(formatTime(message));
+      // TODO Play sound
+      // Show Desktop Notification
+    });
+
+
   });
 
   angular.module('plowderye').controller('SendMessageCtrl', function ($scope) {

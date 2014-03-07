@@ -63,10 +63,10 @@
         <!-- conversation log - displays past chat messages -->
         <div ng-controller="MessageLogCtrl" class="conv-log rd-border">
           <div ng-repeat="message in messages" class="message">
-            <div ng-bind="message.time"
+            <div ng-bind="message.formattedTime"
               class="message-time">
             </div>
-            <span ng-bind="message.from"
+            <span ng-bind="message.sender"
               class="message-from">
             </span>
             <span ng-bind="message.text"
@@ -121,6 +121,7 @@
 <script src="/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
 <script src="/bower_components/jquery-cookie/jquery.cookie.js" type="text/javascript"></script>
 <script src="/bower_components/angular/angular.min.js" type="text/javascript"></script>
+<script src="bower_components/angular-socket-io/socket.js" type="text/javascript"></script>
 <script src="/bower_components/notify.js/notify.js" type="text/javascript"></script>
 <script src="/js/chat.js" type="text/javascript"></script>
 <script src="/js/chat_ui.js" type="text/javascript"></script>
