@@ -9,6 +9,7 @@ Chat = (function() {
     this.socket = socket;
   };
 
+  /*
   Chat.prototype.createMessage = function(text, nick, room) {
     var clientTime = Date.now();
     var message = {
@@ -20,17 +21,20 @@ Chat = (function() {
     };
     return message;
   };
+  */
 
   Chat.prototype.sendMessage = function(message) {
     this.socket.emit('message', message);
   };
 
 
+  /*
   Chat.prototype.changeRoom = function(room) {
     this.socket.emit('join', {
       newRoom: room
     });
   };
+  */
 
   Chat.prototype.processCommand = function(command) {
     var words = command.split(' ');
@@ -43,7 +47,7 @@ Chat = (function() {
       case 'join':
         words.shift();
         var room = words.join(' ');
-        this.changeRoom(room);
+        //this.changeRoom(room);
         break;
       case 'nick':
         words.shift();

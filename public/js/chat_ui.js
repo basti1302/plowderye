@@ -1,6 +1,9 @@
 (function() {
   'use strict';
 
+  // TODO fetch current nick from server
+  var nick = 'You';
+
   angular.module('plowderye', ['btford.socket-io']);
 
   function Conversation(name, active) {
@@ -20,30 +23,192 @@
     return socketFactory();
   });
 
-  angular.module('plowderye').controller('ConvListCtrl', function ($scope) {
+  angular
+    .module('plowderye')
+    .service('ConversationService',
+      function(MessageService, sock) {
 
-    var lobby = new Conversation('Lobby', true);
-    $scope.currentConversation = lobby;
+    var conversations = {};
+    var currentConversation = {};
 
-    $scope.conversations = [
-      lobby,
-      new Conversation('Chat'),
-      new Conversation('Plauderei'),
-      new Conversation('Quatsch'),
-    ];
-
-    $scope.join = function(conversation) {
-      // TODO Actually join conversation via socket.io
-      if ($scope.currentConversation) {
-        $scope.currentConversation.active = false;
-      }
-      $scope.currentConversation = conversation;
-      $scope.currentConversation.active = true;
+    this.getConversations = function() {
+      return conversations;
     }
+
+    this.getCurrentConversation = function() {
+      return currentConversation;
+    }
+
+    this.join = function(conversation) {
+      sock.emit('join', {
+        newRoom: conversation.name
+      });
+    };
+
+    sock.on('fetch-rooms-result', function(conversationNames) {
+      // create all conversations that come from server and do not yet exist on
+      // client
+      conversationNames.forEach(function(conversationName) {
+        var existingConversation = conversations[conversationName];
+        if (!existingConversation) {
+          conversations[conversationName] = new Conversation(conversationName);
+        }
+      });
+      // delete all conversations that exist on client but not on server anymore
+      for (var convKey in conversations) {
+        if ($.inArray(convKey, conversationNames) < 0) {
+          delete conversations[convKey];
+        }
+      }
+    });
+
+    sock.on('join-result', function(result) {
+      MessageService.clearMessages();
+      if (result.room) {
+        if (currentConversation) {
+          currentConversation.active = false;
+        }
+
+        currentConversation = conversations[result.room];
+        if (currentConversation) {
+          // conv is already in user's conv list
+          currentConversation.active = true;
+        } else {
+          // conv is not yet in user's conv list, create it now
+          currentConversation = new Conversation(result.room, true);
+          conversations[currentConversation.name] = currentConversation;
+        }
+        // MessageService needs to know the current conversation to properly
+        // set this attribute in new messages.
+        MessageService.setCurrentConversation(currentConversation);
+      }
+    });
+
+     /*
+      $('#messages')
+        .empty()
+        .append(divSystemContentElement('Room changed.'))
+      ;
+      $.cookie('room', currentRoom);
+      */
+
   });
 
-  angular.module('plowderye').controller('HeadlineCtrl', function ($scope) {
-    $scope.currentRoom = 'Lobby';
+  angular
+    .module('plowderye')
+    .service('MessageService',
+      function(sock) {
+
+    var self = this;
+    var messages = [];
+    var currentConversation = null;
+
+    function createMessage(messageText) {
+      var clientTime = Date.now();
+      var conversationName = currentConversation ? currentConversation.name : null;
+      return {
+        sender: nick,
+        room: conversationName,
+        text: messageText,
+        clientTime: clientTime,
+        clientId: clientTime + '-' + randomString(),
+      };
+    }
+
+    function format(message) {
+      formatSender(message);
+      formatTime(message);
+      formatText(message);
+      return message;
+    }
+
+    function formatSender(message) {
+      if (message.sender) {
+        message.formattedSender = message.sender;
+      } else {
+        message.formattedSender = '?';
+      }
+    }
+
+    function formatTime(message) {
+      if (message.serverTime || message.clientTime) {
+        var date = new Date(message.serverTime || message.clientTime);
+        message.formattedTime =
+        ' [' +
+        date.toLocaleDateString() +
+        ' - ' +
+        date.toLocaleTimeString() +
+        ']:'
+        ;
+      } else {
+        message.formattedTime = '[?]';
+      }
+      return message;
+    }
+
+    function formatText(message) {
+      if (message.text) {
+        message.formattedText = message.text;
+      } else {
+        message.formattedText = '';
+      }
+    }
+
+    function randomString()  {
+      return ('' + Math.random()).substr(2, 4);
+    }
+
+    this.setCurrentConversation = function(_currentConversation) {
+      currentConversation = _currentConversation;
+    };
+
+    this.clearMessages = function() {
+      messages = [];
+    }
+
+    this.getMessages = function() {
+      return messages;
+    };
+
+    this.send = function(messageText) {
+      var message = createMessage(messageText);
+      this.addLocally(angular.copy(message));
+      sock.emit('message', message);
+    };
+
+    this.addLocally = function(message) {
+      messages.push(format(message));
+    };
+
+    sock.on('message', function (message) {
+      self.addLocally(message);
+
+      // TODO Play sound
+      // TODO Show Desktop Notification
+      // TODO Scroll to end? Keep current scrolling position??
+    });
+  });
+
+  angular
+    .module('plowderye')
+    .controller('ConvListCtrl',
+      function ($scope, ConversationService) {
+    $scope.getConversations = ConversationService.getConversations;
+    $scope.join = ConversationService.join;
+ });
+
+  angular
+    .module('plowderye')
+    .controller('HeadlineCtrl',
+      function ($scope, ConversationService) {
+    $scope.getCurrentConversationName = function() {
+      var conv = ConversationService.getCurrentConversation();
+      if (conv && conv.name) {
+        return conv.name;
+      } else {
+        return '?';
+      }
+    };
   });
 
   angular.module('plowderye').controller('ConfigCtrl', function ($scope) {
@@ -88,64 +253,27 @@
   angular
     .module('plowderye')
     .controller('MessageLogCtrl',
-      function ($scope, sock) {
-
-
-    function formatTime(message) {
-      if (message.serverTime || message.clientTime) {
-        var date = new Date(message.serverTime || message.clientTime);
-        message.formattedTime =
-        ' [' +
-        date.toLocaleDateString() +
-        ' - ' +
-        date.toLocaleTimeString() +
-        ']:'
-        ;
-      } else {
-        message.formattedTime = '[?]';
-      }
-      return message;
-    }
-
-    $scope.messages = [{
-      sender: 'Alice',
-      clientTime: new Date(),
-      text: 'Hello Bob! :-)',
-    },
-    {
-      sender: 'Bob',
-      clientTime: new Date(),
-      text: 'Hello Alice. How are you today?',
-    }];
-
-    $scope.messages.forEach(formatTime);
-
-    sock.on('message', function (message) {
-      console.log('incoming message');
-      console.log(message);
-      $scope.messages.push(formatTime(message));
-      // TODO Play sound
-      // Show Desktop Notification
-    });
-
-
+      function ($scope, MessageService) {
+    $scope.getMessages = MessageService.getMessages;
   });
 
-  angular.module('plowderye').controller('SendMessageCtrl', function ($scope) {
+  angular
+    .module('plowderye')
+    .controller('SendMessageCtrl',
+      function ($scope, MessageService) {
     $scope.sendMessage = function() {
-      console.log($scope.message);
-      $scope.message = null;
-      // TODO Write message locally to message log via message service
-      // TODO Send message via socket.io/message service
+      MessageService.send($scope.messageText);
+      $scope.messageText = null;
     }
   });
 
-
-
-  angular.module('plowderye').controller('UserListCtrl', function ($scope) {
-    $scope.users = [
-      'Alice',
-      'Bob',
-    ];
+  angular
+    .module('plowderye')
+    .controller('UserListCtrl',
+      function ($scope, sock) {
+    sock.on('fetch-users-result', function(users) {
+      $scope.users = users;
+    });
   });
+
 })();

@@ -18,7 +18,7 @@
     <div class="margins panel panel-default">
       <div class="panel-heading">Your Conversations</div>
       <div class="list-group" ng-controller="ConvListCtrl">
-        <a href="#" ng-repeat="conversation in conversations"
+        <a href="#" ng-repeat="conversation in getConversations()"
           ng-bind="conversation.name"
           ng-click="join(conversation)"
           ng-class="conversation.getCssClasses()"
@@ -34,7 +34,7 @@
       <div ng-controller="HeadlineCtrl"
          class="expand-left-container current-room">
         <span class="expand-left-left">Current Room:</span>
-        <span ng-bind="currentRoom"
+        <span ng-bind="getCurrentConversationName()"
           class="expand-left-left">
         </span>
       </div>
@@ -62,14 +62,14 @@
 
         <!-- conversation log - displays past chat messages -->
         <div ng-controller="MessageLogCtrl" class="conv-log rd-border">
-          <div ng-repeat="message in messages" class="message">
+          <div ng-repeat="message in getMessages()" class="message">
             <div ng-bind="message.formattedTime"
               class="message-time">
             </div>
-            <span ng-bind="message.sender"
+            <span ng-bind="message.formattedSender"
               class="message-from">
             </span>
-            <span ng-bind="message.text"
+            <span ng-bind="message.formattedText"
               class="message-text">
             </span>
           </div>
@@ -79,7 +79,7 @@
         <form id="send-form" role="form" ng-controller="SendMessageCtrl">
            <div class="expand-left-container form-group">
             <label class="sr-only" for="message">What's up?</label>
-            <input ng-model="message"
+            <input ng-model="messageText"
               type="text"
               class="expand-left-left form-control"
               placeholder="What's up?">
@@ -120,10 +120,10 @@
 <script src="/socket.io/socket.io.js" type="text/javascript"></script>
 <script src="/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
 <script src="/bower_components/jquery-cookie/jquery.cookie.js" type="text/javascript"></script>
-<script src="/bower_components/angular/angular.min.js" type="text/javascript"></script>
+<script src="/bower_components/angular/angular.js" type="text/javascript"></script>
 <script src="bower_components/angular-socket-io/socket.js" type="text/javascript"></script>
 <script src="/bower_components/notify.js/notify.js" type="text/javascript"></script>
-<script src="/js/chat.js" type="text/javascript"></script>
+<!--script src="/js/chat.js" type="text/javascript"></script-->
 <script src="/js/chat_ui.js" type="text/javascript"></script>
 </body>
 </html>

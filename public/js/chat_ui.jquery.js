@@ -21,6 +21,7 @@
     return $('<div></div>').html('<i>' + message + '</i>');
   }
 
+  /*
   function renderMessage(message) {
     var time;
     if (message.serverTime || message.clientTime) {
@@ -67,6 +68,7 @@
     $('#messages')
       .scrollTop($('#messages').prop('scrollHeight'));
   }
+  */
 
   function processUserInput(chatApp, socket) {
     var text = $('#message').val();
@@ -158,6 +160,7 @@
       path: '/',
     };
 
+    /*
     socket.on('set-name-result', function(result) {
       var message;
 
@@ -192,7 +195,9 @@
       ;
       $.cookie('room', currentRoom);
     });
+    */
 
+    /*
     socket.on('fetch-users-result', function(users) {
       $('#user-list').empty();
       users.forEach(function(user) {
@@ -201,6 +206,7 @@
         }
       });
     });
+    */
 
     socket.on('set-sound-enabled', function(enabled) {
       soundEnabled = enabled;
@@ -213,10 +219,12 @@
       notifyLater(message);
     });
 
+    /*
     socket.on('fetch-rooms-result', function(rooms) {
       $('#room-list').empty();
       rooms.forEach(appendRoom);
    });
+   */
 
     $('#toggle-notifications').click(function() {
       notificationsEnabled = !notificationsEnabled;
@@ -224,6 +232,7 @@
       onNotificationsEnabledChange();
     });
 
+    /*
     function appendRoom(room) {
       var roomLink = $('<a href="#" class="list-group-item"></a>').text(room);
       if (room === currentRoom) {
@@ -236,7 +245,7 @@
       }
       $('#room-list').append(roomLink);
     }
-
+    */
 
     function onNotificationsEnabledChange() {
       if (notificationsEnabled) {
