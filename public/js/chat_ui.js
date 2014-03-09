@@ -4,7 +4,7 @@
   // TODO fetch current nick from server
   var nick = 'You';
 
-  angular.module('plowderye', ['btford.socket-io']);
+  angular.module('plowderye', ['btford.socket-io', 'ngCookies']);
 
   function Conversation(name, active) {
     this.name = name;
@@ -19,14 +19,14 @@
     }
   };
 
-  angular.module('plowderye').factory('sock', function (socketFactory) {
+  angular.module('plowderye').factory('socket', function (socketFactory) {
     return socketFactory();
   });
 
   angular
     .module('plowderye')
     .service('ConversationService',
-      function(MessageService, sock) {
+      function(MessageService, socket, $cookies) {
 
     var conversations = {};
     var currentConversation = {};
@@ -40,12 +40,12 @@
     }
 
     this.join = function(conversation) {
-      sock.emit('join', {
+      socket.emit('join', {
         newRoom: conversation.name
       });
     };
 
-    sock.on('fetch-rooms-result', function(conversationNames) {
+    socket.on('fetch-rooms-result', function(conversationNames) {
       // create all conversations that come from server and do not yet exist on
       // client
       conversationNames.forEach(function(conversationName) {
@@ -62,7 +62,7 @@
       }
     });
 
-    sock.on('join-result', function(result) {
+    socket.on('join-result', function(result) {
       MessageService.clearMessages();
       if (result.room) {
         if (currentConversation) {
@@ -81,6 +81,8 @@
         // MessageService needs to know the current conversation to properly
         // set this attribute in new messages.
         MessageService.setCurrentConversation(currentConversation);
+        $cookies.room = currentConversation.name;
+        console.log('setting cookie: room: ' + $cookies.room);
       }
     });
 
@@ -89,7 +91,6 @@
         .empty()
         .append(divSystemContentElement('Room changed.'))
       ;
-      $.cookie('room', currentRoom);
       */
 
   });
@@ -97,7 +98,7 @@
   angular
     .module('plowderye')
     .service('MessageService',
-      function(sock) {
+      function(socket) {
 
     var self = this;
     var messages = [];
@@ -173,14 +174,14 @@
     this.send = function(messageText) {
       var message = createMessage(messageText);
       this.addLocally(angular.copy(message));
-      sock.emit('message', message);
+      socket.emit('message', message);
     };
 
     this.addLocally = function(message) {
       messages.push(format(message));
     };
 
-    sock.on('message', function (message) {
+    socket.on('message', function (message) {
       self.addLocally(message);
 
       // TODO Play sound
@@ -211,7 +212,10 @@
     };
   });
 
-  angular.module('plowderye').controller('ConfigCtrl', function ($scope) {
+  angular
+    .module('plowderye')
+    .controller('ConfigCtrl',
+      function ($scope, $cookies) {
 
     // TODO Enabled/Disabled states need to be variable in the corresponding
     // SoundService/NotificationService
@@ -232,8 +236,7 @@
         $scope.notificationsImage = 'notifications-disabled.png';
         $scope.notificationsTooltip ='currently not showing notifications - click to enable';
       }
-      // TODO Set cookie
-      //$.cookie('notifications', notificationsEnabled);
+      $cookies.notifications = notificationsEnabled;
     };
 
     $scope.toggleSound = function() {
@@ -245,8 +248,7 @@
         $scope.soundImage = 'sound-disabled.png';
         $scope.soundTooltip = 'currently muted - click to unmute';
       }
-      // TODO Set cookie
-      $.cookie('sound', soundEnabled);
+      $cookies.sound = soundEnabled;
     };
   });
 
@@ -270,8 +272,8 @@
   angular
     .module('plowderye')
     .controller('UserListCtrl',
-      function ($scope, sock) {
-    sock.on('fetch-users-result', function(users) {
+      function ($scope, socket) {
+    socket.on('fetch-users-result', function(users) {
       $scope.users = users;
     });
   });
