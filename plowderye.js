@@ -15,5 +15,5 @@ app.use(express.static(__dirname + '/public'));
 
 server.listen(3000);
 
-var chatServer = require('./lib/chat_server');
-chatServer.listen(server);
+var connectionHandler = require('./lib/connection_handler');
+connectionHandler.listen(server);
