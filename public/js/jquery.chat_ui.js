@@ -155,12 +155,14 @@
   }
 
   $(document).ready(function() {
+    /*
     var chatApp = new Chat(socket);
 
     $.cookie.defaults = {
       expires: 90,
       path: '/',
     };
+    */
 
     /*
     socket.on('set-name-result', function(result) {
@@ -284,6 +286,7 @@
       $.cookie('sound', soundEnabled);
     }
 
+    /*
     setInterval(function() {
       socket.emit('fetch-rooms');
     }, refreshRate);
@@ -291,13 +294,16 @@
     setInterval(function() {
       socket.emit('fetch-users');
     }, refreshRate);
+    */
 
     $('#message').focus();
 
+    /*
     $('#send-form').submit(function() {
       processUserInput(chatApp, socket);
       return false;
     });
+    */
   });
 
   var socket = io.connect();

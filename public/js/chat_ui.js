@@ -30,7 +30,7 @@
   angular
     .module('plowderye')
     .service('ConversationService',
-      function(MessageService, socket) {
+      function(MessageService, socket, $interval) {
 
     var conversations = {};
     var currentConversation = {};
@@ -89,6 +89,12 @@
         $.cookie('room', currentConversation.name);
       }
     });
+
+    // TODO This is nonsense. server knows all users and conversations and can
+    // emit user lists on its own, without being polled.
+    $interval(function() {
+      socket.emit('fetch-rooms');
+    }, 10000);
   });
 
   angular
@@ -226,15 +232,12 @@
     };
 
     this.displaySystemMessage = function(messageText) {
-      console.log('this.displaySystemMessage(' + messageText + ')');
       var message = createSystemMessage(messageText);
       this.addLocally(message);
     };
 
     this.addLocally = function(message) {
       format(message);
-      console.log('adding locally: ');
-      console.log(JSON.stringify(message, null, 2));
       messages.push(message);
     };
 
@@ -247,7 +250,6 @@
     });
 
     $rootScope.$on('display-system-message', function(event, message) {
-      console.log('$rootScope.on(\'display-system-message\'' + message + ')');
       self.displaySystemMessage(message);
     });
   });
@@ -255,7 +257,7 @@
   angular
     .module('plowderye')
     .service('UserService',
-      function(socket, $rootScope) {
+      function(socket, $rootScope, $interval) {
 
     var user = 'You';
 
@@ -278,9 +280,14 @@
         message = result.message;
       }
 
-      console.log('$rootScope.emit(display-system-message, ' + message);
       $rootScope.$emit('display-system-message', message);
     });
+
+    // TODO This is nonsense. server knows all users and conversations and can
+    // emit user lists on its own, without being polled.
+    $interval(function() {
+      socket.emit('fetch-users');
+    }, 10000);
   });
 
 
