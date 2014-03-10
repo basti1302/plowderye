@@ -108,7 +108,8 @@
         <div class="panel-heading">Users</div>
         <div class="panel-body" ng-controller="UserListCtrl">
           <div ng-repeat="user in users"
-            ng-bind="user">
+            ng-bind="user"
+            ng-class="isCurrentUser(user) ? ['current-user'] : []"
           </div>
         </div>
       </div>

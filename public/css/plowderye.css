@@ -109,6 +109,10 @@ body {
   font: 10px "Lucida Grande", Helvetica, Arial, sans-serif;
 }
 
+.current-user {
+  font-weight: bold;
+}
+
 #sound {
   display: none;
 }
