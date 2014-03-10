@@ -70,6 +70,7 @@
   }
   */
 
+  /*
   function processUserInput(chatApp, socket) {
     var text = $('#message').val();
     var systemMessage;
@@ -88,6 +89,7 @@
 
     $('#message').val('');
   }
+  */
 
   function notifyLater(message) {
     if (!notificationsEnabled) { return; }

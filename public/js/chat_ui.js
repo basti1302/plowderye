@@ -1,8 +1,14 @@
 (function() {
   'use strict';
 
+  $(document).ready(function() {
+    $.cookie.defaults = {
+      expires: 90,
+      path: '/',
+    };
+  });
 
-  angular.module('plowderye', ['btford.socket-io', 'ngCookies']);
+  angular.module('plowderye', ['btford.socket-io']);
 
   function Conversation(name, active) {
     this.name = name;
@@ -24,7 +30,7 @@
   angular
     .module('plowderye')
     .service('ConversationService',
-      function(MessageService, socket, $cookies) {
+      function(MessageService, socket) {
 
     var conversations = {};
     var currentConversation = {};
@@ -79,9 +85,8 @@
         // MessageService needs to know the current conversation to properly
         // set this attribute in new messages.
         MessageService.setCurrentConversation(currentConversation);
-        $cookies.room = currentConversation.name;
         MessageService.displaySystemMessage('Room changed.');
-        console.log('setting cookie: room: ' + $cookies.room);
+        $.cookie('room', currentConversation.name);
       }
     });
   });
@@ -250,7 +255,7 @@
   angular
     .module('plowderye')
     .service('UserService',
-      function(socket, $rootScope, $cookies) {
+      function(socket, $rootScope) {
 
     var user = 'You';
 
@@ -268,7 +273,7 @@
       if (result.success) {
         user = result.name
         message = 'You are now known as ' + user + '.';
-        $cookies.nick = user;
+        $.cookie('nick', user);
       } else {
         message = result.message;
       }
@@ -304,7 +309,7 @@
   angular
     .module('plowderye')
     .controller('ConfigCtrl',
-      function ($scope, $cookies) {
+      function ($scope) {
 
     // TODO Enabled/Disabled states need to be variable in the corresponding
     // SoundService/NotificationService
@@ -325,7 +330,7 @@
         $scope.notificationsImage = 'notifications-disabled.png';
         $scope.notificationsTooltip ='currently not showing notifications - click to enable';
       }
-      $cookies.notifications = notificationsEnabled;
+      $.cookie('notifications', notificationsEnabled);
     };
 
     $scope.toggleSound = function() {
@@ -337,7 +342,7 @@
         $scope.soundImage = 'sound-disabled.png';
         $scope.soundTooltip = 'currently muted - click to unmute';
       }
-      $cookies.sound = soundEnabled;
+      $.cookie('sound', soundEnabled);
     };
   });
 

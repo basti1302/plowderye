@@ -16,9 +16,9 @@
   ],
   "dependencies": {
     "angular": "~1.2.13",
-    "angular-cookies": "~1.2.14",
     "angular-socket-io": "~0.4.0",
     "jquery": "~2.1.0",
+    "jquery-cookie": "~1.4.0",
     "normalize-css": "~3.0.0",
     "notify.js": "~1.1.0",
     "unsemantic": "*"
