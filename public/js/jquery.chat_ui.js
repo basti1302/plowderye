@@ -7,13 +7,13 @@
   var currentRoom = 'Lobby';
 
   var soundEnabled = true;
-  */
 
   var notificationsChecked = false;
   var notificationsEnabled = false;
   var notificationMessageCount = 0;
   var notificationMessage;
   var notificationTimeoutId;
+  */
 
   /*
   function divEscapedContentElement(message) {
@@ -93,6 +93,7 @@
   }
   */
 
+  /*
   function notifyLater(message) {
     if (!notificationsEnabled) { return; }
     if (!notificationsChecked) {
@@ -137,6 +138,7 @@
     notification.show();
     notificationMessageCount = 0;
   }
+  */
 
   /*
   function playSound(filename){
@@ -221,20 +223,17 @@
       soundEnabled = enabled;
       onSoundEnabledChange();
     });
-    */
 
     socket.on('message', function (message) {
-      //renderMessage(message);
-      //playSound('ping');
+      renderMessage(message);
+      playSound('ping');
       notifyLater(message);
     });
 
-    /*
     socket.on('fetch-rooms-result', function(rooms) {
       $('#room-list').empty();
       rooms.forEach(appendRoom);
-   });
-   */
+    });
 
     $('#toggle-notifications').click(function() {
       notificationsEnabled = !notificationsEnabled;
@@ -242,7 +241,6 @@
       onNotificationsEnabledChange();
     });
 
-    /*
     function appendRoom(room) {
       var roomLink = $('<a href="#" class="list-group-item"></a>').text(room);
       if (room === currentRoom) {
@@ -255,7 +253,6 @@
       }
       $('#room-list').append(roomLink);
     }
-    */
 
     function onNotificationsEnabledChange() {
       if (notificationsEnabled) {
@@ -272,7 +269,6 @@
       $.cookie('sound', soundEnabled);
     }
 
-    /*
     $('#toggle-sound').click(function() {
       soundEnabled = !soundEnabled;
       onSoundEnabledChange();

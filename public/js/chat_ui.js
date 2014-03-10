@@ -140,7 +140,7 @@
   angular
     .module('plowderye')
     .service('MessageService',
-      function(socket, $rootScope, UserService, SoundService) {
+      function(socket, $rootScope, UserService, SoundService, NotificationService) {
 
     var self = this;
     var messages = [];
@@ -245,8 +245,7 @@
     socket.on('message', function (message) {
       self.addLocally(message);
       SoundService.playSound('ping');
-
-      // TODO Show Desktop Notification
+      NotificationService.notify(message);
       // TODO Scroll to end? Keep current scrolling position??
     });
 
@@ -332,6 +331,82 @@
     });
   });
 
+  angular
+    .module('plowderye')
+    .service('NotificationService',
+      function (socket) {
+
+    var notificationsChecked = false;
+    var notificationsEnabled = false;
+    var notificationMessageCount = 0;
+    var notificationMessage;
+    var notificationTimeoutId;
+
+    this.areNotificationsEnabled = function() {
+      return notificationsEnabled;
+    };
+
+    this.toggleNotificationsEnabled = function() {
+      notificationsEnabled = !notificationsEnabled;
+      if (notificationsEnabled) {
+        requestNotificationPermission();
+      }
+      $.cookie('notifications', notificationsEnabled);
+    };
+
+    this.notify = function(message) {
+      notifyLater(message);
+    };
+
+    function notifyLater(message) {
+      if (!notificationsEnabled) { return; }
+      if (!notificationsChecked) {
+        if (!notificationsEnabled) { return; }
+
+        // TODO Does not work in Chrome because we are not in a onClick handler:
+        // https://code.google.com/p/chromium/issues/detail?id=274284
+        requestNotificationPermission();
+        if (!notificationsEnabled) { return; }
+      }
+      // Overwrite current notificationMessage on purpose - only notify for
+      // message received last in time period.
+      notificationMessage = message;
+      notificationMessageCount++;
+      if (!notificationTimeoutId) {
+        notificationTimeoutId = setTimeout(notifyNow, 3000);
+      }
+    }
+
+    function requestNotificationPermission() {
+      if (notificationsChecked) {
+        return;
+      }
+      notificationsEnabled = notificationsEnabled &&
+          Notify.prototype.isSupported();
+      if (!notificationsEnabled) { return; }
+      if (Notify.prototype.needsPermission()) {
+        Notify.prototype.requestPermission();
+      }
+      notificationsChecked = true;
+    }
+
+    function notifyNow() {
+      notificationTimeoutId = null;
+      var title = 'New Message';
+      if (notificationMessageCount >= 2) {
+        title = notificationMessageCount + ' New Messages';
+      }
+      var notification = new Notify(title, {
+        body: notificationMessage.sender + ': ' + notificationMessage.text,
+      });
+      notification.show();
+      notificationMessageCount = 0;
+    }
+
+    socket.on('set-notifications-enabled', function(enabled) {
+      notificationsEnabled = enabled;
+    });
+  });
 
   angular
     .module('plowderye')
@@ -358,27 +433,26 @@
   angular
     .module('plowderye')
     .controller('ConfigCtrl',
-      function ($scope, SoundService) {
-
-    // TODO Enabled/Disabled states need to be variable in the corresponding
-    // SoundService/NotificationService
-    var notificationsEnabled = false;
-
-    $scope.notificationsImage = 'notifications-disabled.png';
-    $scope.notificationsTooltip ='currently not showing notifications - click to enable';
-    $scope.soundImage = 'sound-enabled.png';
-    $scope.soundTooltip = 'currently not muted - click to mute';
+      function ($scope, SoundService, NotificationService) {
 
     $scope.toggleNotifications = function() {
-      notificationsEnabled = !notificationsEnabled;
-      if (notificationsEnabled) {
-        $scope.notificationsImage = 'notifications-enabled.png';
-        $scope.notificationsTooltip = 'currently showing notifications - click to disable';
+      NotificationService.toggleNotificationsEnabled();
+    };
+
+    $scope.getNotificationsImage = function() {
+      if (NotificationService.areNotificationsEnabled()) {
+        return 'notifications-enabled.png';
       } else {
-        $scope.notificationsImage = 'notifications-disabled.png';
-        $scope.notificationsTooltip ='currently not showing notifications - click to enable';
+        return 'notifications-disabled.png';
       }
-      $.cookie('notifications', notificationsEnabled);
+    };
+
+    $scope.getNotficationsTooltip = function() {
+      if (NotificationService.areNotificationsEnabled()) {
+        return 'currently showing desktop notifications - click to disable';
+      } else {
+        return 'currently not showing desktop notifications - click to enable';
+      }
     };
 
     $scope.toggleSound = function() {
