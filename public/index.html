@@ -81,7 +81,8 @@
         <form id="send-form" role="form" ng-controller="SendMessageCtrl">
            <div class="expand-left-container form-group">
             <label class="sr-only" for="message">What's up?</label>
-            <input ng-model="messageText"
+            <input id="message"
+              ng-model="messageText"
               type="text"
               class="expand-left-left form-control"
               placeholder="What's up?">

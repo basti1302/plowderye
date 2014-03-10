@@ -6,6 +6,7 @@
       expires: 90,
       path: '/',
     };
+    $('#message').focus();
   });
 
   angular.module('plowderye', ['btford.socket-io']);

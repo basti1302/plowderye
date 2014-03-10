@@ -294,11 +294,9 @@
     setInterval(function() {
       socket.emit('fetch-users');
     }, refreshRate);
-    */
 
     $('#message').focus();
 
-    /*
     $('#send-form').submit(function() {
       processUserInput(chatApp, socket);
       return false;
