@@ -1,11 +1,13 @@
 (function() {
   'use strict';
 
+  /*
   var refreshRate = 5000;
   var nick = 'You';
   var currentRoom = 'Lobby';
 
   var soundEnabled = true;
+  */
 
   var notificationsChecked = false;
   var notificationsEnabled = false;
@@ -13,11 +15,11 @@
   var notificationMessage;
   var notificationTimeoutId;
 
+  /*
   function divEscapedContentElement(message) {
     return $('<div></div>').text(message);
   }
 
-  /*
   function divSystemContentElement(message) {
     return $('<div></div>').html('<i>' + message + '</i>');
   }
@@ -136,6 +138,7 @@
     notificationMessageCount = 0;
   }
 
+  /*
   function playSound(filename){
     $('#sound').empty();
     if (soundEnabled) {
@@ -153,6 +156,7 @@
       $('#sound').append(audio);
     }
   }
+  */
 
   $(document).ready(function() {
     /*
@@ -212,14 +216,16 @@
     });
     */
 
+    /*
     socket.on('set-sound-enabled', function(enabled) {
       soundEnabled = enabled;
       onSoundEnabledChange();
     });
+    */
 
     socket.on('message', function (message) {
-      renderMessage(message);
-      playSound('ping');
+      //renderMessage(message);
+      //playSound('ping');
       notifyLater(message);
     });
 
@@ -266,6 +272,7 @@
       $.cookie('sound', soundEnabled);
     }
 
+    /*
     $('#toggle-sound').click(function() {
       soundEnabled = !soundEnabled;
       onSoundEnabledChange();
@@ -285,6 +292,7 @@
       }
       $.cookie('sound', soundEnabled);
     }
+    */
 
     /*
     setInterval(function() {

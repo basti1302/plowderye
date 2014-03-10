@@ -140,7 +140,7 @@
   angular
     .module('plowderye')
     .service('MessageService',
-      function(socket, $rootScope, UserService) {
+      function(socket, $rootScope, UserService, SoundService) {
 
     var self = this;
     var messages = [];
@@ -244,8 +244,8 @@
 
     socket.on('message', function (message) {
       self.addLocally(message);
+      SoundService.playSound('ping');
 
-      // TODO Play sound
       // TODO Show Desktop Notification
       // TODO Scroll to end? Keep current scrolling position??
     });
@@ -291,6 +291,46 @@
     }, 10000);
   });
 
+  angular
+    .module('plowderye')
+    .service('SoundService',
+      function (socket) {
+
+    var soundEnabled = true;
+
+    this.isSoundEnabled = function() {
+      return soundEnabled;
+    };
+
+    this.toggleSoundEnabled = function() {
+      soundEnabled = !soundEnabled;
+    };
+
+    // TODO make this more angular-ish and less jquery-ish
+    // Should live in a controller
+    this.playSound = function(filename) {
+      $('#sound').empty();
+      if (soundEnabled) {
+        var mp3 = $('<source src="/sounds/' + filename +
+          '.mp3" type="audio/mpeg" />');
+        var ogg = $('<source src="/sounds/' + filename +
+          '.ogg" type="audio/ogg" />');
+        // fallback to embed (IE8 etc.)
+        var embed = $('<embed hidden="true" autostart="true" loop="false" src="' +
+              filename + '.mp3" />');
+        var audio = $('<audio autoplay="autoplay"></audio>');
+        audio.append(mp3);
+        audio.append(ogg);
+        audio.append(embed);
+        $('#sound').append(audio);
+      }
+    };
+
+    socket.on('set-sound-enabled', function(enabled) {
+      soundEnabled = enabled;
+    });
+  });
+
 
   angular
     .module('plowderye')
@@ -317,12 +357,11 @@
   angular
     .module('plowderye')
     .controller('ConfigCtrl',
-      function ($scope) {
+      function ($scope, SoundService) {
 
     // TODO Enabled/Disabled states need to be variable in the corresponding
     // SoundService/NotificationService
     var notificationsEnabled = false;
-    var soundEnabled = true;
 
     $scope.notificationsImage = 'notifications-disabled.png';
     $scope.notificationsTooltip ='currently not showing notifications - click to enable';
@@ -342,15 +381,15 @@
     };
 
     $scope.toggleSound = function() {
-      soundEnabled = !soundEnabled;
-      if (soundEnabled) {
+      SoundService.toggleSoundEnabled();
+      if (SoundService.isSoundEnabled()) {
         $scope.soundImage = 'sound-enabled.png';
         $scope.soundTooltip = 'currently not muted - click to mute';
       } else {
         $scope.soundImage = 'sound-disabled.png';
         $scope.soundTooltip = 'currently muted - click to unmute';
       }
-      $.cookie('sound', soundEnabled);
+      $.cookie('sound', SoundService.isSoundEnabled());
     };
   });
 
