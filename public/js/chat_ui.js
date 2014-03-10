@@ -304,6 +304,7 @@
 
     this.toggleSoundEnabled = function() {
       soundEnabled = !soundEnabled;
+      $.cookie('sound', soundEnabled);
     };
 
     // TODO make this more angular-ish and less jquery-ish
@@ -382,14 +383,21 @@
 
     $scope.toggleSound = function() {
       SoundService.toggleSoundEnabled();
+    };
+
+    $scope.getSoundImage = function() {
       if (SoundService.isSoundEnabled()) {
-        $scope.soundImage = 'sound-enabled.png';
-        $scope.soundTooltip = 'currently not muted - click to mute';
+        return 'sound-enabled.png';
       } else {
-        $scope.soundImage = 'sound-disabled.png';
-        $scope.soundTooltip = 'currently muted - click to unmute';
+        return 'sound-disabled.png';
       }
-      $.cookie('sound', SoundService.isSoundEnabled());
+    };
+    $scope.getSoundTooltip = function() {
+      if (SoundService.isSoundEnabled()) {
+        return 'currently not muted - click to mute';
+      } else {
+        return 'currently muted - click to unmute';
+      }
     };
   });
 
