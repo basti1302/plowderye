@@ -81,6 +81,8 @@ body {
 .current-conversation {
   font-size: 18px;
   font-weight: bold;
+  height: 28px;
+  line-height: 28px;
 }
 
 .conv-log {
