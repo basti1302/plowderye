@@ -9,6 +9,7 @@
     "mime": "^1.2.11",
     "node-uuid": "^1.4.1",
     "socket.io": "^0.9.16",
-    "through": "^2.3.4"
+    "through": "^2.3.4",
+    "cookie": "^0.1.1"
   }
 }
