@@ -28,12 +28,11 @@
     </div>
   </div>
 
-  <!-- current room headline and config controls -->
+  <!-- current conversation headline and config controls -->
   <div class="grid-80 grid-parent">
     <div class="margins rd-border light-grey-bg">
       <div ng-controller="HeadlineCtrl"
-         class="expand-left-container current-room">
-        <span class="expand-left-left">Current Room:</span>
+         class="expand-left-container current-conversation">
         <span ng-bind="getCurrentConversationName()"
           class="expand-left-left">
         </span>
@@ -96,7 +95,7 @@
           Chat commands:
           <ul>
             <li>Change nickname: <code>/nick [username]</code></li>
-            <li>Join/create room: <code>/join [room name]</code></li>
+            <li>Join/create conversation: <code>/join [conversation name]</code></li>
           </ul>
           powered by <em>plowderye</em>.
         </div>
