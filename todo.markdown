@@ -1,13 +1,10 @@
 TODOs
 =====
-- Angular frontend instead of jQuery
-
 - On joining a conversations, only load a few messages from the past
   (20 messages or so) (instead of loading *all* messages from that room)
+  there are some angular infinite scrolling modules, that might be worth checking out
 - Provide controls to load more messages from the past
   (from today, this week, this month, this year, from beginning)
-
-- Send notifications-enabled to client when reading cookie
 
 Conversations
 -------------
@@ -23,6 +20,7 @@ Conversations
   - you can not join the conv, but get invited/added to it
   - you stay in the conv as long as you want
   - all conversations and rooms you are currently in are shown in the left side bar
+- show users in current conv in top right div (as now) and generel contacts or users online in separate div below that.
 
 Message Editing
 ---------------
@@ -44,12 +42,10 @@ UI/UX
 - Emojis
 - Send images by drag and drop
 - Recognize URLs in chat messages and render as links
-- Desktop Notifications:
-  - Make notifications configurable (opt-out)
-  - Make em less annoying (less often, disappear after a few seconds, don't show if tab has focus, don't show when joining a room and receiving "old" messages...)
+- Make Desktop Notifications less annoying (less often, disappear after a few seconds, don't show if tab has focus, don't show when joining a room and receiving "old" messages...)
 
 Persistent User Accounts?
 -------------------------
-- login
+- login (try lockit?)
 - Persist user settings (in addition to cookies)
 
