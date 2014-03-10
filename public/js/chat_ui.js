@@ -1,8 +1,6 @@
 (function() {
   'use strict';
 
-  // TODO fetch current nick from server
-  var nick = 'You';
 
   angular.module('plowderye', ['btford.socket-io', 'ngCookies']);
 
@@ -82,23 +80,55 @@
         // set this attribute in new messages.
         MessageService.setCurrentConversation(currentConversation);
         $cookies.room = currentConversation.name;
+        MessageService.displaySystemMessage('Room changed.');
         console.log('setting cookie: room: ' + $cookies.room);
       }
     });
+  });
 
-     /*
-      $('#messages')
-        .empty()
-        .append(divSystemContentElement('Room changed.'))
-      ;
-      */
+  angular
+    .module('plowderye')
+    .service('CommandService',
+      function(socket, MessageService, ConversationService, UserService) {
 
+    this.process = function(text) {
+      if (text.charAt(0) === '/') {
+        var systemMessageText = parse(text);
+        if (systemMessageText) {
+          MessageService.displaySystemMessage(systemMessageText);
+        }
+        return true;
+      } else {
+        return false;
+      }
+    }
+
+    function parse(input) {
+      var words = input.split(' ');
+      var command = words[0]
+                    .substring(1, words[0].length)
+                    .toLowerCase();
+      switch(command) {
+        case 'join':
+          words.shift();
+          var conversationName = words.join(' ');
+          ConversationService.join({ name: conversationName });
+          return null;
+        case 'nick':
+          words.shift();
+          var name = words.join(' ');
+          UserService.changeName(name);
+          return null;
+        default:
+          return 'Unrecognized command.';
+      };
+    };
   });
 
   angular
     .module('plowderye')
     .service('MessageService',
-      function(socket) {
+      function(socket, $rootScope, UserService) {
 
     var self = this;
     var messages = [];
@@ -108,11 +138,23 @@
       var clientTime = Date.now();
       var conversationName = currentConversation ? currentConversation.name : null;
       return {
-        sender: nick,
+        sender: UserService.getUser(),
         room: conversationName,
         text: messageText,
         clientTime: clientTime,
         clientId: clientTime + '-' + randomString(),
+        system: false,
+      };
+    }
+
+    function createSystemMessage(messageText) {
+      var clientTime = Date.now();
+      return {
+        sender: '::',
+        text: messageText,
+        clientTime: clientTime,
+        clientId: clientTime + '-' + randomString(),
+        system: true,
       };
     }
 
@@ -120,6 +162,7 @@
       formatSender(message);
       formatTime(message);
       formatText(message);
+      message.classes = message.system ? ['system-message'] : [];
       return message;
     }
 
@@ -177,8 +220,17 @@
       socket.emit('message', message);
     };
 
+    this.displaySystemMessage = function(messageText) {
+      console.log('this.displaySystemMessage(' + messageText + ')');
+      var message = createSystemMessage(messageText);
+      this.addLocally(message);
+    };
+
     this.addLocally = function(message) {
-      messages.push(format(message));
+      format(message);
+      console.log('adding locally: ');
+      console.log(JSON.stringify(message, null, 2));
+      messages.push(message);
     };
 
     socket.on('message', function (message) {
@@ -188,7 +240,44 @@
       // TODO Show Desktop Notification
       // TODO Scroll to end? Keep current scrolling position??
     });
+
+    $rootScope.$on('display-system-message', function(event, message) {
+      console.log('$rootScope.on(\'display-system-message\'' + message + ')');
+      self.displaySystemMessage(message);
+    });
   });
+
+  angular
+    .module('plowderye')
+    .service('UserService',
+      function(socket, $rootScope, $cookies) {
+
+    var user = 'You';
+
+    this.getUser = function() {
+      return user;
+    };
+
+    this.changeName = function(name) {
+      socket.emit('set-name', name);
+    };
+
+    socket.on('set-name-result', function(result) {
+      var message;
+
+      if (result.success) {
+        user = result.name
+        message = 'You are now known as ' + user + '.';
+        $cookies.nick = user;
+      } else {
+        message = result.message;
+      }
+
+      console.log('$rootScope.emit(display-system-message, ' + message);
+      $rootScope.$emit('display-system-message', message);
+    });
+  });
+
 
   angular
     .module('plowderye')
@@ -262,9 +351,11 @@
   angular
     .module('plowderye')
     .controller('SendMessageCtrl',
-      function ($scope, MessageService) {
+      function ($scope, MessageService, CommandService) {
     $scope.sendMessage = function() {
-      MessageService.send($scope.messageText);
+      if (!CommandService.process($scope.messageText)) {
+        MessageService.send($scope.messageText);
+      }
       $scope.messageText = null;
     }
   });

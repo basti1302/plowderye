@@ -17,11 +17,11 @@
     return $('<div></div>').text(message);
   }
 
+  /*
   function divSystemContentElement(message) {
     return $('<div></div>').html('<i>' + message + '</i>');
   }
 
-  /*
   function renderMessage(message) {
     var time;
     if (message.serverTime || message.clientTime) {

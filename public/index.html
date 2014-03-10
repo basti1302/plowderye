@@ -62,7 +62,9 @@
 
         <!-- conversation log - displays past chat messages -->
         <div ng-controller="MessageLogCtrl" class="conv-log rd-border">
-          <div ng-repeat="message in getMessages()" class="message">
+          <div
+            ng-repeat="message in getMessages()"
+            ng-class="message.classes">
             <div ng-bind="message.formattedTime"
               class="message-time">
             </div>

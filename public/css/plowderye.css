@@ -89,6 +89,11 @@ body {
   margin-bottom: 1em;
 }
 
+.system-message {
+  font-style: italic;
+  color: #777;
+}
+
 .message-time {
   padding-top: 5px;
   font-size: x-small;

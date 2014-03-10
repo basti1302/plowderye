@@ -36,6 +36,7 @@ Chat = (function() {
   };
   */
 
+  /*
   Chat.prototype.processCommand = function(command) {
     var words = command.split(' ');
     var command = words[0]
@@ -61,6 +62,7 @@ Chat = (function() {
 
     return message;
   };
+  */
 
   return Chat;
 })();
