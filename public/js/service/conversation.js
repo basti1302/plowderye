@@ -32,11 +32,11 @@
 
     this.join = function(conversation) {
       socket.emit('join', {
-        newRoom: conversation.name
+        newConversation: conversation.name
       });
     };
 
-    socket.on('fetch-rooms-result', function(conversationNames) {
+    socket.on('fetch-conversations-result', function(conversationNames) {
       // create all conversations that come from server and do not yet exist on
       // client
       conversationNames.forEach(function(conversationName) {
@@ -55,32 +55,32 @@
 
     socket.on('join-result', function(result) {
       MessageService.clearMessages();
-      if (result.room) {
+      if (result.conversation) {
         if (currentConversation) {
           currentConversation.active = false;
         }
 
-        currentConversation = conversations[result.room];
+        currentConversation = conversations[result.conversation];
         if (currentConversation) {
           // conv is already in user's conv list
           currentConversation.active = true;
         } else {
           // conv is not yet in user's conv list, create it now
-          currentConversation = new Conversation(result.room, true);
+          currentConversation = new Conversation(result.conversation, true);
           conversations[currentConversation.name] = currentConversation;
         }
         // MessageService needs to know the current conversation to properly
         // set this attribute in new messages.
         MessageService.setCurrentConversation(currentConversation);
-        MessageService.displaySystemMessage('Room changed.');
-        $.cookie('room', currentConversation.name);
+        MessageService.displaySystemMessage('Conversation changed.');
+        $.cookie('conversation', currentConversation.name);
       }
     });
 
     // TODO This is nonsense. server knows all users and conversations and can
     // emit user lists on its own, without being polled.
     $interval(function() {
-      socket.emit('fetch-rooms');
+      socket.emit('fetch-conversations');
     }, 10000);
   });
 

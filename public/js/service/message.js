@@ -15,7 +15,7 @@
       var conversationName = currentConversation ? currentConversation.name : null;
       return {
         sender: UserService.getUser(),
-        room: conversationName,
+        conversation: conversationName,
         text: messageText,
         clientTime: clientTime,
         clientId: clientTime + '-' + randomString(),
