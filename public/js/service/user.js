@@ -7,9 +7,14 @@
       function(socket, $rootScope, $interval) {
 
     var user = 'You';
+    var users = [];
 
     this.getUser = function() {
       return user;
+    };
+
+    this.getUsers = function() {
+      return users;
     };
 
     this.changeName = function(name) {
@@ -30,11 +35,23 @@
       $rootScope.$emit('display-system-message', message);
     });
 
-    // TODO This is nonsense. server knows all users and conversations and can
-    // emit user lists on its own, without being polled.
-    $interval(function() {
-      socket.emit('fetch-users');
-    }, 10000);
+    socket.on('user-joined', function(user) {
+      var userIndex = users.indexOf(user);
+      if (userIndex < 0) {
+        users.push(user);
+      }
+    });
+
+    socket.on('user-left', function(user) {
+      var userIndex = users.indexOf(user);
+      if (userIndex >= 0) {
+        users.splice(userIndex, 1);
+      }
+    });
+
+    socket.on('fetch-users-result', function(_users) {
+      users = _users ;
+    });
   });
 
 })();

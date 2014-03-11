@@ -10,9 +10,7 @@
       return user === UserService.getUser();
     };
 
-    socket.on('fetch-users-result', function(users) {
-      $scope.users = users ;
-    });
+    $scope.getUsers = UserService.getUsers;
 
   });
 
