@@ -4,7 +4,7 @@
   angular
     .module('plowderye')
     .service('UserService',
-      function(socket, $rootScope, $interval) {
+      function(socket, $rootScope) {
 
     var user = 'You';
     var users = [];

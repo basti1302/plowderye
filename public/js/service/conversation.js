@@ -4,7 +4,7 @@
   angular
     .module('plowderye')
     .service('ConversationService',
-      function(MessageService, socket, $interval) {
+      function(MessageService, socket) {
 
     function Conversation(name, active) {
       this.name = name;
@@ -77,11 +77,16 @@
       }
     });
 
-    // TODO This is nonsense. server knows all users and conversations and can
-    // emit user lists on its own, without being polled.
-    $interval(function() {
-      socket.emit('fetch-conversations');
-    }, 10000);
+    socket.on('conversation-added', function(conversationName) {
+      if (!conversations[conversationName]) {
+        var conversation = new Conversation(conversationName);
+        conversations[conversationName] = conversation;
+      }
+    });
+
+    socket.on('conversation-removed', function(conversationName) {
+      delete conversations[conversationName];
+    });
   });
 
 })();
