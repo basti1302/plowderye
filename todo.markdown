@@ -20,6 +20,9 @@ Conversations
   - you stay in the conv as long as you want
   - all conversations and rooms you are currently in are shown in the left side bar
 - show users in current conv in top right div (as now) and generel contacts or users online in separate div below that.
+- Admin role (store admins per conv, creator is automatically admin. If creator leaves, everybody else is admin)
+- Admin can delete conversations
+- Conversations which had no new message since month and/or haven't been joined since xxx and/or are empty (no users) get deleted automatically.
 
 Message Editing
 ---------------

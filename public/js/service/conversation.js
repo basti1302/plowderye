@@ -36,6 +36,16 @@
       });
     };
 
+    /*
+    TODO Makes no sense unless a user can join multiple conversations!
+    this.addUserToCurrentConversation = function(user) {
+      socket.emit('add-user-to-conversation', {
+        user: user,
+        conversation: currentConversation.name,
+      });
+    };
+    */
+
     socket.on('fetch-conversations-result', function(conversationNames) {
       // create all conversations that come from server and do not yet exist on
       // client

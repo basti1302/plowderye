@@ -21,11 +21,24 @@
       socket.emit('set-name', name);
     };
 
+    function renameInList(previousName, newName) {
+      if (previousName != null && newName != null) {
+        var userIndex = users.indexOf(previousName);
+        if (userIndex >= 0) {
+          users.splice(userIndex, 1, newName);
+          return true;
+        }
+      }
+      return false;
+    }
+
     socket.on('set-name-result', function(result) {
       var message;
 
       if (result.success) {
-        user = result.name
+        var previousName = user;
+        user = result.name;
+        renameInList(previousName, user);
         message = 'You are now known as ' + user + '.';
         $.cookie('nick', user);
       } else {
@@ -46,6 +59,15 @@
       var userIndex = users.indexOf(user);
       if (userIndex >= 0) {
         users.splice(userIndex, 1);
+      }
+    });
+
+    socket.on('name-changed', function(result) {
+      var previousName = result.previousName;
+      var newName = result.newName;
+      if (renameInList(previousName, newName)) {
+        $rootScope.$emit('display-system-message',
+          previousName + ' is now known as ' + newName + '.');
       }
     });
 
