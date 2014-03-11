@@ -21,6 +21,7 @@
     "jquery-cookie": "~1.4.0",
     "normalize-css": "~3.0.0",
     "notify.js": "~1.1.0",
-    "unsemantic": "*"
+    "unsemantic": "*",
+    "es5-shim": "~2.3.0"
   }
 }

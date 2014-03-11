@@ -107,7 +107,7 @@
       <div class="margins panel panel-default">
         <div class="panel-heading">Users</div>
         <div class="panel-body" ng-controller="UserListCtrl">
-          <div ng-repeat="user in users"
+          <div ng-repeat="user in getUsers()"
             ng-bind="user"
             ng-class="isCurrentUser(user) ? ['current-user'] : []"
           </div>
@@ -120,6 +120,7 @@
   <div id="sound"></div>
 </div>
 
+<script src="/bower_components/es5-shim/es5-shim.min.js" type="text/javascript"></script>
 <script src="/socket.io/socket.io.js" type="text/javascript"></script>
 <script src="/bower_components/jquery/dist/jquery.min.js" type="text/javascript"></script>
 <script src="/bower_components/jquery-cookie/jquery.cookie.js" type="text/javascript"></script>
