@@ -8,7 +8,6 @@ TODOs
 
 Conversations
 -------------
-- Rename room to conversation everyhwere
 - Public conversations (like IRC rooms) and private conversations (like Skype conversations)
 - Changing a room does not make you leave a room, it stays in the left side bar.
 - Add "Leave" icon (open door) to leave a conv
