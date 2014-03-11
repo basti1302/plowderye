@@ -9,4 +9,8 @@
     $('#message').focus();
   });
 
+  $(window).bind('focus', function() {
+    $('#message').focus();
+  });
+
 })();
