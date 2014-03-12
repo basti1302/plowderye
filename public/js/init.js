@@ -1,15 +1,19 @@
 (function() {
   'use strict';
 
+  //log.setLevel(log.levels.DEBUG);
+  log.disableAll();
+
   $(document).ready(function() {
     $.cookie.defaults = {
       expires: 90,
       path: '/',
     };
-    $('#message').focus();
-  });
 
-  $(window).bind('focus', function() {
+    $(window).bind('focus', function() {
+      $('#message').focus();
+    });
+
     $('#message').focus();
   });
 
