@@ -6,12 +6,15 @@
     .service('ConversationService',
       function(MessageService, socket) {
 
-    function Conversation(name, active) {
+    /*
+    function Conversation(id, name, active) {
+      this.id = id;
       this.name = name;
       this.active = !!active;
     }
+    */
 
-    Conversation.prototype.getCssClasses = function() {
+    function getCssClasses() {
       if (this.active) {
         return ['list-group-item', 'active'];
       } else {
@@ -31,9 +34,18 @@
     }
 
     this.join = function(conversation) {
-      socket.emit('join', {
-        newConversation: conversation.name
-      });
+      var convToServer;
+      if (conversation.id) {
+        convToServer = {
+          id: conversation.id,
+          name: conversation.name,
+        }
+      } else {
+        convToServer = {
+          name: conversation.name,
+        }
+      }
+      socket.emit('join', convToServer);
     };
 
     /*
@@ -46,57 +58,84 @@
     };
     */
 
-    socket.on('fetch-conversations-result', function(conversationNames) {
+    socket.on('fetch-conversations-result', function(_conversations) {
+
       // create all conversations that come from server and do not yet exist on
       // client
-      conversationNames.forEach(function(conversationName) {
-        var existingConversation = conversations[conversationName];
-        if (!existingConversation) {
-          conversations[conversationName] = new Conversation(conversationName);
-        }
-      });
+      for (var c in _conversations) {
+        mergeServerConversation(_conversations[c]);
+      }
+
       // delete all conversations that exist on client but not on server anymore
-      for (var convKey in conversations) {
-        if ($.inArray(convKey, conversationNames) < 0) {
-          delete conversations[convKey];
+      for (var clientConvId in conversations) {
+        var foundMatching = false;
+        for (var serverConvId in _conversations) {
+          if (clientConvId === serverConvId) {
+            // found a matching server conversation, continue with next client
+            // conversation
+            foundMatching = true;
+            break;
+          }
+        }
+
+        // no matching conversation found in server conversations, so delete the
+        // client conversation
+        if (!foundMatching) {
+          delete conversations[clientConvId];
         }
       }
     });
 
     socket.on('join-result', function(result) {
       MessageService.clearMessages();
-      if (result.conversation) {
+      var conversation = result.conversation;
+      if (conversation) {
         if (currentConversation) {
           currentConversation.active = false;
         }
 
-        currentConversation = conversations[result.conversation];
-        if (currentConversation) {
-          // conv is already in user's conv list
-          currentConversation.active = true;
-        } else {
-          // conv is not yet in user's conv list, create it now
-          currentConversation = new Conversation(result.conversation, true);
-          conversations[currentConversation.name] = currentConversation;
-        }
+        mergeServerConversation(conversation);
+        currentConversation = conversations[conversation.id];
+        currentConversation.active = true;
+
         // MessageService needs to know the current conversation to properly
         // set this attribute in new messages.
         MessageService.setCurrentConversation(currentConversation);
         MessageService.displaySystemMessage('Conversation changed.');
-        $.cookie('conversation', currentConversation.name);
+        $.cookie('conversation', currentConversation.id);
       }
     });
 
-    socket.on('conversation-added', function(conversationName) {
-      if (!conversations[conversationName]) {
-        var conversation = new Conversation(conversationName);
-        conversations[conversationName] = conversation;
-      }
+    socket.on('conversation-added', function(conversation) {
+      addFromServerIfNotPresent(conversation);
     });
 
-    socket.on('conversation-removed', function(conversationName) {
-      delete conversations[conversationName];
+    socket.on('conversation-removed', function(conversationId) {
+      delete conversations[conversationId];
     });
+
+    function mergeServerConversation(conversation) {
+      if (!addFromServerIfNotPresent(conversation)) {
+        // conversation was already present on client - copy all properties
+        // from server conversation to client conversation, just in case they
+        // diverged. (Currently, there is only the name property, however.)
+        conversations[conversation.id].name = conversation.name;
+      }
+    }
+
+    function addFromServerIfNotPresent(conversation) {
+      if (!conversations[conversation.id]) {
+        addFromServer(conversation);
+        return true;
+      }
+      return false;
+    }
+
+    function addFromServer(conversation) {
+      conversation.getCssClasses = getCssClasses.bind(conversation);
+      conversations[conversation.id] = conversation;
+    }
+
   });
 
 })();

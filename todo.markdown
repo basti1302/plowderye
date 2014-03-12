@@ -1,5 +1,24 @@
 TODOs
 =====
+- Turn convs into actual objects in server code
+- Turn convs into actual objects in client code?
+- Use uuids as primary identifier for conversations, name is just an attribute
+
+- Turn users into actual objects in server code
+- Turn users into actual objects in client code?
+- Save users to LevelDB, restore on startup
+
+- attach conversation list to user object, attach user list to conversation object
+- update both lists when
+  - user joins a conversation or
+  - user is added to a conversation or
+  - user leaves a conversation or
+  - a conversation is removed
+- show only user's conversations in conversation list in client
+- show public rooms in separate list
+- enable users to add other users to conversations
+- closed/private conversations, see below
+
 - On joining a conversations, only load a few messages from the past
   (20 messages or so) (instead of loading *all* messages from that room)
   there are some angular infinite scrolling modules, that might be worth checking out

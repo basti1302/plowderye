@@ -12,10 +12,10 @@
 
     function createMessage(messageText) {
       var clientTime = Date.now();
-      var conversationName = currentConversation ? currentConversation.name : null;
+      var conversationId = currentConversation ? currentConversation.id : null;
       return {
         sender: UserService.getUser(),
-        conversation: conversationName,
+        conversation: conversationId,
         text: messageText,
         clientTime: clientTime,
         clientId: clientTime + '-' + randomString(),
