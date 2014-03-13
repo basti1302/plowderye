@@ -1,11 +1,5 @@
 TODOs
 =====
-- Turn convs into actual objects in server code
-- Turn convs into actual objects in client code?
-- Use uuids as primary identifier for conversations, name is just an attribute
-
-- Turn users into actual objects in server code
-- Turn users into actual objects in client code?
 - Save users to LevelDB, restore on startup
 
 - attach conversation list to user object, attach user list to conversation object
