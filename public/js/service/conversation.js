@@ -6,19 +6,14 @@
     .service('ConversationService',
       function(MessageService, socket) {
 
-    /*
-    function Conversation(id, name, active) {
-      this.id = id;
-      this.name = name;
-      this.active = !!active;
-    }
-    */
+    var cssClassesActive = ['list-group-item', 'active'];
+    var cssClassesInactive = ['list-group-item'];
 
     function getCssClasses() {
       if (this.active) {
-        return ['list-group-item', 'active'];
+        return cssClassesActive;
       } else {
-        return ['list-group-item'];
+        return cssClassesInactive;
       }
     };
 

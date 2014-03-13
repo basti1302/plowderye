@@ -7,7 +7,7 @@
       function ($scope, socket, UserService) {
 
     $scope.isCurrentUser = function(user) {
-      return user === UserService.getUser();
+      return user.id === UserService.getUser().id;
     };
 
     $scope.getUsers = UserService.getUsers;

@@ -26,7 +26,7 @@
     function createSystemMessage(messageText) {
       var clientTime = Date.now();
       return {
-        sender: '::',
+        sender: { nick: '::' },
         text: messageText,
         clientTime: clientTime,
         clientId: clientTime + '-' + randomString(),
@@ -43,8 +43,10 @@
     }
 
     function formatSender(message) {
-      if (message.sender) {
-        message.formattedSender = message.sender;
+      log.debug('formatSender');
+      log.debug(JSON.stringify(message, null, 2));
+      if (message.sender && message.sender.nick != null) {
+        message.formattedSender = message.sender.nick;
       } else {
         message.formattedSender = '?';
       }
