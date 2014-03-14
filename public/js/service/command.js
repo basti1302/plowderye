@@ -26,6 +26,9 @@
         case 'join':
           ConversationService.join({ name: argument });
           break;
+        case 'create':
+          ConversationService.create({ name: argument });
+          break;
         case 'nick':
           UserService.changeName(argument);
           break;

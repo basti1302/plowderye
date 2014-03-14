@@ -40,7 +40,11 @@
           name: conversation.name,
         }
       }
-      socket.emit('join', convToServer);
+      socket.emit('join-conversation', convToServer);
+    };
+
+    this.create = function(conversation) {
+      socket.emit('create-conversation', conversation);
     };
 
     /*
