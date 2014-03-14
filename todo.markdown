@@ -1,7 +1,5 @@
 TODOs
 =====
-- attach getCssClassses method to user object same as conversation object
-
 - Save users to LevelDB, restore on startup, write user's id to cookie instead of nick name
 
 - attach conversation list to user object, attach user list to conversation object
