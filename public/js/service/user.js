@@ -6,9 +6,20 @@
     .service('UserService',
       function(socket, $rootScope) {
 
-    var user = {
-      nick: 'You',
+    var cssClassesCurrent = ['sidebar-item-borders', 'user-item', 'user-item-skin', 'sidebar-item-active'];
+    var cssClasses        = ['sidebar-item-borders', 'user-item', 'user-item-skin'];
+
+    function getCssClasses() {
+      if (this.id ===  user.id) {
+        return cssClassesCurrent;
+      } else {
+        return cssClasses;
+      }
     };
+
+    var user = bindCss({
+      nick: 'You',
+    });
     var users = {};
 
     this.getUser = function() {
@@ -48,7 +59,7 @@
       var message;
       log.debug('init-user-result');
       log.debug(JSON.stringify(_user, null, 2));
-      user = _user;
+      user = bindCss(_user);
       users[user.id] = user;
     });
 
@@ -57,6 +68,7 @@
       // object from the server?
       log.debug('user-joined');
       log.debug(JSON.stringify(_user, null, 2));
+      bindCss(_user);
       users[_user.id] = _user;
 
       // was the user in the user-joined message from the server the current
@@ -95,6 +107,9 @@
       log.debug('users-in-current-conversation');
       log.debug(JSON.stringify(_users, null, 2));
       users = _users ;
+      for (var u in users) {
+        bindCss(users[u]);
+      }
 
       // was the current user also in the user collection received from the
       // server? If so, replace the current user so that users[user.id] is
@@ -104,6 +119,12 @@
         user = users[user.id];
       }
     });
+
+    function bindCss(_user) {
+      _user.getCssClasses = getCssClasses.bind(_user);
+      return _user;
+    }
+
   });
 
 })();

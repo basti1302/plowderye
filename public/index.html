@@ -107,9 +107,8 @@
         <div ng-controller="UserListCtrl">
           <div ng-repeat="user in getUsers()"
             ng-bind="user.nick"
-            ng-class="isCurrentUser(user) ? ['sidebar-item-borders', 'user-item', 'user-item-skin', 'sidebar-item-active'] : ['sidebar-item-borders', 'user-item', 'user-item-skin']"
+            ng-class="user.getCssClasses()"
           </div>
-          <!-- TODO: attach getCssClass() method to user obj -->
         </div>
       </div>
     </div>

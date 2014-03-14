@@ -138,7 +138,7 @@ button {
   vertical-align: middle;
   cursor: pointer;
   background-image: none;
-  border: 1px solid transparent;
+  border: 1px solid ;
   white-space: nowrap;
   padding: 6px 12px;
   font-size: 14px;
@@ -154,12 +154,12 @@ button {
   color: #ccc;
   font-weight: bold;
   background-color: #304050;
-  border-color: #506070;
+  border-color: #102030;
 }
 
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active  {
   color: #fff;
-  border-color: #304050;
+  border-color: #102030;
   background-color: #506070;
 }
 
@@ -245,13 +245,7 @@ img {
   border-bottom-right-radius: 4px;
 }
 
-.sidebar-item-active {
-  font-weight: bold;
-  border-top-color: #031017;
-  border-bottom-color: #203040;
-  background-image: none;
-  background-color: #102030;
-}
+
 
 .conv-item {
   display: block;
@@ -278,6 +272,15 @@ a:hover.sidebar-item-active {
 
 .user-item-skin {
   background-color: #203040;
+}
+
+/* needs to be defined after user-item and conv-item */
+.sidebar-item-active {
+  font-weight: bold;
+  border-top-color: #031017;
+  border-bottom-color: #203040;
+  background-image: none;
+  background-color: #102030;
 }
 
 /* in headline */
