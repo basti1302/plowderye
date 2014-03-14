@@ -6,8 +6,8 @@
     .service('ConversationService',
       function(MessageService, socket) {
 
-    var cssClassesActive = ['sidebar-item-borders', 'conv-item', 'conv-item-skin', 'sidebar-item-active'];
-    var cssClassesInactive = ['sidebar-item-borders', 'conv-item', 'conv-item-skin'];
+    var cssClassesActive = ['sidebar-item-borders', 'conv-item', 'grad-ld', 'sidebar-item-active'];
+    var cssClassesInactive = ['sidebar-item-borders', 'conv-item', 'grad-ld'];
 
     function getCssClasses() {
       if (this.active) {

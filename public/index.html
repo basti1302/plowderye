@@ -5,8 +5,6 @@
   <title>plowderye</title>
   <link rel="stylesheet" href="/bower_components/normalize-css/normalize.css"></link>
   <link rel="stylesheet" href="/bower_components/unsemantic/assets/stylesheets/unsemantic-grid-responsive.css"></link>
-  <link rel="stylesheet"
-  href="/css/custom-bootstrap/bootstrap.min.css"></link-->
   <link rel="stylesheet" href="/css/plowderye.css"></link>
 </head>
 
@@ -15,8 +13,8 @@
 
   <!-- list of conversations -->
   <div class="grid-20 grid-parent">
-    <div class="margins sidebar sidebar-skin">
-      <div class="sidebar-heading sidebar-heading-skin">Conversations</div>
+    <div class="margins rounded-box box-shadow text-on-mtl">
+      <div class="sidebar-heading sidebar-heading-skin grad-dl">Conversations</div>
       <div ng-controller="ConvListCtrl">
         <a href="#" ng-repeat="conversation in getConversations()"
           ng-bind="conversation.name"
@@ -30,7 +28,7 @@
 
   <!-- current conversation headline and config controls -->
   <div class="grid-80 grid-parent">
-    <div class="margins rd-border light-grey-bg">
+    <div class="margins padding rounded-box box-shadow grad-dl text-on-mtl">
       <div ng-controller="HeadlineCtrl"
          class="expand-left-container current-conversation">
         <span ng-bind="getCurrentConversationName()"
@@ -41,12 +39,12 @@
         <div ng-controller="ConfigCtrl"
           class="config-controls">
           <img ng-click="toggleNotifications()"
-            class="ctrl-img"
+            class="ctrl-img box-shadow-inset"
             ng-src="/images/{{getNotificationsImage()}}"
             alt="toggle notifications"
             title="{{getNotficationsTooltip()}}"
           ><img ng-click="toggleSound()"
-            class="ctrl-img"
+            class="ctrl-img box-shadow-inset"
             ng-src="/images/{{getSoundImage()}}"
             alt="toggle sound"
             title="{{getSoundTooltip()}}"
@@ -60,7 +58,7 @@
       <div class="margins">
 
         <!-- conversation log - displays past chat messages -->
-        <div ng-controller="MessageLogCtrl" class="conv-log rd-border">
+        <div ng-controller="MessageLogCtrl" class="padding rounded-box box-shadow-inset conv-log">
           <div
             ng-repeat="message in getMessages()"
             ng-class="message.classes">
@@ -79,7 +77,7 @@
         <!-- compose new message -->
         <form id="send-form" role="form" ng-controller="SendMessageCtrl">
            <div class="expand-left-container form-group">
-            <label class="sr-only" for="message">What's up?</label>
+            <label class="sr-label" for="message">What's up?</label>
             <input id="message"
               ng-model="messageText"
               type="text"
@@ -104,8 +102,8 @@
 
     <!-- user list -->
     <div class="grid-20 grid-parent">
-      <div class="margins sidebar sidebar-skin">
-        <div class="sidebar-heading sidebar-heading-skin">Users</div>
+      <div class="margins rounded-box box-shadow text-on-mtl">
+        <div class="sidebar-heading sidebar-heading-skin grad-dl">Users</div>
         <div ng-controller="UserListCtrl">
           <div ng-repeat="user in getUsers()"
             ng-bind="user.nick"
