@@ -1,5 +1,11 @@
 TODOs
 =====
+- Bug: Something's wrong with user manangement. User names stay in memory although there are not in use anymore.
+- Bug: Issuing join (instead of clicking on conv) creates a new conv.
+  More generally, when server receives a join without id but with name of existing public
+  conv (case insensitive), it should use the existing one.
+- attach getCssClassses method to user object same as conversation object
+
 - Save users to LevelDB, restore on startup
 
 - attach conversation list to user object, attach user list to conversation object

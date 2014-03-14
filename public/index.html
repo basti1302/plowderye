@@ -6,7 +6,7 @@
   <link rel="stylesheet" href="/bower_components/normalize-css/normalize.css"></link>
   <link rel="stylesheet" href="/bower_components/unsemantic/assets/stylesheets/unsemantic-grid-responsive.css"></link>
   <link rel="stylesheet"
-  href="/css/custom-bootstrap/bootstrap.min.css"></link>
+  href="/css/custom-bootstrap/bootstrap.min.css"></link-->
   <link rel="stylesheet" href="/css/plowderye.css"></link>
 </head>
 
@@ -15,9 +15,9 @@
 
   <!-- list of conversations -->
   <div class="grid-20 grid-parent">
-    <div class="margins panel panel-default">
-      <div class="panel-heading">Your Conversations</div>
-      <div class="list-group" ng-controller="ConvListCtrl">
+    <div class="margins sidebar sidebar-skin">
+      <div class="sidebar-heading sidebar-heading-skin">Conversations</div>
+      <div ng-controller="ConvListCtrl">
         <a href="#" ng-repeat="conversation in getConversations()"
           ng-bind="conversation.name"
           ng-click="join(conversation)"
@@ -104,13 +104,14 @@
 
     <!-- user list -->
     <div class="grid-20 grid-parent">
-      <div class="margins panel panel-default">
-        <div class="panel-heading">Users</div>
-        <div class="panel-body" ng-controller="UserListCtrl">
+      <div class="margins sidebar sidebar-skin">
+        <div class="sidebar-heading sidebar-heading-skin">Users</div>
+        <div ng-controller="UserListCtrl">
           <div ng-repeat="user in getUsers()"
             ng-bind="user.nick"
-            ng-class="isCurrentUser(user) ? ['current-user'] : []"
+            ng-class="isCurrentUser(user) ? ['sidebar-item-borders', 'user-item', 'user-item-skin', 'sidebar-item-active'] : ['sidebar-item-borders', 'user-item', 'user-item-skin']"
           </div>
+          <!-- TODO: attach getCssClass() method to user obj -->
         </div>
       </div>
     </div>
