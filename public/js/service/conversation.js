@@ -43,8 +43,8 @@
       socket.emit('join-conversation', convToServer);
     };
 
-    this.create = function(conversation) {
-      socket.emit('create-conversation', conversation);
+    this.create = function(conversationName) {
+      socket.emit('create-conversation', { name: conversationName });
     };
 
     /*
