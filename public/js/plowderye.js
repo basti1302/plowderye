@@ -1,6 +1,6 @@
 (function() {
   'use strict';
 
-  angular.module('plowderye', ['btford.socket-io']);
+  angular.module('plowderye', ['btford.socket-io', 'ngAnimate']);
 
 })();
