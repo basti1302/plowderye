@@ -101,7 +101,6 @@
         // set this attribute in new messages.
         MessageService.setCurrentConversation(currentConversation);
         MessageService.displaySystemMessage('Conversation changed.');
-        $.cookie('conversation', currentConversation.id);
       }
     });
 

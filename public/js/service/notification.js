@@ -21,14 +21,20 @@
       if (notificationsEnabled) {
         requestNotificationPermission();
       }
-      $.cookie('notifications', notificationsEnabled);
+      socket.emit('enable-notifications', notificationsEnabled);
+    };
+
+    this.setNotificationsEnabled = function(enabled) {
+      notificationsEnabled = enabled;
     };
 
     this.notify = function(message) {
+      log.debug('notfiy(' + JSON.stringify(message) +')');
       notifyLater(message);
     };
 
     function notifyLater(message) {
+      log.debug('notificationsEnabled: ' + notificationsEnabled);
       if (!notificationsEnabled) { return; }
       if (!notificationsChecked) {
         if (!notificationsEnabled) { return; }
@@ -72,10 +78,6 @@
       notification.show();
       notificationMessageCount = 0;
     }
-
-    socket.on('set-notifications-enabled', function(enabled) {
-      notificationsEnabled = enabled;
-    });
   });
 
 })();

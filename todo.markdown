@@ -1,6 +1,10 @@
 TODOs
 =====
-- Save users to LevelDB, restore on startup, write user's id to cookie instead of nick name
+- A user can join multiple conversations
+- A user can have no conversation at all
+- Send two conversation lists to the client:
+  - Their own conversations (public and private)
+  - All public conversations
 
 - attach conversation list to user object, attach user list to conversation object
 - update both lists when
@@ -8,6 +12,14 @@ TODOs
   - user is added to a conversation or
   - user leaves a conversation or
   - a conversation is removed
+-
+- make conversations linkable - read conversation id from url and open conversation
+
+- routing (views for chat, sign-in, sign-up)
+
+- remove nick name from leveldb used names file when user disconnects if that user
+  was not logged in
+
 - show only user's conversations in conversation list in client
 - show public rooms in separate list
 - enable users to add other users to conversations

@@ -14,12 +14,18 @@
 
     this.toggleSoundEnabled = function() {
       soundEnabled = !soundEnabled;
-      $.cookie('sound', soundEnabled);
+      socket.emit('enable-sound', soundEnabled);
+    };
+
+    this.setSoundEnabled = function(enabled) {
+      soundEnabled = enabled;
     };
 
     // TODO make this more angular-ish and less jquery-ish
     // Should live in a controller
     this.playSound = function(filename) {
+      log.debug('playSound(' + filename + ')');
+      log.debug('soundEnabled: ' + soundEnabled);
       $('#sound').empty();
       if (soundEnabled) {
         var mp3 = $('<source src="/sounds/' + filename +
@@ -36,10 +42,6 @@
         $('#sound').append(audio);
       }
     };
-
-    socket.on('set-sound-enabled', function(enabled) {
-      soundEnabled = enabled;
-    });
   });
 
 })();

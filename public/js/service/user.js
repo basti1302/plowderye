@@ -4,7 +4,7 @@
   angular
     .module('plowderye')
     .service('UserService',
-      function(socket, $rootScope) {
+      function(socket, $rootScope, SoundService, NotificationService) {
 
     var cssClassesCurrent = ['sidebar-item-borders', 'user-item', 'user-item-skin', 'sidebar-item-active'];
     var cssClasses        = ['sidebar-item-borders', 'user-item', 'user-item-skin'];
@@ -46,7 +46,6 @@
         log.debug('set-name-result: success');
         user.nick = result.name;
         message = 'You are now known as ' + user.nick + '.';
-        $.cookie('nick', user.nick);
       } else {
         log.debug('set-name-result: failure');
         message = result.message;
@@ -61,6 +60,9 @@
       log.debug(JSON.stringify(_user, null, 2));
       user = bindCss(_user);
       users[user.id] = user;
+      $.cookie('id', user.id);
+      SoundService.setSoundEnabled(user.soundEnabled);
+      NotificationService.setNotificationsEnabled(user.notificationsEnabled);
     });
 
     socket.on('user-joined', function(_user) {

@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-pushd `dirname $0`/..
-find data/messages/ -type f -not -name .gitignore -delete
-find data/conversations/ -type f -not -name .gitignore -delete
+pushd `dirname $0`/../data
+find . -mindepth 1 -not -name .gitignore -delete
 popd
