@@ -1,7 +1,10 @@
 TODOs
 =====
+
+http://benclinkinbeard.com/talks/2014/ng-conf/#/19
+
 - A user can join multiple conversations
-- A user can have no conversation at all
+- A user can have no conversation at all - fix client for this situation
 - Send two conversation lists to the client:
   - Their own conversations (public and private)
   - All public conversations
@@ -12,7 +15,14 @@ TODOs
   - user is added to a conversation or
   - user leaves a conversation or
   - a conversation is removed
--
+
+- at the start of each socket.io request (in the socket.on-handler), create
+  a request object and pass it on to all functions called later. Put the
+  user id in. If required, load the user object and put it in the requst object.
+  If the user object is needed again during that request, fetch it from the
+  request object. This should be handled transparently in the getUserById
+  method (which also gets the request object as a parameter).
+
 - make conversations linkable - read conversation id from url and open conversation
 
 - routing (views for chat, sign-in, sign-up)
