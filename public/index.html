@@ -147,7 +147,7 @@
         <div class="sidebar-heading sidebar-heading-skin grad-dl">Users</div>
         <div ng-controller="UserListCtrl">
           <div ng-repeat="user in getUsers()"
-            ng-bind="user.nick"
+            ng-bind="user.displayName()"
             ng-class="user.getCssClasses()"
           </div>
         </div>

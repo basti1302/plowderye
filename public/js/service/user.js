@@ -8,12 +8,23 @@
 
     var cssClassesCurrent = ['sidebar-item-borders', 'user-item', 'user-item-skin', 'sidebar-item-active'];
     var cssClasses        = ['sidebar-item-borders', 'user-item', 'user-item-skin'];
+    var cssClassesOffline = ['sidebar-item-borders', 'user-item', 'user-item-offline-skin'];
 
     function getCssClasses() {
-      if (this.id ===  user.id) {
+      if (this.id === user.id) {
         return cssClassesCurrent;
-      } else {
+      } else if (this.online) {
         return cssClasses;
+      } else {
+        return cssClassesOffline;
+      }
+    };
+
+    function displayName() {
+      if (this.online) {
+        return this.nick;
+      } else {
+        return this.nick + ' (offline)';
       }
     };
 
@@ -88,7 +99,15 @@
       log.debug('user-left');
       log.debug(id);
       delete users[id];
-      log.debug(JSON.stringify(users, null, 2));
+    });
+
+    socket.on('user-went-offline', function(id) {
+      log.debug('user-went-offline');
+      log.debug(id);
+      var user = users[id];
+      if (user) {
+        user.online = false;
+      }
     });
 
     socket.on('name-changed', function(result) {
@@ -117,13 +136,14 @@
       // server? If so, replace the current user so that users[user.id] is
       // always the same object as user.
       if (users[user.id]) {
-        log.debug('!! fetch-user-result: replacing current user');
+        log.debug('fetch-user-result: replacing current user');
         user = users[user.id];
       }
     });
 
     function bindCss(_user) {
       _user.getCssClasses = getCssClasses.bind(_user);
+      _user.displayName = displayName.bind(_user);
       return _user;
     }
 

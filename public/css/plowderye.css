@@ -334,6 +334,12 @@ a:hover.sidebar-item-active {
   background-color: #203040;
 }
 
+.user-item-offline-skin {
+  background-color: #203040;
+  color: #555;
+  text-shadow: none;
+}
+
 /* needs to be defined after user-item and conv-item */
 .sidebar-item-active {
   font-weight: bold;
