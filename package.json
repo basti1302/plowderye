@@ -5,15 +5,16 @@
   "repository": "https://github.com/basti1302/plowderye.git",
   "main": "plowderye.js",
   "dependencies": {
+    "async": "^0.2.10",
+    "cookie": "^0.1.1",
     "express": "^3.4.8",
+    "gen-id": "^0.1.1",
     "level": "^0.18.0",
+    "lodash": "^2.4.1",
     "mime": "^1.2.11",
     "node-uuid": "^1.4.1",
     "socket.io": "^0.9.16",
     "through": "^2.3.4",
-    "cookie": "^0.1.1",
-    "winston": "~0.7.2",
-    "lodash": "~2.4.1",
-    "gen-id": "~0.1.1"
+    "winston": "^0.7.2"
   }
 }
