@@ -4,7 +4,7 @@ Plowderye
 
 [![NPM](https://nodei.co/npm/plowderye.png?downloads=true&stars=true)](https://nodei.co/npm/plowderye/)
 
-There not enough socket.io based chats in the world. So here's another one. It also uses AngularJS and LevelDB.
+There are simply not enough socket.io/Node.js based chats in this world. So here's another one. It also uses AngularJS and LevelDB.
 
 License
 -------
