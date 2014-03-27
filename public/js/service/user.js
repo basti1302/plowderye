@@ -93,6 +93,10 @@
         log.debug('!!!! user-joined: replacing current user');
         user = _user;
       }
+
+      $rootScope.$emit('display-system-message',
+        _user.nick + ' has joined this conversation.');
+
     });
 
     socket.on('user-left', function(id) {
