@@ -84,16 +84,6 @@
       bindCss(_user);
       users[_user.id] = _user;
 
-      // was the user in the user-joined message from the server the current
-      // user? If so, replace the current user object so that users[user.id] is
-      // always the same object as user. This should not happen as user-joined
-      // is broadcasted to all *other* users in the conversation, but not to the
-      // user joining the conversation.
-      if (_user.id === user.id) {
-        log.debug('!!!! user-joined: replacing current user');
-        user = _user;
-      }
-
       $rootScope.$emit('display-system-message',
         _user.nick + ' has joined this conversation.');
 
