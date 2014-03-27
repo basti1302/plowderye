@@ -43,8 +43,6 @@
     }
 
     function formatSender(message) {
-      log.debug('formatSender');
-      log.debug(JSON.stringify(message, null, 2));
       if (message.sender && message.sender.nick != null) {
         message.formattedSender = message.sender.nick;
       } else {
@@ -105,6 +103,8 @@
 
     this.addLocally = function(message) {
       format(message);
+      log.debug('adding message:');
+      log.debug(JSON.stringify(message, null, 2));
       messages.push(message);
     };
 
