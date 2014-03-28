@@ -27,14 +27,14 @@ nconf.argv()
        'exit-on-error': false,
        logging: {
          console: {
-           enabled: false,
-           level: 'debug',
+           enabled: true,
+           level: 'info',
            colorize: true,
            json: false,
            timestamp: true,
          },
          file: {
-           enabled: true,
+           enabled: false,
            filename: path.resolve(path.join(__dirname, 'plowderye.log')),
            level: 'info',
            colorize: false,
@@ -50,7 +50,7 @@ nconf.argv()
              timestamp: true,
            },
            file: {
-             enabled: true,
+             enabled: false,
              filename: path.resolve(path.join(__dirname, 'plowderye-error.log')),
              level: 'error',
              colorize: false,

@@ -1,5 +1,8 @@
 node_modules
 
+# optional config file
+plowderye.json
+
 # vim tmp files
 *.swp
 *.un~

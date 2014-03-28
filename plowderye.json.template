@@ -1,0 +1,64 @@
+{
+
+  "remark": [
+    "This is a template for the (optional) configuration file. Save it as",
+    "plowderye.json in Plowderye's home directory if you want to use it to",
+    "configure Plowderye. You do not need to use a configuration file though.",
+    "All options in this file can be omitted, there are defaults for everything.",
+    "Only keep the options you care about, remove the rest",
+
+    "All options that you can configure here can also be configured by using",
+    "environment variables or command line parameters.",
+    "Plowderye uses nconf for configuration, so you could have a look at",
+    "https://github.com/flatiron/nconf/blob/master/README.md to learn about the",
+    "general configuration possibilities.",
+
+    "Examples: ",
+    "node plowderye.js --port 4000",
+    "node plowderye.js --logging:console:enabled true --logging:file:level error",
+    "port=4444 node plowderye.js",
+    "logging:console:enabled=true logging:file:level=error node plowderye.js",
+
+    "You can delete this property 'remark' if you copy this template to plowderye.json."
+  ],
+
+  "port": 3000,
+  "data": "/path/to/leveldb/data/files",
+  "default-conversation-name": "Lobby",
+  "exit-on-error": false,
+
+  "logging": {
+    "console": {
+      "enabled": true,
+      "level": "info",
+      "colorize": true,
+      "json": false,
+      "timestamp": true
+    },
+    "file": {
+      "enabled": false,
+      "filename": "/path/to/log/file",
+      "level": "info",
+      "colorize": false,
+      "json": false,
+      "timestamp": true
+    },
+    "exceptions": {
+      "console": {
+        "enabled": false,
+        "level": "error",
+        "colorize": false,
+        "json": false,
+        "timestamp": true
+      },
+      "file": {
+        "enabled": false,
+        "filename": "/path/to/error/log/file",
+        "level": "error",
+        "colorize": false,
+        "json": false,
+        "timestamp": true
+      }
+    }
+  }
+}
