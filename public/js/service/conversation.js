@@ -4,18 +4,7 @@
   angular
     .module('plowderye')
     .service('ConversationService',
-      function(MessageService, socket) {
-
-    var cssClassesActive = ['sidebar-item-borders', 'conv-item', 'grad-ld', 'sidebar-item-active'];
-    var cssClassesInactive = ['sidebar-item-borders', 'conv-item', 'grad-ld'];
-
-    function getCssClasses() {
-      if (this.active) {
-        return cssClassesActive;
-      } else {
-        return cssClassesInactive;
-      }
-    };
+      function(socket, $rootScope) {
 
     var conversations = {};
     var currentConversation = {};
@@ -86,22 +75,19 @@
     });
 
     socket.on('join-result', function(result) {
-      MessageService.clearMessages();
       var conversation = result.conversation;
-      if (conversation) {
-        if (currentConversation) {
-          currentConversation.active = false;
-        }
-
-        mergeServerConversation(conversation);
-        currentConversation = conversations[conversation.id];
-        currentConversation.active = true;
-
-        // MessageService needs to know the current conversation to properly
-        // set this attribute in new messages.
-        MessageService.setCurrentConversation(currentConversation);
-        MessageService.displaySystemMessage('Conversation changed.');
+      if (!conversation) {
+        return;
       }
+
+      if (currentConversation) {
+        currentConversation.active = false;
+      }
+
+      mergeServerConversation(conversation);
+      currentConversation = conversations[conversation.id];
+      currentConversation.active = true;
+      $rootScope.$emit('conversation-changed');
     });
 
     socket.on('conversation-added', function(conversation) {
@@ -130,7 +116,6 @@
     }
 
     function addFromServer(conversation) {
-      conversation.getCssClasses = getCssClasses.bind(conversation);
       conversations[conversation.id] = conversation;
     }
 

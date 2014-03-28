@@ -21,7 +21,7 @@
         <a href="#" ng-repeat="conversation in getConversations()"
           ng-bind="conversation.name"
           ng-click="join(conversation)"
-          ng-class="conversation.getCssClasses()"
+          ng-class="getCssClasses(conversation)"
           >
         </a>
       </div>
@@ -151,8 +151,8 @@
         <div class="sidebar-heading sidebar-heading-skin grad-dl">Users</div>
         <div ng-controller="UserListCtrl">
           <div ng-repeat="user in getUsers()"
-            ng-bind="user.displayName()"
-            ng-class="user.getCssClasses()"
+            ng-bind="getDisplayName(user)"
+            ng-class="getCssClasses(user)"
           </div>
         </div>
       </div>

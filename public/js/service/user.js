@@ -6,31 +6,7 @@
     .service('UserService',
       function(socket, $rootScope, SoundService, NotificationService) {
 
-    var cssClassesCurrent = ['sidebar-item-borders', 'user-item', 'user-item-skin', 'sidebar-item-active'];
-    var cssClasses        = ['sidebar-item-borders', 'user-item', 'user-item-skin'];
-    var cssClassesOffline = ['sidebar-item-borders', 'user-item', 'user-item-offline-skin'];
-
-    function getCssClasses() {
-      if (this.id === user.id) {
-        return cssClassesCurrent;
-      } else if (this.online) {
-        return cssClasses;
-      } else {
-        return cssClassesOffline;
-      }
-    };
-
-    function displayName() {
-      if (this.online) {
-        return this.nick;
-      } else {
-        return this.nick + ' (offline)';
-      }
-    };
-
-    var user = bindCss({
-      nick: 'You',
-    });
+    var user = { nick: 'You', online: true };
     var users = {};
 
     this.getUser = function() {
@@ -69,7 +45,7 @@
       var message;
       log.debug('init-user-result');
       log.debug(JSON.stringify(_user, null, 2));
-      user = bindCss(_user);
+      user = _user;
       users[user.id] = user;
       $.cookie('id', user.id);
       SoundService.setSoundEnabled(user.soundEnabled);
@@ -79,7 +55,6 @@
     socket.on('user-joined', function(_user) {
       log.debug('user-joined');
       log.debug(JSON.stringify(_user, null, 2));
-      bindCss(_user);
       users[_user.id] = _user;
 
       $rootScope.$emit('display-system-message',
@@ -96,9 +71,9 @@
     socket.on('user-went-offline', function(id) {
       log.debug('user-went-offline');
       log.debug(id);
-      var user = users[id];
-      if (user) {
-        user.online = false;
+      var u = users[id];
+      if (u) {
+        u.online = false;
       }
     });
 
@@ -106,13 +81,13 @@
       log.debug('name-changed');
       log.debug(JSON.stringify(result, null, 2));
       var id = result.id;
-      var user = users[id];
-      if (user) {
+      var u = users[id];
+      if (u) {
         log.debug('name-changed - user present');
-        var previousName = user.nick;
-        user.nick = result.name;
+        var previousName = u.nick;
+        u.nick = result.name;
         $rootScope.$emit('display-system-message',
-          previousName + ' is now known as ' + user.nick + '.');
+          previousName + ' is now known as ' + u.nick + '.');
       }
     });
 
@@ -120,9 +95,6 @@
       log.debug('users-in-current-conversation');
       log.debug(JSON.stringify(_users, null, 2));
       users = _users ;
-      for (var u in users) {
-        bindCss(users[u]);
-      }
 
       // was the current user also in the user collection received from the
       // server? If so, replace the current user so that users[user.id] is
@@ -132,12 +104,6 @@
         user = users[user.id];
       }
     });
-
-    function bindCss(_user) {
-      _user.getCssClasses = getCssClasses.bind(_user);
-      _user.displayName = displayName.bind(_user);
-      return _user;
-    }
 
   });
 

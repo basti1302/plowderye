@@ -4,14 +4,19 @@
   angular
     .module('plowderye')
     .service('MessageService',
-      function(socket, $rootScope, UserService, SoundService, NotificationService) {
+      function(socket,
+        $rootScope,
+        ConversationService,
+        UserService,
+        SoundService,
+        NotificationService) {
 
     var self = this;
     var messages = [];
-    var currentConversation = null;
 
     function createMessage(messageText) {
       var clientTime = Date.now();
+      var currentConversation = ConversationService.getCurrentConversation();
       var conversationId = currentConversation ? currentConversation.id : null;
       return {
         sender: UserService.getUser(),
@@ -78,10 +83,6 @@
       return ('' + Math.random()).substr(2, 4);
     }
 
-    this.setCurrentConversation = function(_currentConversation) {
-      currentConversation = _currentConversation;
-    };
-
     this.clearMessages = function() {
       messages = [];
     }
@@ -102,6 +103,14 @@
     };
 
     this.addLocally = function(message) {
+      var currentConversation = ConversationService.getCurrentConversation();
+      if (currentConversation &&
+          currentConversation.id &&
+          message.conversation &&
+          message.conversation !== currentConversation.id) {
+        return;
+      }
+
       format(message);
       log.debug('adding message:');
       log.debug(JSON.stringify(message, null, 2));
@@ -116,6 +125,10 @@
 
     $rootScope.$on('display-system-message', function(event, message) {
       self.displaySystemMessage(message);
+    });
+
+    $rootScope.$on('conversation-changed', function(event) {
+      self.clearMessages();
     });
   });
 
