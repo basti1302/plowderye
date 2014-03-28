@@ -39,8 +39,10 @@
       if (!notificationsChecked) {
         if (!notificationsEnabled) { return; }
 
-        // TODO Does not work in Chrome because we are not in a onClick handler:
+        // Does not work in Chrome because we are not in a onClick handler:
         // https://code.google.com/p/chromium/issues/detail?id=274284
+        // As a remedy we also ask for permission when the user activates
+        // notifications.
         requestNotificationPermission();
         if (!notificationsEnabled) { return; }
       }

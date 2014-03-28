@@ -77,8 +77,6 @@
     });
 
     socket.on('user-joined', function(_user) {
-      // TODO Is it okay to always overwrite the client user object with the
-      // object from the server?
       log.debug('user-joined');
       log.debug(JSON.stringify(_user, null, 2));
       bindCss(_user);
