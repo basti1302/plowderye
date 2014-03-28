@@ -5,6 +5,7 @@
     .module('plowderye')
     .controller('MessageLogCtrl',
       function ($scope, MessageService) {
+    $scope.glued = true;
     $scope.getMessages = MessageService.getMessages;
   });
 

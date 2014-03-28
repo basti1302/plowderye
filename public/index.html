@@ -98,10 +98,14 @@
       <div class="margins">
 
         <!-- conversation log - displays past chat messages -->
-        <div ng-controller="MessageLogCtrl" class="padding rounded-box box-shadow-inset conv-log">
+        <div ng-controller="MessageLogCtrl"
+          class="padding rounded-box box-shadow-inset conv-log"
+          scroll-glue
+        >
           <div
             ng-repeat="message in getMessages()"
-            ng-class="message.classes">
+            ng-class="message.classes"
+          >
             <div ng-bind="message.formattedTime"
               class="message-time">
             </div>
@@ -166,6 +170,7 @@
 <script src="/bower_components/angular/angular.js" type="text/javascript"></script>
 <script src="/bower_components/angular-socket-io/socket.js" type="text/javascript"></script>
 <script src="bower_components/angular-animate/angular-animate.min.js" type="text/javascript"></script>
+<script src="bower_components/angularjs-scroll-glue/src/scrollglue.js" type="text/javascript"></script>
 
 <script src="/bower_components/notify.js/notify.js" type="text/javascript"></script>
 <script src="/bower_components/loglevel/dist/loglevel.min.js" type="text/javascript"></script>

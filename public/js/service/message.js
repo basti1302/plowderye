@@ -112,7 +112,6 @@
       self.addLocally(message);
       SoundService.playSound('ping');
       NotificationService.notify(message);
-      // TODO Scroll to end? Keep current scrolling position??
     });
 
     $rootScope.$on('display-system-message', function(event, message) {
