@@ -4,11 +4,13 @@ TODOs
 - objects, especially user, is stored to often and at random times
   - dirty flag?
 
-http://benclinkinbeard.com/talks/2014/ng-conf/#/19
-
 - store all messages and such in client via level.js or similar. Only update that local storage
   from the server when new messages are coming in. But for changing conversations we should not
   need to ask the server. Views only fetch stuff from the level.js store.
+
+- There are still some client side libs (es5-shim, socket.io, jquery, jquery-cookie,
+  notify and loglevel) which are used via script tag - include them into the
+  browserify build.
 
 - A user can have no conversation at all - fix client for this situation
 - Send two conversation lists to the client:
