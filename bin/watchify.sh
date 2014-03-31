@@ -19,7 +19,7 @@ pushd $bin_path/.. > /dev/null
 
 watchify \
   --entry client/plowderye-client.js \
-  --outfile public/plowderye-client.js \
+  --outfile public/js/plowderye-client.js \
   --verbose \
   &
 
