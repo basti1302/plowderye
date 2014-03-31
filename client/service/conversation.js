@@ -28,6 +28,12 @@ module.exports = function(socket, $rootScope) {
     socket.emit('join-conversation', convToServer);
   };
 
+  this.leave = function() {
+    if (currentConversation) {
+      socket.emit('leave-conversation', currentConversation.id);
+    }
+  };
+
   this.create = function(conversationName) {
     socket.emit('create-conversation', { name: conversationName });
   };

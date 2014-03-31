@@ -670,6 +670,9 @@ module.exports = function(
       case 'nick':
         UserService.changeName(argument);
         break;
+      case 'leave':
+        ConversationService.leave();
+        break;
       /*
       TODO Makes no sense unless a user can join multiple conversations!
       case 'add':
@@ -712,6 +715,12 @@ module.exports = function(socket, $rootScope) {
       };
     }
     socket.emit('join-conversation', convToServer);
+  };
+
+  this.leave = function() {
+    if (currentConversation) {
+      socket.emit('leave-conversation', currentConversation.id);
+    }
   };
 
   this.create = function(conversationName) {

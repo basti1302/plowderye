@@ -32,6 +32,9 @@ module.exports = function(
       case 'nick':
         UserService.changeName(argument);
         break;
+      case 'leave':
+        ConversationService.leave();
+        break;
       /*
       TODO Makes no sense unless a user can join multiple conversations!
       case 'add':
