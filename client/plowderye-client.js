@@ -25,7 +25,10 @@ angular.module('plowderye', [
   .directive('focusOn', require('./directive/focus_on'))
 
   .controller('ConfigCtrl', require('./controller/config'))
-  .controller('ConvListCtrl', require('./controller/conversation_list'))
+  .controller('UserConvListCtrl',
+    require('./controller/user_conversation_list'))
+  .controller('PublicConvListCtrl',
+    require('./controller/public_conversation_list'))
   .controller('CreateConversationCtrl',
     require('./controller/create_conversation'))
   .controller('HeadlineCtrl', require('./controller/headline'))

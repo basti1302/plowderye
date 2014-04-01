@@ -1,13 +1,46 @@
 'use strict';
 
+var _  = {};
+_.omit = require('lodash.omit');
+_.values = require('lodash.values');
+
 module.exports = function(socket, $rootScope) {
 
   var conversations = {};
+
   var currentConversation = {};
 
-  this.getConversations = function() {
-    return conversations;
+  this.getUserConversations = function() {
+    return filter(function(conversation) {
+      return !conversation.participates;
+    });
   };
+
+  this.getPublicConversations = function() {
+    return filter(function(conversation) {
+      return conversation.participates || !conversation.public;
+    });
+  };
+
+  function filter(fn) {
+    // 1. _.omit: filter conversations according to given filter function (for
+    // user conversations or public conversations,
+    // 2. _.values: convert to array and
+    // 3. sort by name
+    return sort(_.values(_.omit(conversations, fn)));
+  }
+
+  function sort(c) {
+    return c.sort(function (a, b) {
+      if (a.name > b.name) {
+        return 1;
+      } else if (a.name < b.name) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
 
   this.getCurrentConversation = function() {
     return currentConversation;
@@ -27,6 +60,23 @@ module.exports = function(socket, $rootScope) {
     }
     socket.emit('join-conversation', convToServer);
   };
+
+  socket.on('join-result', function(result) {
+    var conversation = result.conversation;
+    if (!conversation) {
+      return;
+    }
+
+    conversation.participates = true;
+    if (currentConversation) {
+      currentConversation.active = false;
+    }
+
+    mergeServerConversation(conversation);
+    currentConversation = conversations[conversation.id];
+    currentConversation.active = true;
+    $rootScope.$emit('conversation-changed');
+  });
 
   this.leave = function() {
     if (currentConversation) {
@@ -48,18 +98,43 @@ module.exports = function(socket, $rootScope) {
   };
   */
 
-  socket.on('fetch-conversations-result', function(_conversations) {
+  socket.on('user-conversation-list', function(conversationsFromServer) {
+    log.trace('user-conversation-list');
+    log.trace(JSON.stringify(conversationsFromServer, null, 2));
+    for (var c in conversationsFromServer) {
+      conversationsFromServer[c].participates = true;
+    }
+    merge(conversationsFromServer);
+  });
 
+  socket.on('public-conversation-list', function(conversationsFromServer) {
+    log.trace('public-conversation-list');
+    log.trace(JSON.stringify(conversationsFromServer, null, 2));
+    for (var c in conversationsFromServer) {
+      conversationsFromServer[c].public = true;
+    }
+    merge(conversationsFromServer);
+  });
+
+  socket.on('conversation-added', function(conversation) {
+    addFromServerIfNotPresent(conversation);
+  });
+
+  socket.on('conversation-removed', function(conversationId) {
+    delete conversations[conversationId];
+  });
+
+  function merge(conversationsFromServer) {
     // create all conversations that come from server and do not yet exist on
     // client
-    for (var c in _conversations) {
-      mergeServerConversation(_conversations[c]);
+    for (var c in conversationsFromServer) {
+      mergeServerConversation(conversationsFromServer[c]);
     }
 
     // delete all conversations that exist on client but not on server anymore
     for (var clientConvId in conversations) {
       var foundMatching = false;
-      for (var serverConvId in _conversations) {
+      for (var serverConvId in conversationsFromServer) {
         if (clientConvId === serverConvId) {
           // found a matching server conversation, continue with next client
           // conversation
@@ -74,38 +149,21 @@ module.exports = function(socket, $rootScope) {
         delete conversations[clientConvId];
       }
     }
-  });
+  }
 
-  socket.on('join-result', function(result) {
-    var conversation = result.conversation;
-    if (!conversation) {
-      return;
-    }
-
-    if (currentConversation) {
-      currentConversation.active = false;
-    }
-
-    mergeServerConversation(conversation);
-    currentConversation = conversations[conversation.id];
-    currentConversation.active = true;
-    $rootScope.$emit('conversation-changed');
-  });
-
-  socket.on('conversation-added', function(conversation) {
-    addFromServerIfNotPresent(conversation);
-  });
-
-  socket.on('conversation-removed', function(conversationId) {
-    delete conversations[conversationId];
-  });
-
-  function mergeServerConversation(conversation) {
-    if (!addFromServerIfNotPresent(conversation)) {
+  function mergeServerConversation(serverConversation) {
+    if (!addFromServerIfNotPresent(serverConversation)) {
       // conversation was already present on client - copy all properties
       // from server conversation to client conversation, just in case they
-      // diverged. (Currently, there is only the name property, however.)
-      conversations[conversation.id].name = conversation.name;
+      // diverged.
+      var clientConversation = conversations[serverConversation.id];
+      clientConversation.name = serverConversation.name;
+      if (angular.isDefined(serverConversation.participates)) {
+        clientConversation.participates = serverConversation.participates;
+      }
+      if (angular.isDefined(serverConversation.public)) {
+        clientConversation.public = serverConversation.public;
+      }
     }
   }
 
@@ -120,5 +178,4 @@ module.exports = function(socket, $rootScope) {
   function addFromServer(conversation) {
     conversations[conversation.id] = conversation;
   }
-
 };

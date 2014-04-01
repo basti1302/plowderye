@@ -1,6 +1,14 @@
 'use strict';
 
-module.exports = function ($scope, SoundService, NotificationService) {
+module.exports = function (
+  $scope,
+  ConversationService,
+  SoundService,
+  NotificationService) {
+
+  $scope.leaveConversation = function() {
+    ConversationService.leave();
+  };
 
   $scope.toggleNotifications = function() {
     NotificationService.toggleNotificationsEnabled();

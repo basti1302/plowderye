@@ -7,7 +7,9 @@
     "angular": "^1.2.15",
     "angular-animate": "0.0.2",
     "angular-socket-io": "^0.4.1",
-    "angularjs-scroll-glue": "git://github.com/Luegg/angularjs-scroll-glue.git#d7e73097fa96aa27ba5123ba879addbdeb68db21"
+    "angularjs-scroll-glue": "git://github.com/Luegg/angularjs-scroll-glue.git#d7e73097fa96aa27ba5123ba879addbdeb68db21",
+    "lodash.omit": "~2.4.1",
+    "lodash.values": "~2.4.1"
   },
   "devDependencies": {
     "browserify": "^3.38.0",

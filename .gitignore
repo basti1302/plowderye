@@ -1,4 +1,4 @@
-node_modules
+/node_modules
 
 # optional config file
 plowderye.json

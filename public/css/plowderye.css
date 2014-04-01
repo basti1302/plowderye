@@ -35,7 +35,8 @@ body {
 }
 
 .config-controls {
-  width: 70px;
+  width: 96px;
+  margin-right: 3px;
 }
 
 .span-send {

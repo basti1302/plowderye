@@ -14,7 +14,8 @@ module.exports = function ($scope, ConversationService) {
     'grad-ld'
   ];
 
-  $scope.getConversations = ConversationService.getConversations;
+  $scope.getUserConversations = ConversationService.getUserConversations;
+  $scope.getPublicConversations = ConversationService.getPublicConversations;
 
   $scope.join = ConversationService.join;
 

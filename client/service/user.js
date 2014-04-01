@@ -57,8 +57,12 @@ module.exports = function(
     log.debug(JSON.stringify(_user, null, 2));
     users[_user.id] = _user;
 
+    /*
+    TODO Currently broken: message is displayed in all conversations. Drop
+    'has joined' message for now, it's low priority.
     $rootScope.$emit('display-system-message',
       _user.nick + ' has joined this conversation.');
+    */
 
   });
 

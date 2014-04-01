@@ -17,8 +17,11 @@
   <div class="grid-20 grid-parent">
     <div class="margins rounded-box box-shadow text-on-mtl">
       <div class="sidebar-heading sidebar-heading-skin grad-dl">Conversations</div>
-      <div ng-controller="ConvListCtrl">
-        <a href="#" ng-repeat="conversation in getConversations()"
+      <div
+        ng-controller="UserConvListCtrl"
+        class="margin-below"
+      >
+        <a href="#" ng-repeat="conversation in getUserConversations()"
           ng-bind="conversation.name"
           ng-click="join(conversation)"
           ng-class="getCssClasses(conversation)"
@@ -26,7 +29,8 @@
         </a>
       </div>
     </div>
-    <div ng-controller="CreateConversationCtrl">
+
+    <div ng-controller="CreateConversationCtrl" class="margin-below">
       <div class="margin-above">
         <a href="#"
            class="show-create-conf-toggle rounded-box box-shadow-small grad-dl text-on-mtl"
@@ -64,6 +68,19 @@
         </div>
       </div>
     </div>
+
+    <div class="margins rounded-box box-shadow text-on-mtl">
+      <div class="sidebar-heading sidebar-heading-skin grad-dl">Public Conversations</div>
+      <div ng-controller="PublicConvListCtrl">
+        <a href="#" ng-repeat="conversation in getPublicConversations()"
+          ng-bind="conversation.name"
+          ng-click="join(conversation)"
+          ng-class="getCssClasses(conversation)"
+          >
+        </a>
+      </div>
+    </div>
+
   </div>
 
   <!-- current conversation headline and config controls -->
@@ -78,7 +95,12 @@
       <div class="expand-left-right">
         <div ng-controller="ConfigCtrl"
           class="config-controls">
-          <img ng-click="toggleNotifications()"
+          <img ng-click="leaveConversation()"
+            class="ctrl-img box-shadow-inset"
+            ng-src="/images/leave-conversation.png"
+            alt="leave conversation"
+            title="leave this conversation"
+          ><img ng-click="toggleNotifications()"
             class="ctrl-img box-shadow-inset"
             ng-src="/images/{{getNotificationsImage()}}"
             alt="toggle notifications"
@@ -139,8 +161,9 @@
             <li>Change nickname: <code>/nick [username]</code></li>
             <li>Join a conversation: <code>/join [conversation name]</code></li>
             <li>Create a new public conversation: <code>/create [conversation name]</code></li>
+            <li>Leave a conversation: <code>/leave</code></li>
           </ul>
-          powered by <em>plowderye</em>.
+          <em>plowderye</em> uses <a href="http://GLYPHICONS.com">GLYPHICONS.com</a> licensed under <a href="http://creativecommons.org/licenses/by/3.0/legalcode">CC-BY 3.0</a>.
         </div>
       </div>
     </div>
