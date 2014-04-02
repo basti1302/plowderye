@@ -4,7 +4,7 @@
   "description": "Yet another chat implementation with Node.js and Socket.io",
   "repository": "https://github.com/basti1302/plowderye.git",
   "dependencies": {
-    "angular": "^1.2.15",
+    "angular": "1.2.13",
     "angular-animate": "0.0.2",
     "angular-socket-io": "^0.4.1",
     "angularjs-scroll-glue": "git://github.com/Luegg/angularjs-scroll-glue.git#d7e73097fa96aa27ba5123ba879addbdeb68db21",
