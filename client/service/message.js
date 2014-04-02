@@ -137,6 +137,10 @@ module.exports = function(socket,
     NotificationService.notify(message);
   });
 
+  $rootScope.$on('user-left-conversation', function(event, conversationId) {
+    delete messages[conversationId];
+  });
+
   $rootScope.$on('display-system-message', function(event, message) {
     if (!message.conversation) {
       return;

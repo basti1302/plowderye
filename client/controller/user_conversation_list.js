@@ -6,7 +6,7 @@ module.exports = function ($scope, ConversationService) {
 
   $scope.getUserConversations = ConversationService.getUserConversations;
 
-  $scope.join = ConversationService.join;
+  $scope.switchTo = ConversationService.switchTo;
 
   $scope.getCssClasses = getCssClasses;
 };

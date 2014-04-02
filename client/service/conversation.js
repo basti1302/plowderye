@@ -4,7 +4,7 @@ var _  = {};
 _.omit = require('lodash.omit');
 _.values = require('lodash.values');
 
-module.exports = function(socket) {
+module.exports = function(socket, $rootScope) {
 
   var conversations = {};
 
@@ -46,6 +46,12 @@ module.exports = function(socket) {
     return currentConversation;
   };
 
+  this.switchTo = function(conversation) {
+    deactivateCurrentConversation();
+    currentConversation = conversation;
+    activateCurrentConversation();
+  };
+
   this.join = function(conversation) {
     var convToServer;
     if (conversation.id) {
@@ -61,6 +67,20 @@ module.exports = function(socket) {
     socket.emit('join-conversation', convToServer);
   };
 
+  this.joinOrSwitchTo = function(conversationName) {
+    for (var c in conversations) {
+      var conversation = conversations[c];
+      if (conversation.name.toUpperCase() === conversationName.toUpperCase()) {
+        this.switchTo(conversation);
+        return;
+      }
+    }
+
+    // try to join a public conversation with the given name, that the user does
+    // not yet participate in.
+    this.join({ name: conversationName });
+  };
+
   socket.on('join-result', function(result) {
     var conversation = result.conversation;
     if (!conversation) {
@@ -68,19 +88,18 @@ module.exports = function(socket) {
     }
 
     conversation.participates = true;
-    if (currentConversation) {
-      currentConversation.active = false;
-    }
+    deactivateCurrentConversation();
 
     mergeServerConversation(conversation);
     currentConversation = conversations[conversation.id];
-    currentConversation.active = true;
+    activateCurrentConversation();
   });
 
   this.leave = function() {
     if (currentConversation) {
       socket.emit('leave-conversation', currentConversation.id);
     }
+    $rootScope.$emit('user-left-conversation', currentConversation.id);
     currentConversation = null;
   };
 
@@ -177,5 +196,17 @@ module.exports = function(socket) {
 
   function addFromServer(conversation) {
     conversations[conversation.id] = conversation;
+  }
+
+  function deactivateCurrentConversation() {
+    if (currentConversation) {
+      currentConversation.active = false;
+    }
+  }
+
+  function activateCurrentConversation() {
+    if (currentConversation) {
+      currentConversation.active = true;
+    }
   }
 };

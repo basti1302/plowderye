@@ -23,7 +23,7 @@
       >
         <a href="#" ng-repeat="conversation in getUserConversations()"
           ng-bind="conversation.name"
-          ng-click="join(conversation)"
+          ng-click="switchTo(conversation)"
           ng-class="getCssClasses(conversation)"
           >
         </a>

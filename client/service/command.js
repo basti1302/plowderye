@@ -24,7 +24,7 @@ module.exports = function(
     var argument = words.join(' ');
     switch (command) {
       case 'join':
-        ConversationService.join({ name: argument });
+        ConversationService.joinOrSwitchTo(argument);
         break;
       case 'create':
         ConversationService.create(argument);
