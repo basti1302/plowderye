@@ -3,6 +3,10 @@ TODOs
 
 - client: store messages per conversation. Update the correct message-log on incoming messages. When going online, fetch the message log for all conversations (asynchronously).
 - clear distinction between joining a conversation and switching to a conversation which you already participate in (the latter is a client-only operation)
+- clear distinction between leaving a conversation and disconnecting/going offline
+
+- two user lists: top: users in this conversations; bottom: all users
+- fix display of user in user list (online/offline etc.)
 
 - objects, especially user, is stored to often and at random times
   - dirty flag?
