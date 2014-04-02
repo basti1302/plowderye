@@ -26,19 +26,22 @@ module.exports = function(
   };
 
   socket.on('set-name-result', function(result) {
-    var message;
+    var text;
     log.debug('set-name-result');
     log.debug(JSON.stringify(result, null, 2));
     if (result.success) {
       log.debug('set-name-result: success');
       user.nick = result.name;
-      message = 'You are now known as ' + user.nick + '.';
+      text = 'You are now known as ' + user.nick + '.';
     } else {
       log.debug('set-name-result: failure');
-      message = result.message;
+      text = result.message;
     }
 
-    $rootScope.$emit('display-system-message', message);
+    $rootScope.$emit('display-system-message', {
+      text: text,
+      conversation: '*',
+    });
   });
 
   socket.on('init-user-result', function(_user) {
@@ -52,18 +55,17 @@ module.exports = function(
     NotificationService.setNotificationsEnabled(user.notificationsEnabled);
   });
 
-  socket.on('user-joined', function(_user) {
+  socket.on('user-joined', function(data) {
     log.debug('user-joined');
-    log.debug(JSON.stringify(_user, null, 2));
-    users[_user.id] = _user;
+    log.debug(JSON.stringify(data, null, 2));
+    var conversationId = data.conversation;
+    delete data.conversation;
+    users[data.id] = data;
 
-    /*
-    TODO Currently broken: message is displayed in all conversations. Drop
-    'has joined' message for now, it's low priority.
-    $rootScope.$emit('display-system-message',
-      _user.nick + ' has joined this conversation.');
-    */
-
+    $rootScope.$emit('display-system-message', {
+      text: data.nick + ' has joined this conversation.',
+      conversation: conversationId,
+    });
   });
 
   socket.on('user-left', function(id) {
@@ -90,8 +92,10 @@ module.exports = function(
       log.debug('name-changed - user present');
       var previousName = u.nick;
       u.nick = result.name;
-      $rootScope.$emit('display-system-message',
-        previousName + ' is now known as ' + u.nick + '.');
+      $rootScope.$emit('display-system-message', {
+        text: previousName + ' is now known as ' + u.nick + '.',
+        conversation: '*',
+      });
     }
   });
 

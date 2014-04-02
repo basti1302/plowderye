@@ -4,7 +4,7 @@ var _  = {};
 _.omit = require('lodash.omit');
 _.values = require('lodash.values');
 
-module.exports = function(socket, $rootScope) {
+module.exports = function(socket) {
 
   var conversations = {};
 
@@ -25,7 +25,7 @@ module.exports = function(socket, $rootScope) {
   function filter(fn) {
     // 1. _.omit: filter conversations according to given filter function (for
     // user conversations or public conversations,
-    // 2. _.values: convert to array and
+    // 2. _.values: convert object to array and finally
     // 3. sort by name
     return sort(_.values(_.omit(conversations, fn)));
   }
@@ -75,13 +75,13 @@ module.exports = function(socket, $rootScope) {
     mergeServerConversation(conversation);
     currentConversation = conversations[conversation.id];
     currentConversation.active = true;
-    $rootScope.$emit('conversation-changed');
   });
 
   this.leave = function() {
     if (currentConversation) {
       socket.emit('leave-conversation', currentConversation.id);
     }
+    currentConversation = null;
   };
 
   this.create = function(conversationName) {

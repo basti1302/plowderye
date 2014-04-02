@@ -8,27 +8,35 @@ module.exports = function(socket,
   NotificationService) {
 
   var self = this;
-  var messages = [];
+  var messages = {};
 
-  function createMessage(messageText) {
+  function createMessage(text) {
     var clientTime = Date.now();
     var currentConversation = ConversationService.getCurrentConversation();
-    var conversationId = currentConversation ? currentConversation.id : null;
+    if (!currentConversation) {
+      return;
+    }
+    // TODO Only send user's id and nick, not the full object
     return {
       sender: UserService.getUser(),
-      conversation: conversationId,
-      text: messageText,
+      conversation: currentConversation.id,
+      text: text,
       clientTime: clientTime,
       clientId: clientTime + '-' + randomString(),
       system: false,
     };
   }
 
-  function createSystemMessage(messageText) {
+  function createSystemMessage(text) {
     var clientTime = Date.now();
+    var currentConversation = ConversationService.getCurrentConversation();
+    if (!currentConversation) {
+      return;
+    }
     return {
       sender: { nick: '::' },
-      text: messageText,
+      conversation: currentConversation.id,
+      text: text,
       clientTime: clientTime,
       clientId: clientTime + '-' + randomString(),
       system: true,
@@ -79,38 +87,48 @@ module.exports = function(socket,
     return ('' + Math.random()).substr(2, 4);
   }
 
-  this.clearMessages = function() {
-    messages = [];
-  };
-
   this.getMessages = function() {
-    return messages;
+    var currentConversation = ConversationService.getCurrentConversation();
+    if (!currentConversation) {
+      return [];
+    }
+    var conversationId = currentConversation.id;
+    return messages[conversationId];
   };
 
-  this.send = function(messageText) {
-    var message = createMessage(messageText);
+  this.send = function(text) {
+    var message = createMessage(text);
     this.addLocally(angular.copy(message));
     socket.emit('message', message);
   };
 
-  this.displaySystemMessage = function(messageText) {
-    var message = createSystemMessage(messageText);
+  this.displaySystemMessageInCurrentConversation = function(text) {
+    var message = createSystemMessage(text);
+    this.addLocally(message);
+  };
+
+  this.displaySystemMessageInConversation = function(text, conversationId) {
+    var message = createSystemMessage(text);
+    message.conversation = conversationId;
     this.addLocally(message);
   };
 
   this.addLocally = function(message) {
-    var currentConversation = ConversationService.getCurrentConversation();
-    if (currentConversation &&
-        currentConversation.id &&
-        message.conversation &&
-        message.conversation !== currentConversation.id) {
+    var conversationId = message.conversation;
+    if (!conversationId) {
+      log.error('Message without conversation id:');
+      log.error(JSON.stringify(message));
       return;
     }
-
     format(message);
     log.debug('adding message:');
     log.debug(JSON.stringify(message, null, 2));
-    messages.push(message);
+    var convLog = messages[conversationId];
+    if (!convLog) {
+      convLog = [];
+      messages[conversationId] = convLog;
+    }
+    convLog.push(message);
   };
 
   socket.on('message', function (message) {
@@ -120,10 +138,14 @@ module.exports = function(socket,
   });
 
   $rootScope.$on('display-system-message', function(event, message) {
-    self.displaySystemMessage(message);
-  });
-
-  $rootScope.$on('conversation-changed', function(event) {
-    self.clearMessages();
+    if (!message.conversation) {
+      return;
+    }
+    if (message.conversation === '*') {
+      self.displaySystemMessageInCurrentConversation(message.text);
+    } else {
+      self.displaySystemMessageInConversation(message.text,
+        message.conversation);
+    }
   });
 };

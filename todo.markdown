@@ -1,23 +1,19 @@
 TODOs
 =====
 
+- client: store messages per conversation. Update the correct message-log on incoming messages. When going online, fetch the message log for all conversations (asynchronously).
+- clear distinction between joining a conversation and switching to a conversation which you already participate in (the latter is a client-only operation)
+
 - objects, especially user, is stored to often and at random times
   - dirty flag?
-
-- store all messages and such in client via level.js or similar. Only update that local storage
-  from the server when new messages are coming in. But for changing conversations we should not
-  need to ask the server. Views only fetch stuff from the level.js store.
 
 - There are still some client side libs (es5-shim, socket.io, jquery, jquery-cookie,
   notify and loglevel) which are used via script tag - include them into the
   browserify build.
 
 - A user can have no conversation at all - fix client for this situation
-- Send two conversation lists to the client:
-  - Their own conversations (public and private)
-  - All public conversations
 
-- attach user list to conversation object
+- attach user list to conversation object - should make ugly "full-table-scan" approach when fetching users participating in a conversation unecessary.
 - update user-conversation relations (in both directions) lists when
   - user joins a conversation or
   - user is added to a conversation or
