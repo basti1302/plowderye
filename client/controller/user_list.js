@@ -17,7 +17,9 @@ module.exports = function ($scope, socket, UserService) {
     'user-item-offline-skin'
   ];
 
-  $scope.getUsers = UserService.getUsers;
+  $scope.getParticipants = UserService.getParticipants;
+
+  $scope.getAllUsers = UserService.getAllUsers;
 
   $scope.getCssClasses = function(user) {
     if (user.id === UserService.getUser().id) {

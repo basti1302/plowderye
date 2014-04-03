@@ -25,8 +25,7 @@
           ng-bind="conversation.name"
           ng-click="switchTo(conversation)"
           ng-class="getCssClasses(conversation)"
-          >
-        </a>
+        ></a>
       </div>
     </div>
 
@@ -61,7 +60,7 @@
                 ng-click="createConversation()"
                 ng-focus="buttonHasFocus = true;"
                 ng-blur="buttonHasFocus = false; onLeave();"
-                class="btn btn-primary full-width"
+                class="btn btn-primary full-width margin-below-5"
               >Create</button>
             </div>
           </form>
@@ -76,8 +75,7 @@
           ng-bind="conversation.name"
           ng-click="join(conversation)"
           ng-class="getCssClasses(conversation)"
-          >
-        </a>
+        ></a>
       </div>
     </div>
 
@@ -85,7 +83,7 @@
 
   <!-- current conversation headline and config controls -->
   <div class="grid-80 grid-parent">
-    <div class="margins padding rounded-box box-shadow grad-dl text-on-mtl">
+    <div class="margins rounded-box box-shadow headline grad-dl text-on-mtl">
       <div ng-controller="HeadlineCtrl"
          class="expand-left-container current-conversation">
         <span ng-bind="getCurrentConversationName()"
@@ -170,10 +168,20 @@
 
     <!-- user list -->
     <div class="grid-20 grid-parent">
-      <div class="margins rounded-box box-shadow text-on-mtl">
-        <div class="sidebar-heading sidebar-heading-skin grad-dl">Users</div>
+      <div class="margins rounded-box box-shadow text-on-mtl margin-below">
+        <div class="sidebar-heading sidebar-heading-skin grad-dl">Participants</div>
         <div ng-controller="UserListCtrl">
-          <div ng-repeat="user in getUsers()"
+          <div ng-repeat="user in getParticipants()"
+            ng-bind="getDisplayName(user)"
+            ng-class="getCssClasses(user)"
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="margins rounded-box box-shadow text-on-mtl margin-below">
+      <div class="sidebar-heading sidebar-heading-skin grad-dl">Users</div>
+        <div ng-controller="UserListCtrl">
+          <div ng-repeat="user in getAllUsers()"
             ng-bind="getDisplayName(user)"
             ng-class="getCssClasses(user)"
           </div>

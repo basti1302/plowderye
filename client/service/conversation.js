@@ -1,7 +1,7 @@
 'use strict';
 
-var _  = {};
-_.omit = require('lodash.omit');
+var _    = {};
+_.omit   = require('lodash.omit');
 _.values = require('lodash.values');
 
 module.exports = function(socket, $rootScope) {
@@ -24,7 +24,7 @@ module.exports = function(socket, $rootScope) {
 
   function filter(fn) {
     // 1. _.omit: filter conversations according to given filter function (for
-    // user conversations or public conversations,
+    // user conversations or public conversations),
     // 2. _.values: convert object to array and finally
     // 3. sort by name
     return sort(_.values(_.omit(conversations, fn)));

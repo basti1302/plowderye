@@ -204,7 +204,9 @@ module.exports = function ($scope, socket, UserService) {
     'user-item-offline-skin'
   ];
 
-  $scope.getUsers = UserService.getUsers;
+  $scope.getParticipants = UserService.getParticipants;
+
+  $scope.getAllUsers = UserService.getAllUsers;
 
   $scope.getCssClasses = function(user) {
     if (user.id === UserService.getUser().id) {
@@ -2671,8 +2673,8 @@ module.exports = function(
 },{}],102:[function(require,module,exports){
 'use strict';
 
-var _  = {};
-_.omit = require('lodash.omit');
+var _    = {};
+_.omit   = require('lodash.omit');
 _.values = require('lodash.values');
 
 module.exports = function(socket, $rootScope) {
@@ -2695,7 +2697,7 @@ module.exports = function(socket, $rootScope) {
 
   function filter(fn) {
     // 1. _.omit: filter conversations according to given filter function (for
-    // user conversations or public conversations,
+    // user conversations or public conversations),
     // 2. _.values: convert object to array and finally
     // 3. sort by name
     return sort(_.values(_.omit(conversations, fn)));
@@ -3166,9 +3168,14 @@ module.exports = function (socket) {
 },{}],106:[function(require,module,exports){
 'use strict';
 
+var _    = {};
+_.omit   = require('lodash.omit');
+_.values = require('lodash.values');
+
 module.exports = function(
   socket,
   $rootScope,
+  ConversationService,
   SoundService,
   NotificationService) {
 
@@ -3181,11 +3188,53 @@ module.exports = function(
     return user;
   };
 
-  this.getUsers = function() {
-    log.trace('getUsers');
+  this.getParticipants = function() {
+    log.trace('getParticipants');
     log.trace(JSON.stringify(users, null, 2));
-    return users;
+    return filter(function(user) {
+      return !isInCurrentConversation(user);
+    });
   };
+
+  this.getAllUsers = function() {
+    log.trace('getAllUsers');
+    log.trace(JSON.stringify(users, null, 2));
+    return filter(isInCurrentConversation);
+  };
+
+  function filter(fn) {
+    // 1. _.omit: filter users according to given filter function (for
+    // participants or all users).
+    // 2. _.values: convert object to array and finally
+    // 3. sort by online/offline, name
+    return sort(_.values(_.omit(users, fn)));
+  }
+
+  function sort(u) {
+    return u.sort(function (a, b) {
+      if (a.online && !b.online) {
+        return -1;
+      } else if (!a.online && b.online) {
+        return 0;
+      } else if (a.name > b.name) {
+        return 1;
+      } else if (a.name < b.name) {
+        return -1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+  function isInCurrentConversation(user) {
+    var currentConversation = ConversationService.getCurrentConversation();
+    for (var conversationId in user.conversations) {
+      if (conversationId === currentConversation.id) {
+        return true;
+      }
+    }
+    return false;
+  }
 
   this.changeName = function(name) {
     socket.emit('set-name', name);
@@ -3281,7 +3330,7 @@ module.exports = function(
 
 };
 
-},{}],107:[function(require,module,exports){
+},{"lodash.omit":17,"lodash.values":93}],107:[function(require,module,exports){
 module.exports={
   "name": "plowderye",
   "version": "0.0.0",
