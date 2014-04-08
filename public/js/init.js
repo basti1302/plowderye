@@ -1,8 +1,8 @@
 (function() {
   'use strict';
 
-  //log.setLevel(log.levels.DEBUG);
-  log.disableAll();
+  log.setLevel(log.levels.DEBUG);
+  //log.disableAll();
 
   $(document).ready(function() {
     $.cookie.defaults = {

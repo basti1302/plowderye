@@ -140,7 +140,26 @@ module.exports = function ($scope, MessageService) {
 },{}],6:[function(require,module,exports){
 'use strict';
 
-var getCssClasses = require('./conversation_list_css');
+var userListStyle = require('./user_list_style');
+
+module.exports = function ($scope, socket, ConversationService, UserService) {
+
+  $scope.getParticipants = function() {
+    return UserService.getParticipants(
+      ConversationService.getCurrentConversation());
+  };
+
+  $scope.getCssClasses = function(user) {
+    return userListStyle.getCssClasses(user, UserService.getUser());
+  };
+
+  $scope.getDisplayName = userListStyle.getDisplayName;
+};
+
+},{"./user_list_style":11}],7:[function(require,module,exports){
+'use strict';
+
+var getCssClasses = require('./conversation_list_style');
 
 module.exports = function ($scope, ConversationService) {
 
@@ -152,7 +171,7 @@ module.exports = function ($scope, ConversationService) {
 
 };
 
-},{"./conversation_list_css":2}],7:[function(require,module,exports){
+},{"./conversation_list_style":2}],8:[function(require,module,exports){
 'use strict';
 
 module.exports = function ($scope, MessageService, CommandService) {
@@ -170,10 +189,10 @@ module.exports = function ($scope, MessageService, CommandService) {
   };
 };
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 'use strict';
 
-var getCssClasses = require('./conversation_list_css');
+var getCssClasses = require('./conversation_list_style');
 
 module.exports = function ($scope, ConversationService) {
 
@@ -184,50 +203,59 @@ module.exports = function ($scope, ConversationService) {
   $scope.getCssClasses = getCssClasses;
 };
 
-},{"./conversation_list_css":2}],9:[function(require,module,exports){
+},{"./conversation_list_style":2}],10:[function(require,module,exports){
 'use strict';
 
+var userListStyle = require('./user_list_style');
+
 module.exports = function ($scope, socket, UserService) {
-
-  var cssClassesCurrent = ['sidebar-item-borders',
-    'user-item',
-    'user-item-skin',
-    'sidebar-item-active'
-  ];
-  var cssClasses = ['sidebar-item-borders',
-    'user-item',
-    'user-item-skin'
-  ];
-  var cssClassesOffline = [
-    'sidebar-item-borders',
-    'user-item',
-    'user-item-offline-skin'
-  ];
-
-  $scope.getParticipants = UserService.getParticipants;
-
   $scope.getAllUsers = UserService.getAllUsers;
 
   $scope.getCssClasses = function(user) {
-    if (user.id === UserService.getUser().id) {
-      return cssClassesCurrent;
-    } else if (user.online) {
-      return cssClasses;
-    } else {
-      return cssClassesOffline;
-    }
+    return userListStyle.getCssClasses(user, UserService.getUser());
   };
 
-  $scope.getDisplayName = function(user) {
-    if (user.online) {
-      return user.nick;
-    } else {
-      return user.nick + ' (offline)';
-    }
-  };
+  $scope.getDisplayName = userListStyle.getDisplayName;
 };
 
-},{}],10:[function(require,module,exports){
+},{"./user_list_style":11}],11:[function(require,module,exports){
+'use strict';
+
+var UserService = require('../service/user');
+var cssClassesCurrent = ['sidebar-item-borders',
+  'user-item',
+  'user-item-skin',
+  'sidebar-item-active'
+];
+var cssClasses = ['sidebar-item-borders',
+  'user-item',
+  'user-item-skin'
+];
+var cssClassesOffline = [
+  'sidebar-item-borders',
+  'user-item',
+  'user-item-offline-skin'
+];
+
+exports.getCssClasses = function(user, currentUser) {
+  if (user.id === currentUser.id) {
+    return cssClassesCurrent;
+  } else if (user.online) {
+    return cssClasses;
+  } else {
+    return cssClassesOffline;
+  }
+};
+
+exports.getDisplayName = function(user) {
+  if (user.online) {
+    return user.nick;
+  } else {
+    return user.nick + ' (offline)';
+  }
+};
+
+},{"../service/user":108}],12:[function(require,module,exports){
 'use strict';
 
 /*
@@ -249,14 +277,14 @@ module.exports = function($timeout) {
   };
 };
 
-},{}],11:[function(require,module,exports){
+},{}],13:[function(require,module,exports){
 'use strict';
 
 module.exports = function(socketFactory) {
   return socketFactory();
 };
 
-},{}],12:[function(require,module,exports){
+},{}],14:[function(require,module,exports){
 /*
  AngularJS v1.2.12
  (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -282,7 +310,7 @@ a.removeData(n);d()}function g(b,c,d){var e=L(b,c);if(e){var f=e;y(b,function(){
 function(a){g.removeClass(a)});g.addClass(e(h,"addClass"==c?"-add":"-remove"));l.append(g);a=N(g);g.remove();return 0<Math.max(a.transitionDuration,a.animationDuration)},enter:function(a,c){return g(a,"ng-enter",c)},leave:function(a,c){return g(a,"ng-leave",c)},move:function(a,c){return g(a,"ng-move",c)},beforeAddClass:function(a,c,d){var f=L(a,e(c,"-add"),function(d){a.addClass(c);d=d();a.removeClass(c);return d});if(f)return y(a,function(){J(a);A(a);d()}),f;d()},addClass:function(b,c,d){return a(b,
 e(c,"-add"),d)},beforeRemoveClass:function(a,c,d){var f=L(a,e(c,"-remove"),function(d){var e=a.attr("class");a.removeClass(c);d=d();a.attr("class",e);return d});if(f)return y(a,function(){J(a);A(a);d()}),f;d()},removeClass:function(b,c,d){return a(b,e(c,"-remove"),d)}}}])}])})(window,window.angular);
 //# sourceMappingURL=angular-animate.min.js.map
-},{}],13:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 /*
  * @license
  * angular-socket-io v0.4.1
@@ -369,12 +397,12 @@ angular.module('btford.socket-io', []).
     };
   });
 
-},{}],14:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 require('./lib/angular.min.js');
 
 module.exports = angular;
 
-},{"./lib/angular.min.js":15}],15:[function(require,module,exports){
+},{"./lib/angular.min.js":17}],17:[function(require,module,exports){
 /*
  AngularJS v1.2.13
  (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -580,7 +608,7 @@ ngModel:fe,ngList:he,ngChange:ge,required:Oc,ngRequired:Oc,ngValue:je}).directiv
 !angular.$$csp()&&angular.element(document).find("head").prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide{display:none !important;}ng\\:form{display:block;}.ng-animate-block-transitions{transition:0s all!important;-webkit-transition:0s all!important;}</style>');
 //# sourceMappingURL=angular.min.js.map
 
-},{}],16:[function(require,module,exports){
+},{}],18:[function(require,module,exports){
 (function(angular, undefined){
     'use strict';
 
@@ -626,7 +654,7 @@ ngModel:fe,ngList:he,ngChange:ge,required:Oc,ngRequired:Oc,ngValue:je}).directiv
     });
 }(angular));
 
-},{}],17:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -695,7 +723,7 @@ function omit(object, callback, thisArg) {
 
 module.exports = omit;
 
-},{"lodash._basedifference":18,"lodash._baseflatten":31,"lodash.createcallback":35,"lodash.forin":70}],18:[function(require,module,exports){
+},{"lodash._basedifference":20,"lodash._baseflatten":33,"lodash.createcallback":37,"lodash.forin":72}],20:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -749,7 +777,7 @@ function baseDifference(array, values) {
 
 module.exports = baseDifference;
 
-},{"lodash._baseindexof":19,"lodash._cacheindexof":20,"lodash._createcache":22,"lodash._largearraysize":27,"lodash._releaseobject":28}],19:[function(require,module,exports){
+},{"lodash._baseindexof":21,"lodash._cacheindexof":22,"lodash._createcache":24,"lodash._largearraysize":29,"lodash._releaseobject":30}],21:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -783,7 +811,7 @@ function baseIndexOf(array, value, fromIndex) {
 
 module.exports = baseIndexOf;
 
-},{}],20:[function(require,module,exports){
+},{}],22:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -824,7 +852,7 @@ function cacheIndexOf(cache, value) {
 
 module.exports = cacheIndexOf;
 
-},{"lodash._baseindexof":19,"lodash._keyprefix":21}],21:[function(require,module,exports){
+},{"lodash._baseindexof":21,"lodash._keyprefix":23}],23:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.2 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -839,7 +867,7 @@ var keyPrefix = '__1335248838000__';
 
 module.exports = keyPrefix;
 
-},{}],22:[function(require,module,exports){
+},{}],24:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -886,7 +914,7 @@ function createCache(array) {
 
 module.exports = createCache;
 
-},{"lodash._cachepush":23,"lodash._getobject":25,"lodash._releaseobject":28}],23:[function(require,module,exports){
+},{"lodash._cachepush":25,"lodash._getobject":27,"lodash._releaseobject":30}],25:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -926,9 +954,9 @@ function cachePush(value) {
 
 module.exports = cachePush;
 
-},{"lodash._keyprefix":24}],24:[function(require,module,exports){
-module.exports=require(21)
-},{}],25:[function(require,module,exports){
+},{"lodash._keyprefix":26}],26:[function(require,module,exports){
+module.exports=require(23)
+},{}],27:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -965,7 +993,7 @@ function getObject() {
 
 module.exports = getObject;
 
-},{"lodash._objectpool":26}],26:[function(require,module,exports){
+},{"lodash._objectpool":28}],28:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -980,7 +1008,7 @@ var objectPool = [];
 
 module.exports = objectPool;
 
-},{}],27:[function(require,module,exports){
+},{}],29:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -995,7 +1023,7 @@ var largeArraySize = 75;
 
 module.exports = largeArraySize;
 
-},{}],28:[function(require,module,exports){
+},{}],30:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1026,7 +1054,7 @@ function releaseObject(object) {
 
 module.exports = releaseObject;
 
-},{"lodash._maxpoolsize":29,"lodash._objectpool":30}],29:[function(require,module,exports){
+},{"lodash._maxpoolsize":31,"lodash._objectpool":32}],31:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1041,9 +1069,9 @@ var maxPoolSize = 40;
 
 module.exports = maxPoolSize;
 
-},{}],30:[function(require,module,exports){
-module.exports=require(26)
-},{}],31:[function(require,module,exports){
+},{}],32:[function(require,module,exports){
+module.exports=require(28)
+},{}],33:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1097,7 +1125,7 @@ function baseFlatten(array, isShallow, isStrict, fromIndex) {
 
 module.exports = baseFlatten;
 
-},{"lodash.isarguments":32,"lodash.isarray":33}],32:[function(require,module,exports){
+},{"lodash.isarguments":34,"lodash.isarray":35}],34:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1139,7 +1167,7 @@ function isArguments(value) {
 
 module.exports = isArguments;
 
-},{}],33:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1186,7 +1214,7 @@ var isArray = nativeIsArray || function(value) {
 
 module.exports = isArray;
 
-},{"lodash._isnative":34}],34:[function(require,module,exports){
+},{"lodash._isnative":36}],36:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1222,7 +1250,7 @@ function isNative(value) {
 
 module.exports = isNative;
 
-},{}],35:[function(require,module,exports){
+},{}],37:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1305,7 +1333,7 @@ function createCallback(func, thisArg, argCount) {
 
 module.exports = createCallback;
 
-},{"lodash._basecreatecallback":36,"lodash._baseisequal":55,"lodash.isobject":63,"lodash.keys":65,"lodash.property":69}],36:[function(require,module,exports){
+},{"lodash._basecreatecallback":38,"lodash._baseisequal":57,"lodash.isobject":65,"lodash.keys":67,"lodash.property":71}],38:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1387,7 +1415,7 @@ function baseCreateCallback(func, thisArg, argCount) {
 
 module.exports = baseCreateCallback;
 
-},{"lodash._setbinddata":37,"lodash.bind":40,"lodash.identity":52,"lodash.support":53}],37:[function(require,module,exports){
+},{"lodash._setbinddata":39,"lodash.bind":42,"lodash.identity":54,"lodash.support":55}],39:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1432,9 +1460,9 @@ var setBindData = !defineProperty ? noop : function(func, value) {
 
 module.exports = setBindData;
 
-},{"lodash._isnative":38,"lodash.noop":39}],38:[function(require,module,exports){
-module.exports=require(34)
-},{}],39:[function(require,module,exports){
+},{"lodash._isnative":40,"lodash.noop":41}],40:[function(require,module,exports){
+module.exports=require(36)
+},{}],41:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1462,7 +1490,7 @@ function noop() {
 
 module.exports = noop;
 
-},{}],40:[function(require,module,exports){
+},{}],42:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1504,7 +1532,7 @@ function bind(func, thisArg) {
 
 module.exports = bind;
 
-},{"lodash._createwrapper":41,"lodash._slice":51}],41:[function(require,module,exports){
+},{"lodash._createwrapper":43,"lodash._slice":53}],43:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1612,7 +1640,7 @@ function createWrapper(func, bitmask, partialArgs, partialRightArgs, thisArg, ar
 
 module.exports = createWrapper;
 
-},{"lodash._basebind":42,"lodash._basecreatewrapper":46,"lodash._slice":51,"lodash.isfunction":50}],42:[function(require,module,exports){
+},{"lodash._basebind":44,"lodash._basecreatewrapper":48,"lodash._slice":53,"lodash.isfunction":52}],44:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1676,7 +1704,7 @@ function baseBind(bindData) {
 
 module.exports = baseBind;
 
-},{"lodash._basecreate":43,"lodash._setbinddata":37,"lodash._slice":51,"lodash.isobject":63}],43:[function(require,module,exports){
+},{"lodash._basecreate":45,"lodash._setbinddata":39,"lodash._slice":53,"lodash.isobject":65}],45:[function(require,module,exports){
 (function (global){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
@@ -1722,11 +1750,11 @@ if (!nativeCreate) {
 module.exports = baseCreate;
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"lodash._isnative":44,"lodash.isobject":63,"lodash.noop":45}],44:[function(require,module,exports){
-module.exports=require(34)
-},{}],45:[function(require,module,exports){
-module.exports=require(39)
-},{}],46:[function(require,module,exports){
+},{"lodash._isnative":46,"lodash.isobject":65,"lodash.noop":47}],46:[function(require,module,exports){
+module.exports=require(36)
+},{}],47:[function(require,module,exports){
+module.exports=require(41)
+},{}],48:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1806,13 +1834,13 @@ function baseCreateWrapper(bindData) {
 
 module.exports = baseCreateWrapper;
 
-},{"lodash._basecreate":47,"lodash._setbinddata":37,"lodash._slice":51,"lodash.isobject":63}],47:[function(require,module,exports){
-module.exports=require(43)
-},{"lodash._isnative":48,"lodash.isobject":63,"lodash.noop":49}],48:[function(require,module,exports){
-module.exports=require(34)
-},{}],49:[function(require,module,exports){
-module.exports=require(39)
-},{}],50:[function(require,module,exports){
+},{"lodash._basecreate":49,"lodash._setbinddata":39,"lodash._slice":53,"lodash.isobject":65}],49:[function(require,module,exports){
+module.exports=require(45)
+},{"lodash._isnative":50,"lodash.isobject":65,"lodash.noop":51}],50:[function(require,module,exports){
+module.exports=require(36)
+},{}],51:[function(require,module,exports){
+module.exports=require(41)
+},{}],52:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1841,7 +1869,7 @@ function isFunction(value) {
 
 module.exports = isFunction;
 
-},{}],51:[function(require,module,exports){
+},{}],53:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1881,7 +1909,7 @@ function slice(array, start, end) {
 
 module.exports = slice;
 
-},{}],52:[function(require,module,exports){
+},{}],54:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -1911,7 +1939,7 @@ function identity(value) {
 
 module.exports = identity;
 
-},{}],53:[function(require,module,exports){
+},{}],55:[function(require,module,exports){
 (function (global){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
@@ -1955,9 +1983,9 @@ support.funcNames = typeof Function.name == 'string';
 module.exports = support;
 
 }).call(this,typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"lodash._isnative":54}],54:[function(require,module,exports){
-module.exports=require(34)
-},{}],55:[function(require,module,exports){
+},{"lodash._isnative":56}],56:[function(require,module,exports){
+module.exports=require(36)
+},{}],57:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -2168,7 +2196,7 @@ function baseIsEqual(a, b, callback, isWhere, stackA, stackB) {
 
 module.exports = baseIsEqual;
 
-},{"lodash._getarray":56,"lodash._objecttypes":58,"lodash._releasearray":59,"lodash.forin":70,"lodash.isfunction":62}],56:[function(require,module,exports){
+},{"lodash._getarray":58,"lodash._objecttypes":60,"lodash._releasearray":61,"lodash.forin":72,"lodash.isfunction":64}],58:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -2191,7 +2219,7 @@ function getArray() {
 
 module.exports = getArray;
 
-},{"lodash._arraypool":57}],57:[function(require,module,exports){
+},{"lodash._arraypool":59}],59:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -2206,7 +2234,7 @@ var arrayPool = [];
 
 module.exports = arrayPool;
 
-},{}],58:[function(require,module,exports){
+},{}],60:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -2228,7 +2256,7 @@ var objectTypes = {
 
 module.exports = objectTypes;
 
-},{}],59:[function(require,module,exports){
+},{}],61:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -2255,13 +2283,13 @@ function releaseArray(array) {
 
 module.exports = releaseArray;
 
-},{"lodash._arraypool":60,"lodash._maxpoolsize":61}],60:[function(require,module,exports){
-module.exports=require(57)
-},{}],61:[function(require,module,exports){
-module.exports=require(29)
-},{}],62:[function(require,module,exports){
-module.exports=require(50)
+},{"lodash._arraypool":62,"lodash._maxpoolsize":63}],62:[function(require,module,exports){
+module.exports=require(59)
 },{}],63:[function(require,module,exports){
+module.exports=require(31)
+},{}],64:[function(require,module,exports){
+module.exports=require(52)
+},{}],65:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -2302,9 +2330,9 @@ function isObject(value) {
 
 module.exports = isObject;
 
-},{"lodash._objecttypes":64}],64:[function(require,module,exports){
-module.exports=require(58)
-},{}],65:[function(require,module,exports){
+},{"lodash._objecttypes":66}],66:[function(require,module,exports){
+module.exports=require(60)
+},{}],67:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -2342,9 +2370,9 @@ var keys = !nativeKeys ? shimKeys : function(object) {
 
 module.exports = keys;
 
-},{"lodash._isnative":66,"lodash._shimkeys":67,"lodash.isobject":63}],66:[function(require,module,exports){
-module.exports=require(34)
-},{}],67:[function(require,module,exports){
+},{"lodash._isnative":68,"lodash._shimkeys":69,"lodash.isobject":65}],68:[function(require,module,exports){
+module.exports=require(36)
+},{}],69:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -2384,9 +2412,9 @@ var shimKeys = function(object) {
 
 module.exports = shimKeys;
 
-},{"lodash._objecttypes":68}],68:[function(require,module,exports){
-module.exports=require(58)
-},{}],69:[function(require,module,exports){
+},{"lodash._objecttypes":70}],70:[function(require,module,exports){
+module.exports=require(60)
+},{}],71:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -2428,7 +2456,7 @@ function property(key) {
 
 module.exports = property;
 
-},{}],70:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -2484,51 +2512,51 @@ var forIn = function(collection, callback, thisArg) {
 
 module.exports = forIn;
 
-},{"lodash._basecreatecallback":71,"lodash._objecttypes":92}],71:[function(require,module,exports){
-arguments[4][36][0].apply(exports,arguments)
-},{"lodash._setbinddata":72,"lodash.bind":75,"lodash.identity":89,"lodash.support":90}],72:[function(require,module,exports){
-module.exports=require(37)
-},{"lodash._isnative":73,"lodash.noop":74}],73:[function(require,module,exports){
-module.exports=require(34)
-},{}],74:[function(require,module,exports){
+},{"lodash._basecreatecallback":73,"lodash._objecttypes":94}],73:[function(require,module,exports){
+arguments[4][38][0].apply(exports,arguments)
+},{"lodash._setbinddata":74,"lodash.bind":77,"lodash.identity":91,"lodash.support":92}],74:[function(require,module,exports){
 module.exports=require(39)
-},{}],75:[function(require,module,exports){
-arguments[4][40][0].apply(exports,arguments)
-},{"lodash._createwrapper":76,"lodash._slice":88}],76:[function(require,module,exports){
-arguments[4][41][0].apply(exports,arguments)
-},{"lodash._basebind":77,"lodash._basecreatewrapper":82,"lodash._slice":88,"lodash.isfunction":87}],77:[function(require,module,exports){
+},{"lodash._isnative":75,"lodash.noop":76}],75:[function(require,module,exports){
+module.exports=require(36)
+},{}],76:[function(require,module,exports){
+module.exports=require(41)
+},{}],77:[function(require,module,exports){
 arguments[4][42][0].apply(exports,arguments)
-},{"lodash._basecreate":78,"lodash._setbinddata":72,"lodash._slice":88,"lodash.isobject":81}],78:[function(require,module,exports){
+},{"lodash._createwrapper":78,"lodash._slice":90}],78:[function(require,module,exports){
 arguments[4][43][0].apply(exports,arguments)
-},{"lodash._isnative":79,"lodash.isobject":81,"lodash.noop":80}],79:[function(require,module,exports){
-module.exports=require(34)
-},{}],80:[function(require,module,exports){
-module.exports=require(39)
-},{}],81:[function(require,module,exports){
-module.exports=require(63)
-},{"lodash._objecttypes":92}],82:[function(require,module,exports){
-arguments[4][46][0].apply(exports,arguments)
-},{"lodash._basecreate":83,"lodash._setbinddata":72,"lodash._slice":88,"lodash.isobject":86}],83:[function(require,module,exports){
-arguments[4][43][0].apply(exports,arguments)
-},{"lodash._isnative":84,"lodash.isobject":86,"lodash.noop":85}],84:[function(require,module,exports){
-module.exports=require(34)
-},{}],85:[function(require,module,exports){
-module.exports=require(39)
-},{}],86:[function(require,module,exports){
-module.exports=require(63)
-},{"lodash._objecttypes":92}],87:[function(require,module,exports){
-module.exports=require(50)
+},{"lodash._basebind":79,"lodash._basecreatewrapper":84,"lodash._slice":90,"lodash.isfunction":89}],79:[function(require,module,exports){
+arguments[4][44][0].apply(exports,arguments)
+},{"lodash._basecreate":80,"lodash._setbinddata":74,"lodash._slice":90,"lodash.isobject":83}],80:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"lodash._isnative":81,"lodash.isobject":83,"lodash.noop":82}],81:[function(require,module,exports){
+module.exports=require(36)
+},{}],82:[function(require,module,exports){
+module.exports=require(41)
+},{}],83:[function(require,module,exports){
+module.exports=require(65)
+},{"lodash._objecttypes":94}],84:[function(require,module,exports){
+arguments[4][48][0].apply(exports,arguments)
+},{"lodash._basecreate":85,"lodash._setbinddata":74,"lodash._slice":90,"lodash.isobject":88}],85:[function(require,module,exports){
+arguments[4][45][0].apply(exports,arguments)
+},{"lodash._isnative":86,"lodash.isobject":88,"lodash.noop":87}],86:[function(require,module,exports){
+module.exports=require(36)
+},{}],87:[function(require,module,exports){
+module.exports=require(41)
 },{}],88:[function(require,module,exports){
-module.exports=require(51)
-},{}],89:[function(require,module,exports){
+module.exports=require(65)
+},{"lodash._objecttypes":94}],89:[function(require,module,exports){
 module.exports=require(52)
 },{}],90:[function(require,module,exports){
 module.exports=require(53)
-},{"lodash._isnative":91}],91:[function(require,module,exports){
-module.exports=require(34)
+},{}],91:[function(require,module,exports){
+module.exports=require(54)
 },{}],92:[function(require,module,exports){
-module.exports=require(58)
-},{}],93:[function(require,module,exports){
+module.exports=require(55)
+},{"lodash._isnative":93}],93:[function(require,module,exports){
+module.exports=require(36)
+},{}],94:[function(require,module,exports){
+module.exports=require(60)
+},{}],95:[function(require,module,exports){
 /**
  * Lo-Dash 2.4.1 (Custom Build) <http://lodash.com/>
  * Build: `lodash modularize modern exports="npm" -o ./npm/`
@@ -2566,19 +2594,19 @@ function values(object) {
 
 module.exports = values;
 
-},{"lodash.keys":94}],94:[function(require,module,exports){
-arguments[4][65][0].apply(exports,arguments)
-},{"lodash._isnative":95,"lodash._shimkeys":96,"lodash.isobject":98}],95:[function(require,module,exports){
-module.exports=require(34)
-},{}],96:[function(require,module,exports){
-module.exports=require(67)
-},{"lodash._objecttypes":97}],97:[function(require,module,exports){
-module.exports=require(58)
+},{"lodash.keys":96}],96:[function(require,module,exports){
+arguments[4][67][0].apply(exports,arguments)
+},{"lodash._isnative":97,"lodash._shimkeys":98,"lodash.isobject":100}],97:[function(require,module,exports){
+module.exports=require(36)
 },{}],98:[function(require,module,exports){
-module.exports=require(63)
+module.exports=require(69)
 },{"lodash._objecttypes":99}],99:[function(require,module,exports){
-module.exports=require(58)
+module.exports=require(60)
 },{}],100:[function(require,module,exports){
+module.exports=require(65)
+},{"lodash._objecttypes":101}],101:[function(require,module,exports){
+module.exports=require(60)
+},{}],102:[function(require,module,exports){
 'use strict';
 
 var angular = require('angular');
@@ -2615,11 +2643,12 @@ angular.module('plowderye', [
   .controller('HeadlineCtrl', require('./controller/headline'))
   .controller('MessageLogCtrl', require('./controller/message_log'))
   .controller('SendMessageCtrl', require('./controller/send_message'))
+  .controller('ParticipantListCtrl', require('./controller/participant_list'))
   .controller('UserListCtrl', require('./controller/user_list'))
   ;
 
 
-},{"../package.json":107,"./controller/config":1,"./controller/create_conversation":3,"./controller/headline":4,"./controller/message_log":5,"./controller/public_conversation_list":6,"./controller/send_message":7,"./controller/user_conversation_list":8,"./controller/user_list":9,"./directive/focus_on":10,"./factory/socket":11,"./service/command":101,"./service/conversation":102,"./service/message":103,"./service/notification":104,"./service/sound":105,"./service/user":106,"angular":14,"angular-animate":12,"angular-socket-io":13,"angularjs-scroll-glue":16}],101:[function(require,module,exports){
+},{"../package.json":109,"./controller/config":1,"./controller/create_conversation":3,"./controller/headline":4,"./controller/message_log":5,"./controller/participant_list":6,"./controller/public_conversation_list":7,"./controller/send_message":8,"./controller/user_conversation_list":9,"./controller/user_list":10,"./directive/focus_on":12,"./factory/socket":13,"./service/command":103,"./service/conversation":104,"./service/message":105,"./service/notification":106,"./service/sound":107,"./service/user":108,"angular":16,"angular-animate":14,"angular-socket-io":15,"angularjs-scroll-glue":18}],103:[function(require,module,exports){
 'use strict';
 
 module.exports = function(
@@ -2670,7 +2699,7 @@ module.exports = function(
   }
 };
 
-},{}],102:[function(require,module,exports){
+},{}],104:[function(require,module,exports){
 'use strict';
 
 var _    = {};
@@ -2884,7 +2913,7 @@ module.exports = function(socket, $rootScope) {
   }
 };
 
-},{"lodash.omit":17,"lodash.values":93}],103:[function(require,module,exports){
+},{"lodash.omit":19,"lodash.values":95}],105:[function(require,module,exports){
 'use strict';
 
 module.exports = function(socket,
@@ -3041,7 +3070,7 @@ module.exports = function(socket,
   });
 };
 
-},{}],104:[function(require,module,exports){
+},{}],106:[function(require,module,exports){
 'use strict';
 
 module.exports = function (socket) {
@@ -3122,7 +3151,7 @@ module.exports = function (socket) {
   }
 };
 
-},{}],105:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 'use strict';
 
 module.exports = function (socket) {
@@ -3165,7 +3194,7 @@ module.exports = function (socket) {
   };
 };
 
-},{}],106:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 'use strict';
 
 var _    = {};
@@ -3180,7 +3209,8 @@ module.exports = function(
   NotificationService) {
 
   var user = { nick: 'You', online: true };
-  var users = {};
+  var allUsers = {};
+  var usersPerConversation = {};
 
   this.getUser = function() {
     log.trace('getUser');
@@ -3188,52 +3218,37 @@ module.exports = function(
     return user;
   };
 
-  this.getParticipants = function() {
+  this.getParticipants = function(conversation) {
     log.trace('getParticipants');
-    log.trace(JSON.stringify(users, null, 2));
-    return filter(function(user) {
-      return !isInCurrentConversation(user);
-    });
+    if (!conversation) {
+      return [];
+    }
+    if (!usersPerConversation[conversation.id]) {
+      return [];
+    }
+    return sort(_.values(usersPerConversation[conversation.id]));
   };
 
   this.getAllUsers = function() {
     log.trace('getAllUsers');
-    log.trace(JSON.stringify(users, null, 2));
-    return filter(isInCurrentConversation);
+    log.trace(JSON.stringify(allUsers, null, 2));
+    return sort(_.values(allUsers));
   };
-
-  function filter(fn) {
-    // 1. _.omit: filter users according to given filter function (for
-    // participants or all users).
-    // 2. _.values: convert object to array and finally
-    // 3. sort by online/offline, name
-    return sort(_.values(_.omit(users, fn)));
-  }
 
   function sort(u) {
     return u.sort(function (a, b) {
       if (a.online && !b.online) {
         return -1;
       } else if (!a.online && b.online) {
-        return 0;
-      } else if (a.name > b.name) {
         return 1;
-      } else if (a.name < b.name) {
+      } else if (a.nick > b.nick) {
+        return 1;
+      } else if (a.nick < b.nick) {
         return -1;
       } else {
         return 0;
       }
     });
-  }
-
-  function isInCurrentConversation(user) {
-    var currentConversation = ConversationService.getCurrentConversation();
-    for (var conversationId in user.conversations) {
-      if (conversationId === currentConversation.id) {
-        return true;
-      }
-    }
-    return false;
   }
 
   this.changeName = function(name) {
@@ -3264,73 +3279,125 @@ module.exports = function(
     log.debug('init-user-result');
     log.debug(JSON.stringify(_user, null, 2));
     user = _user;
-    users[user.id] = user;
+    allUsers[user.id] = user;
+    replaceUserInAllCollections(user);
     $.cookie('id', user.id);
     SoundService.setSoundEnabled(user.soundEnabled);
     NotificationService.setNotificationsEnabled(user.notificationsEnabled);
   });
 
-  socket.on('user-joined', function(data) {
+  socket.on('user-joined', function(userJoinedData) {
     log.debug('user-joined');
-    log.debug(JSON.stringify(data, null, 2));
-    var conversationId = data.conversation;
-    delete data.conversation;
-    users[data.id] = data;
-
+    log.debug(JSON.stringify(userJoinedData, null, 2));
+    var _user = userJoinedData.user;
+    var conversationId = userJoinedData.conversationId;
+    usersPerConversation[conversationId][_user.id] = _user;
+    replaceUserInAllCollections(_user);
     $rootScope.$emit('display-system-message', {
-      text: data.nick + ' has joined this conversation.',
+      text: _user.nick + ' has joined this conversation.',
       conversation: conversationId,
     });
   });
 
-  socket.on('user-left', function(id) {
+  socket.on('user-left', function(userLeftData) {
     log.debug('user-left');
-    log.debug(id);
-    delete users[id];
+    log.debug(JSON.stringify(userLeftData, null, 2));
+    var _user = userLeftData.user;
+    var conversationId = userLeftData.conversationId;
+    delete
+      usersPerConversation[conversationId][_user.userId];
+    $rootScope.$emit('display-system-message', {
+      text: _user.nick + ' has left this conversation.',
+      conversation: conversationId,
+    });
   });
 
   socket.on('user-went-offline', function(id) {
     log.debug('user-went-offline');
     log.debug(id);
-    var u = users[id];
+    var u = allUsers[id];
     if (u) {
       u.online = false;
     }
   });
 
-  socket.on('name-changed', function(result) {
-    log.debug('name-changed');
-    log.debug(JSON.stringify(result, null, 2));
-    var id = result.id;
-    var u = users[id];
+  socket.on('user-coming-online', function(id) {
+    log.debug('user-coming-online');
+    log.debug(id);
+    var u = allUsers[id];
     if (u) {
-      log.debug('name-changed - user present');
+      u.online = true;
+    }
+  });
+
+  socket.on('user-changed', function(_user) {
+    log.debug('user-changed');
+    log.debug(JSON.stringify(_user, null, 2));
+    replaceUserInAllCollections(_user);
+    /*
+    var id = _user.id;
+    var userNow = allUsers[id];
+    if (userNow) {
+      log.debug('user-changed - user is present');
       var previousName = u.nick;
       u.nick = result.name;
       $rootScope.$emit('display-system-message', {
-        text: previousName + ' is now known as ' + u.nick + '.',
+        text: userNow.nick + ' is now known as ' + _user.nick + '.',
         conversation: '*',
       });
     }
+    */
   });
 
-  socket.on('users-in-current-conversation', function(_users) {
-    log.debug('users-in-current-conversation');
-    log.debug(JSON.stringify(_users, null, 2));
-    users = _users ;
+  socket.on('user-list', function(users) {
+    log.debug('user-list');
+    log.debug(JSON.stringify(users, null, 2));
+    allUsers = users;
+    replaceAllUsersInAllCollections(allUsers);
+  });
 
-    // was the current user also in the user collection received from the
-    // server? If so, replace the current user so that users[user.id] is
-    // always the same object as user.
-    if (users[user.id]) {
-      log.debug('fetch-user-result: replacing current user');
-      user = users[user.id];
+  socket.on('participant-list', function(participantData) {
+    log.debug('participant-list');
+    log.debug(JSON.stringify(participantData, null, 2));
+    usersPerConversation[participantData.conversationId] =
+      participantData.participants;
+    replaceAllUsersInAllCollections(
+      usersPerConversation[participantData.conversationId]);
+  });
+
+  function replaceAllUsersInAllCollections(usersFromServer) {
+    // replace all user objects in each collection of users we track
+    for (var u in usersFromServer) {
+      var userFromServer = usersFromServer[u];
+      replaceUserInAllCollections(userFromServer);
     }
-  });
+    // replace the current user object with the fresh object from the server
+    if (usersFromServer[user.id]) {
+      user = usersFromServer[user.id];
+    }
+  }
 
+  function replaceUserInAllCollections(userFromServer) {
+    replaceUserInCollection(userFromServer, allUsers);
+    forUsersInEachConversation(function(usersInConvesation) {
+      replaceUserInCollection(userFromServer, usersInConvesation);
+    });
+  }
+
+  function replaceUserInCollection(userFromServer, users) {
+    if (users[userFromServer.id]) {
+      users[userFromServer.id] = userFromServer;
+    }
+  }
+
+  function forUsersInEachConversation(fn) {
+    for (var c in usersPerConversation) {
+      fn(usersPerConversation[c]);
+    }
+  }
 };
 
-},{"lodash.omit":17,"lodash.values":93}],107:[function(require,module,exports){
+},{"lodash.omit":19,"lodash.values":95}],109:[function(require,module,exports){
 module.exports={
   "name": "plowderye",
   "version": "0.0.0",
@@ -3353,4 +3420,4 @@ module.exports={
   }
 }
 
-},{}]},{},[100]);
+},{}]},{},[102]);

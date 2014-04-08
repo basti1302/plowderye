@@ -34,6 +34,7 @@ angular.module('plowderye', [
   .controller('HeadlineCtrl', require('./controller/headline'))
   .controller('MessageLogCtrl', require('./controller/message_log'))
   .controller('SendMessageCtrl', require('./controller/send_message'))
+  .controller('ParticipantListCtrl', require('./controller/participant_list'))
   .controller('UserListCtrl', require('./controller/user_list'))
   ;
 

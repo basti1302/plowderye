@@ -1,12 +1,11 @@
 TODOs
 =====
 
-- client: store messages per conversation. Update the correct message-log on incoming messages. When going online, fetch the message log for all conversations (asynchronously).
-- clear distinction between joining a conversation and switching to a conversation which you already participate in (the latter is a client-only operation)
-- clear distinction between leaving a conversation and disconnecting/going offline
+- Store last active conversation for user. - cookie? server side?
 
-- two user lists: top: users in this conversations; bottom: all users
-- fix display of user in user list (online/offline etc.)
+- When coming online, fetch the message log for all conversations (asynchronously).
+
+- show number of unread messages per conversations, clear unread counter when switching to conversation
 
 - objects, especially user, is stored to often and at random times
   - dirty flag?
@@ -14,8 +13,6 @@ TODOs
 - There are still some client side libs (es5-shim, socket.io, jquery, jquery-cookie,
   notify and loglevel) which are used via script tag - include them into the
   browserify build.
-
-- A user can have no conversation at all - fix client for this situation
 
 - attach user list to conversation object - should make ugly "full-table-scan" approach when fetching users participating in a conversation unecessary.
 - update user-conversation relations (in both directions) lists when
@@ -28,8 +25,7 @@ TODOs
 
 - angular routing (views for chat, sign-in, sign-up)
 
-- remove nick name from leveldb used names file when user disconnects if that user
-  was not logged in
+- remove nick name from leveldb used names file when user disconnects if that user does not have a registered account
 
 - show only user's conversations in conversation list in client
 - show public rooms in separate list

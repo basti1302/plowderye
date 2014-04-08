@@ -1,6 +1,6 @@
 'use strict';
 
-var getCssClasses = require('./conversation_list_css');
+var getCssClasses = require('./conversation_list_style');
 
 module.exports = function ($scope, ConversationService) {
 

@@ -16,7 +16,7 @@
   <!-- list of conversations -->
   <div class="grid-20 grid-parent">
     <div class="margins rounded-box box-shadow text-on-mtl">
-      <div class="sidebar-heading sidebar-heading-skin grad-dl">Conversations</div>
+      <div class="sidebar-heading sidebar-heading-skin grad-dl">Your Conversations</div>
       <div
         ng-controller="UserConvListCtrl"
         class="margin-below"
@@ -68,9 +68,13 @@
       </div>
     </div>
 
-    <div class="margins rounded-box box-shadow text-on-mtl">
+    <div
+      ng-controller="PublicConvListCtrl"
+      class="margins rounded-box box-shadow text-on-mtl"
+      ng-show="getPublicConversations().length > 0"
+    >
       <div class="sidebar-heading sidebar-heading-skin grad-dl">Public Conversations</div>
-      <div ng-controller="PublicConvListCtrl">
+      <div >
         <a href="#" ng-repeat="conversation in getPublicConversations()"
           ng-bind="conversation.name"
           ng-click="join(conversation)"
@@ -170,7 +174,7 @@
     <div class="grid-20 grid-parent">
       <div class="margins rounded-box box-shadow text-on-mtl margin-below">
         <div class="sidebar-heading sidebar-heading-skin grad-dl">Participants</div>
-        <div ng-controller="UserListCtrl">
+        <div ng-controller="ParticipantListCtrl">
           <div ng-repeat="user in getParticipants()"
             ng-bind="getDisplayName(user)"
             ng-class="getCssClasses(user)"

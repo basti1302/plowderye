@@ -12,7 +12,8 @@ module.exports = function(
   NotificationService) {
 
   var user = { nick: 'You', online: true };
-  var users = {};
+  var allUsers = {};
+  var usersPerConversation = {};
 
   this.getUser = function() {
     log.trace('getUser');
@@ -20,52 +21,37 @@ module.exports = function(
     return user;
   };
 
-  this.getParticipants = function() {
+  this.getParticipants = function(conversation) {
     log.trace('getParticipants');
-    log.trace(JSON.stringify(users, null, 2));
-    return filter(function(user) {
-      return !isInCurrentConversation(user);
-    });
+    if (!conversation) {
+      return [];
+    }
+    if (!usersPerConversation[conversation.id]) {
+      return [];
+    }
+    return sort(_.values(usersPerConversation[conversation.id]));
   };
 
   this.getAllUsers = function() {
     log.trace('getAllUsers');
-    log.trace(JSON.stringify(users, null, 2));
-    return filter(isInCurrentConversation);
+    log.trace(JSON.stringify(allUsers, null, 2));
+    return sort(_.values(allUsers));
   };
-
-  function filter(fn) {
-    // 1. _.omit: filter users according to given filter function (for
-    // participants or all users).
-    // 2. _.values: convert object to array and finally
-    // 3. sort by online/offline, name
-    return sort(_.values(_.omit(users, fn)));
-  }
 
   function sort(u) {
     return u.sort(function (a, b) {
       if (a.online && !b.online) {
         return -1;
       } else if (!a.online && b.online) {
-        return 0;
-      } else if (a.name > b.name) {
         return 1;
-      } else if (a.name < b.name) {
+      } else if (a.nick > b.nick) {
+        return 1;
+      } else if (a.nick < b.nick) {
         return -1;
       } else {
         return 0;
       }
     });
-  }
-
-  function isInCurrentConversation(user) {
-    var currentConversation = ConversationService.getCurrentConversation();
-    for (var conversationId in user.conversations) {
-      if (conversationId === currentConversation.id) {
-        return true;
-      }
-    }
-    return false;
   }
 
   this.changeName = function(name) {
@@ -96,68 +82,120 @@ module.exports = function(
     log.debug('init-user-result');
     log.debug(JSON.stringify(_user, null, 2));
     user = _user;
-    users[user.id] = user;
+    allUsers[user.id] = user;
+    replaceUserInAllCollections(user);
     $.cookie('id', user.id);
     SoundService.setSoundEnabled(user.soundEnabled);
     NotificationService.setNotificationsEnabled(user.notificationsEnabled);
   });
 
-  socket.on('user-joined', function(data) {
+  socket.on('user-joined', function(userJoinedData) {
     log.debug('user-joined');
-    log.debug(JSON.stringify(data, null, 2));
-    var conversationId = data.conversation;
-    delete data.conversation;
-    users[data.id] = data;
-
+    log.debug(JSON.stringify(userJoinedData, null, 2));
+    var _user = userJoinedData.user;
+    var conversationId = userJoinedData.conversationId;
+    usersPerConversation[conversationId][_user.id] = _user;
+    replaceUserInAllCollections(_user);
     $rootScope.$emit('display-system-message', {
-      text: data.nick + ' has joined this conversation.',
+      text: _user.nick + ' has joined this conversation.',
       conversation: conversationId,
     });
   });
 
-  socket.on('user-left', function(id) {
+  socket.on('user-left', function(userLeftData) {
     log.debug('user-left');
-    log.debug(id);
-    delete users[id];
+    log.debug(JSON.stringify(userLeftData, null, 2));
+    var _user = userLeftData.user;
+    var conversationId = userLeftData.conversationId;
+    delete
+      usersPerConversation[conversationId][_user.userId];
+    $rootScope.$emit('display-system-message', {
+      text: _user.nick + ' has left this conversation.',
+      conversation: conversationId,
+    });
   });
 
   socket.on('user-went-offline', function(id) {
     log.debug('user-went-offline');
     log.debug(id);
-    var u = users[id];
+    var u = allUsers[id];
     if (u) {
       u.online = false;
     }
   });
 
-  socket.on('name-changed', function(result) {
-    log.debug('name-changed');
-    log.debug(JSON.stringify(result, null, 2));
-    var id = result.id;
-    var u = users[id];
+  socket.on('user-coming-online', function(id) {
+    log.debug('user-coming-online');
+    log.debug(id);
+    var u = allUsers[id];
     if (u) {
-      log.debug('name-changed - user present');
+      u.online = true;
+    }
+  });
+
+  socket.on('user-changed', function(_user) {
+    log.debug('user-changed');
+    log.debug(JSON.stringify(_user, null, 2));
+    replaceUserInAllCollections(_user);
+    /*
+    var id = _user.id;
+    var userNow = allUsers[id];
+    if (userNow) {
+      log.debug('user-changed - user is present');
       var previousName = u.nick;
       u.nick = result.name;
       $rootScope.$emit('display-system-message', {
-        text: previousName + ' is now known as ' + u.nick + '.',
+        text: userNow.nick + ' is now known as ' + _user.nick + '.',
         conversation: '*',
       });
     }
+    */
   });
 
-  socket.on('users-in-current-conversation', function(_users) {
-    log.debug('users-in-current-conversation');
-    log.debug(JSON.stringify(_users, null, 2));
-    users = _users ;
+  socket.on('user-list', function(users) {
+    log.debug('user-list');
+    log.debug(JSON.stringify(users, null, 2));
+    allUsers = users;
+    replaceAllUsersInAllCollections(allUsers);
+  });
 
-    // was the current user also in the user collection received from the
-    // server? If so, replace the current user so that users[user.id] is
-    // always the same object as user.
-    if (users[user.id]) {
-      log.debug('fetch-user-result: replacing current user');
-      user = users[user.id];
+  socket.on('participant-list', function(participantData) {
+    log.debug('participant-list');
+    log.debug(JSON.stringify(participantData, null, 2));
+    usersPerConversation[participantData.conversationId] =
+      participantData.participants;
+    replaceAllUsersInAllCollections(
+      usersPerConversation[participantData.conversationId]);
+  });
+
+  function replaceAllUsersInAllCollections(usersFromServer) {
+    // replace all user objects in each collection of users we track
+    for (var u in usersFromServer) {
+      var userFromServer = usersFromServer[u];
+      replaceUserInAllCollections(userFromServer);
     }
-  });
+    // replace the current user object with the fresh object from the server
+    if (usersFromServer[user.id]) {
+      user = usersFromServer[user.id];
+    }
+  }
 
+  function replaceUserInAllCollections(userFromServer) {
+    replaceUserInCollection(userFromServer, allUsers);
+    forUsersInEachConversation(function(usersInConvesation) {
+      replaceUserInCollection(userFromServer, usersInConvesation);
+    });
+  }
+
+  function replaceUserInCollection(userFromServer, users) {
+    if (users[userFromServer.id]) {
+      users[userFromServer.id] = userFromServer;
+    }
+  }
+
+  function forUsersInEachConversation(fn) {
+    for (var c in usersPerConversation) {
+      fn(usersPerConversation[c]);
+    }
+  }
 };
