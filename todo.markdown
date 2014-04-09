@@ -1,8 +1,6 @@
 TODOs
 =====
 
-- Store last active conversation for user. - cookie? server side?
-
 - When coming online, fetch the message log for all conversations (asynchronously).
 
 - show number of unread messages per conversations, clear unread counter when switching to conversation

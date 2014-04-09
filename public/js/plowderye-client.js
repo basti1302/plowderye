@@ -2756,8 +2756,12 @@ module.exports = function(socket, $rootScope) {
   };
 
   this.switchTo = function(conversation) {
+    if (!conversation) {
+      return;
+    }
     deactivateCurrentConversation();
     currentConversation = conversation;
+    $.cookie('conversation-id', conversation.id);
     activateCurrentConversation();
   };
 
@@ -2845,6 +2849,10 @@ module.exports = function(socket, $rootScope) {
       conversationsFromServer[c].participates = true;
     }
     merge(conversationsFromServer);
+    var conversationId = $.cookie('conversation-id');
+    if (conversationId) {
+      self.switchToById(conversationId);
+    }
   });
 
   socket.on('public-conversation-list', function(conversationsFromServer) {
