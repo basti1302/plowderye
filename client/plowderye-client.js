@@ -38,3 +38,4 @@ angular.module('plowderye', [
   .controller('UserListCtrl', require('./controller/user_list'))
   ;
 
+require('./init');
