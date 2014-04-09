@@ -2708,8 +2708,8 @@ _.values = require('lodash.values');
 
 module.exports = function(socket, $rootScope) {
 
+  var self = this;
   var conversations = {};
-
   var currentConversation = {};
 
   this.getUserConversations = function() {
@@ -2748,10 +2748,29 @@ module.exports = function(socket, $rootScope) {
     return currentConversation;
   };
 
+  this.getConversationName = function(conversationId) {
+    if (conversations[conversationId]) {
+      return conversations[conversationId].name;
+    }
+    return null;
+  };
+
   this.switchTo = function(conversation) {
     deactivateCurrentConversation();
     currentConversation = conversation;
     activateCurrentConversation();
+  };
+
+  $rootScope.$on('switch-to-conversation-by-id',
+      function(event, conversationId) {
+    self.switchToById(conversationId);
+  });
+
+  this.switchToById = function(conversationId) {
+    var conv = conversations[conversationId];
+    if (conv) {
+      this.switchTo(conv);
+    }
   };
 
   this.join = function(conversation) {
@@ -2963,6 +2982,7 @@ module.exports = function(socket,
     formatSender(message);
     formatTime(message);
     formatText(message);
+    addConversationName(message);
     message.classes = message.system ? ['system-message'] : [];
     return message;
   }
@@ -2996,6 +3016,13 @@ module.exports = function(socket,
       message.formattedText = message.text;
     } else {
       message.formattedText = '';
+    }
+  }
+
+  function addConversationName(message) {
+    if (message.conversation) {
+      message.conversationName =
+        ConversationService.getConversationName(message.conversation);
     }
   }
 
@@ -3077,7 +3104,7 @@ module.exports = function(socket,
 },{}],106:[function(require,module,exports){
 'use strict';
 
-module.exports = function (socket) {
+module.exports = function (socket, $rootScope) {
 
   var notificationsChecked = false;
   var notificationsEnabled = false;
@@ -3133,23 +3160,38 @@ module.exports = function (socket) {
       return;
     }
     notificationsEnabled = notificationsEnabled &&
-        Notify.prototype.isSupported();
+        Notify.isSupported();
     if (!notificationsEnabled) { return; }
-    if (Notify.prototype.needsPermission()) {
-      Notify.prototype.requestPermission();
+    if (Notify.needsPermission()) {
+      Notify.requestPermission();
     }
     notificationsChecked = true;
   }
 
   function notifyNow() {
     notificationTimeoutId = null;
-    var title = 'New Message';
+    var title;
+    if (notificationMessage.conversationName) {
+      title = 'New Message in ' + notificationMessage.conversationName;
+    } else {
+      title = 'New Message';
+    }
     if (notificationMessageCount >= 2) {
       title = notificationMessageCount + ' New Messages';
     }
     var notification = new Notify(title, {
       body: notificationMessage.formattedSender +
-      ': ' + notificationMessage.formattedText,
+        ': ' + notificationMessage.formattedText,
+        // TODO icon for notification
+        // icon: (string) - path for icon to display in notification
+      tag: notificationMessage.clientId,
+      timeout: 30,
+      notifyClick: function() {
+        $rootScope.$apply(function() {
+          $rootScope.$emit('switch-to-conversation-by-id',
+              notificationMessage.conversation);
+        });
+      },
     });
     notification.show();
     notificationMessageCount = 0;

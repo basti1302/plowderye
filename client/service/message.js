@@ -47,6 +47,7 @@ module.exports = function(socket,
     formatSender(message);
     formatTime(message);
     formatText(message);
+    addConversationName(message);
     message.classes = message.system ? ['system-message'] : [];
     return message;
   }
@@ -80,6 +81,13 @@ module.exports = function(socket,
       message.formattedText = message.text;
     } else {
       message.formattedText = '';
+    }
+  }
+
+  function addConversationName(message) {
+    if (message.conversation) {
+      message.conversationName =
+        ConversationService.getConversationName(message.conversation);
     }
   }
 

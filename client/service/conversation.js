@@ -6,8 +6,8 @@ _.values = require('lodash.values');
 
 module.exports = function(socket, $rootScope) {
 
+  var self = this;
   var conversations = {};
-
   var currentConversation = {};
 
   this.getUserConversations = function() {
@@ -46,10 +46,29 @@ module.exports = function(socket, $rootScope) {
     return currentConversation;
   };
 
+  this.getConversationName = function(conversationId) {
+    if (conversations[conversationId]) {
+      return conversations[conversationId].name;
+    }
+    return null;
+  };
+
   this.switchTo = function(conversation) {
     deactivateCurrentConversation();
     currentConversation = conversation;
     activateCurrentConversation();
+  };
+
+  $rootScope.$on('switch-to-conversation-by-id',
+      function(event, conversationId) {
+    self.switchToById(conversationId);
+  });
+
+  this.switchToById = function(conversationId) {
+    var conv = conversations[conversationId];
+    if (conv) {
+      this.switchTo(conv);
+    }
   };
 
   this.join = function(conversation) {

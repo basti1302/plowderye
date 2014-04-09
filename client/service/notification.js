@@ -1,6 +1,6 @@
 'use strict';
 
-module.exports = function (socket) {
+module.exports = function (socket, $rootScope) {
 
   var notificationsChecked = false;
   var notificationsEnabled = false;
@@ -56,23 +56,38 @@ module.exports = function (socket) {
       return;
     }
     notificationsEnabled = notificationsEnabled &&
-        Notify.prototype.isSupported();
+        Notify.isSupported();
     if (!notificationsEnabled) { return; }
-    if (Notify.prototype.needsPermission()) {
-      Notify.prototype.requestPermission();
+    if (Notify.needsPermission()) {
+      Notify.requestPermission();
     }
     notificationsChecked = true;
   }
 
   function notifyNow() {
     notificationTimeoutId = null;
-    var title = 'New Message';
+    var title;
+    if (notificationMessage.conversationName) {
+      title = 'New Message in ' + notificationMessage.conversationName;
+    } else {
+      title = 'New Message';
+    }
     if (notificationMessageCount >= 2) {
       title = notificationMessageCount + ' New Messages';
     }
     var notification = new Notify(title, {
       body: notificationMessage.formattedSender +
-      ': ' + notificationMessage.formattedText,
+        ': ' + notificationMessage.formattedText,
+        // TODO icon for notification
+        // icon: (string) - path for icon to display in notification
+      tag: notificationMessage.clientId,
+      timeout: 30,
+      notifyClick: function() {
+        $rootScope.$apply(function() {
+          $rootScope.$emit('switch-to-conversation-by-id',
+              notificationMessage.conversation);
+        });
+      },
     });
     notification.show();
     notificationMessageCount = 0;
