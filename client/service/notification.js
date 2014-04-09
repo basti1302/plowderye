@@ -71,7 +71,8 @@ module.exports = function (socket) {
       title = notificationMessageCount + ' New Messages';
     }
     var notification = new Notify(title, {
-      body: notificationMessage.sender + ': ' + notificationMessage.text,
+      body: notificationMessage.formattedSender +
+      ': ' + notificationMessage.formattedText,
     });
     notification.show();
     notificationMessageCount = 0;

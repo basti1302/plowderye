@@ -137,6 +137,10 @@ module.exports = function(socket,
     NotificationService.notify(message);
   });
 
+  socket.on('message-old', function (message) {
+    self.addLocally(message);
+  });
+
   $rootScope.$on('user-left-conversation', function(event, conversationId) {
     delete messages[conversationId];
   });

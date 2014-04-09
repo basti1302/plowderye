@@ -3053,6 +3053,10 @@ module.exports = function(socket,
     NotificationService.notify(message);
   });
 
+  socket.on('message-old', function (message) {
+    self.addLocally(message);
+  });
+
   $rootScope.$on('user-left-conversation', function(event, conversationId) {
     delete messages[conversationId];
   });
@@ -3144,7 +3148,8 @@ module.exports = function (socket) {
       title = notificationMessageCount + ' New Messages';
     }
     var notification = new Notify(title, {
-      body: notificationMessage.sender + ': ' + notificationMessage.text,
+      body: notificationMessage.formattedSender +
+      ': ' + notificationMessage.formattedText,
     });
     notification.show();
     notificationMessageCount = 0;
