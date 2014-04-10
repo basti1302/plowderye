@@ -1,5 +1,7 @@
 'use strict';
 
+var logger = require('loglevel');
+
 module.exports = function (socket) {
 
   var soundEnabled = true;
@@ -20,8 +22,8 @@ module.exports = function (socket) {
   // TODO make this more angular-ish and less jquery-ish
   // Should live in a controller
   this.playSound = function(filename) {
-    log.debug('playSound(' + filename + ')');
-    log.debug('soundEnabled: ' + soundEnabled);
+    logger.debug('playSound(' + filename + ')');
+    logger.debug('soundEnabled: ' + soundEnabled);
     $('#sound').empty();
     if (soundEnabled) {
       var mp3 = $('<source src="/sounds/' + filename +

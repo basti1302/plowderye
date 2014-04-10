@@ -1,8 +1,10 @@
 'use strict';
 
-var _    = {};
-_.omit   = require('lodash.omit');
-_.values = require('lodash.values');
+var logger = require('loglevel');
+
+var _      = {};
+_.omit     = require('lodash.omit');
+_.values   = require('lodash.values');
 
 module.exports = function(socket, $rootScope) {
 
@@ -141,8 +143,8 @@ module.exports = function(socket, $rootScope) {
   */
 
   socket.on('user-conversation-list', function(conversationsFromServer) {
-    log.trace('user-conversation-list');
-    log.trace(JSON.stringify(conversationsFromServer, null, 2));
+    logger.trace('user-conversation-list');
+    logger.trace(JSON.stringify(conversationsFromServer, null, 2));
     for (var c in conversationsFromServer) {
       conversationsFromServer[c].participates = true;
     }
@@ -154,8 +156,8 @@ module.exports = function(socket, $rootScope) {
   });
 
   socket.on('public-conversation-list', function(conversationsFromServer) {
-    log.trace('public-conversation-list');
-    log.trace(JSON.stringify(conversationsFromServer, null, 2));
+    logger.trace('public-conversation-list');
+    logger.trace(JSON.stringify(conversationsFromServer, null, 2));
     for (var c in conversationsFromServer) {
       conversationsFromServer[c].public = true;
     }

@@ -21,7 +21,6 @@
     "normalize-css": "~3.0.0",
     "notify.js": "~1.1.0",
     "unsemantic": "*",
-    "es5-shim": "~2.3.0",
-    "loglevel": "~0.5.0"
+    "es5-shim": "~2.3.0"
   }
 }

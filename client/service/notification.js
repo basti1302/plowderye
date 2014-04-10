@@ -1,5 +1,7 @@
 'use strict';
 
+var logger = require('loglevel');
+
 module.exports = function (socket, $rootScope) {
 
   var notificationsChecked = false;
@@ -25,12 +27,12 @@ module.exports = function (socket, $rootScope) {
   };
 
   this.notify = function(message) {
-    log.debug('notfiy(' + JSON.stringify(message) +')');
+    logger.debug('notfiy(' + JSON.stringify(message) +')');
     notifyLater(message);
   };
 
   function notifyLater(message) {
-    log.debug('notificationsEnabled: ' + notificationsEnabled);
+    logger.debug('notificationsEnabled: ' + notificationsEnabled);
     if (!notificationsEnabled) { return; }
     if (!notificationsChecked) {
       if (!notificationsEnabled) { return; }

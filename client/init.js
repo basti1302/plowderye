@@ -1,7 +1,9 @@
 'use strict';
 
-//log.setLevel(log.levels.DEBUG);
-log.disableAll();
+var logger = require('loglevel');
+
+//logger.setLevel(logger.levels.DEBUG);
+logger.disableAll();
 
 $(document).ready(function() {
   $.cookie.defaults = {

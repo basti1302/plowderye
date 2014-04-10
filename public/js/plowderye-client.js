@@ -255,7 +255,7 @@ exports.getDisplayName = function(user) {
   }
 };
 
-},{"../service/user":110}],12:[function(require,module,exports){
+},{"../service/user":111}],12:[function(require,module,exports){
 'use strict';
 
 /*
@@ -287,8 +287,10 @@ module.exports = function(socketFactory) {
 },{}],14:[function(require,module,exports){
 'use strict';
 
-//log.setLevel(log.levels.DEBUG);
-log.disableAll();
+var logger = require('loglevel');
+
+logger.setLevel(logger.levels.DEBUG);
+//logger.disableAll();
 
 $(document).ready(function() {
   $.cookie.defaults = {
@@ -303,7 +305,7 @@ $(document).ready(function() {
   $('#message').focus();
 });
 
-},{}],15:[function(require,module,exports){
+},{"loglevel":104}],15:[function(require,module,exports){
 /*
  AngularJS v1.2.12
  (c) 2010-2014 Google, Inc. http://angularjs.org
@@ -11739,6 +11741,205 @@ module.exports=require(67)
 },{"lodash._objecttypes":103}],103:[function(require,module,exports){
 module.exports=require(62)
 },{}],104:[function(require,module,exports){
+/*
+ * loglevel - https://github.com/pimterry/loglevel
+ *
+ * Copyright (c) 2013 Tim Perry
+ * Licensed under the MIT license.
+ */
+
+;(function (undefined) {
+    var undefinedType = "undefined";
+
+    (function (name, definition) {
+        if (typeof module !== 'undefined') {
+            module.exports = definition();
+        } else if (typeof define === 'function' && typeof define.amd === 'object') {
+            define(definition);
+        } else {
+            this[name] = definition();
+        }
+    }('log', function () {
+        var self = {};
+        var noop = function() {};
+
+        function realMethod(methodName) {
+            if (typeof console === undefinedType) {
+                return noop;
+            } else if (console[methodName] === undefined) {
+                if (console.log !== undefined) {
+                    return boundToConsole(console, 'log');
+                } else {
+                    return noop;
+                }
+            } else {
+                return boundToConsole(console, methodName);
+            }
+        }
+
+        function boundToConsole(console, methodName) {
+            var method = console[methodName];
+            if (method.bind === undefined) {
+                if (Function.prototype.bind === undefined) {
+                    return functionBindingWrapper(method, console);
+                } else {
+                    try {
+                        return Function.prototype.bind.call(console[methodName], console);
+                    } catch (e) {
+                        // In IE8 + Modernizr, the bind shim will reject the above, so we fall back to wrapping
+                        return functionBindingWrapper(method, console);
+                    }
+                }
+            } else {
+                return console[methodName].bind(console);
+            }
+        }
+
+        function functionBindingWrapper(f, context) {
+            return function() {
+                Function.prototype.apply.apply(f, [context, arguments]);
+            };
+        }
+
+        var logMethods = [
+            "trace",
+            "debug",
+            "info",
+            "warn",
+            "error"
+        ];
+
+        function replaceLoggingMethods(methodFactory) {
+            for (var ii = 0; ii < logMethods.length; ii++) {
+                self[logMethods[ii]] = methodFactory(logMethods[ii]);
+            }
+        }
+
+        function cookiesAvailable() {
+            return (typeof window !== undefinedType &&
+                    window.document !== undefined &&
+                    window.document.cookie !== undefined);
+        }
+
+        function localStorageAvailable() {
+            try {
+                return (typeof window !== undefinedType &&
+                        window.localStorage !== undefined);
+            } catch (e) {
+                return false;
+            }
+        }
+
+        function persistLevelIfPossible(levelNum) {
+            var localStorageFail = false,
+                levelName;
+
+            for (var key in self.levels) {
+                if (self.levels.hasOwnProperty(key) && self.levels[key] === levelNum) {
+                    levelName = key;
+                    break;
+                }
+            }
+
+            if (localStorageAvailable()) {
+                /*
+                 * Setting localStorage can create a DOM 22 Exception if running in Private mode
+                 * in Safari, so even if it is available we need to catch any errors when trying
+                 * to write to it
+                 */
+                try {
+                    window.localStorage['loglevel'] = levelName;
+                } catch (e) {
+                    localStorageFail = true;
+                }
+            } else {
+                localStorageFail = true;
+            }
+
+            if (localStorageFail && cookiesAvailable()) {
+                window.document.cookie = "loglevel=" + levelName + ";";
+            }
+        }
+
+        var cookieRegex = /loglevel=([^;]+)/;
+
+        function loadPersistedLevel() {
+            var storedLevel;
+
+            if (localStorageAvailable()) {
+                storedLevel = window.localStorage['loglevel'];
+            }
+
+            if (storedLevel === undefined && cookiesAvailable()) {
+                var cookieMatch = cookieRegex.exec(window.document.cookie) || [];
+                storedLevel = cookieMatch[1];
+            }
+            
+            if (self.levels[storedLevel] === undefined) {
+                storedLevel = "WARN";
+            }
+
+            self.setLevel(self.levels[storedLevel]);
+        }
+
+        /*
+         *
+         * Public API
+         *
+         */
+
+        self.levels = { "TRACE": 0, "DEBUG": 1, "INFO": 2, "WARN": 3,
+            "ERROR": 4, "SILENT": 5};
+
+        self.setLevel = function (level) {
+            if (typeof level === "number" && level >= 0 && level <= self.levels.SILENT) {
+                persistLevelIfPossible(level);
+
+                if (level === self.levels.SILENT) {
+                    replaceLoggingMethods(function () {
+                        return noop;
+                    });
+                    return;
+                } else if (typeof console === undefinedType) {
+                    replaceLoggingMethods(function (methodName) {
+                        return function () {
+                            if (typeof console !== undefinedType) {
+                                self.setLevel(level);
+                                self[methodName].apply(self, arguments);
+                            }
+                        };
+                    });
+                    return "No console available for logging";
+                } else {
+                    replaceLoggingMethods(function (methodName) {
+                        if (level <= self.levels[methodName.toUpperCase()]) {
+                            return realMethod(methodName);
+                        } else {
+                            return noop;
+                        }
+                    });
+                }
+            } else if (typeof level === "string" && self.levels[level.toUpperCase()] !== undefined) {
+                self.setLevel(self.levels[level.toUpperCase()]);
+            } else {
+                throw "log.setLevel() called with invalid level: " + level;
+            }
+        };
+
+        self.enableAll = function() {
+            self.setLevel(self.levels.TRACE);
+        };
+
+        self.disableAll = function() {
+            self.setLevel(self.levels.SILENT);
+        };
+
+        loadPersistedLevel();
+        return self;
+    }));
+})();
+
+},{}],105:[function(require,module,exports){
 'use strict';
 
 window.$ = window.jQuery = require('jquery');
@@ -11784,7 +11985,7 @@ angular.module('plowderye', [
 
 require('./init');
 
-},{"../package.json":112,"./controller/config":1,"./controller/create_conversation":3,"./controller/headline":4,"./controller/message_log":5,"./controller/participant_list":6,"./controller/public_conversation_list":7,"./controller/send_message":8,"./controller/user_conversation_list":9,"./controller/user_list":10,"./directive/focus_on":12,"./factory/socket":13,"./init":14,"./service/command":105,"./service/conversation":106,"./service/message":107,"./service/notification":108,"./service/sound":109,"./service/user":110,"angular":17,"angular-animate":15,"angular-socket-io":16,"angularjs-scroll-glue":19,"jquery":20,"jquery-cookie":111}],105:[function(require,module,exports){
+},{"../package.json":113,"./controller/config":1,"./controller/create_conversation":3,"./controller/headline":4,"./controller/message_log":5,"./controller/participant_list":6,"./controller/public_conversation_list":7,"./controller/send_message":8,"./controller/user_conversation_list":9,"./controller/user_list":10,"./directive/focus_on":12,"./factory/socket":13,"./init":14,"./service/command":106,"./service/conversation":107,"./service/message":108,"./service/notification":109,"./service/sound":110,"./service/user":111,"angular":17,"angular-animate":15,"angular-socket-io":16,"angularjs-scroll-glue":19,"jquery":20,"jquery-cookie":112}],106:[function(require,module,exports){
 'use strict';
 
 module.exports = function(
@@ -11835,12 +12036,14 @@ module.exports = function(
   }
 };
 
-},{}],106:[function(require,module,exports){
+},{}],107:[function(require,module,exports){
 'use strict';
 
-var _    = {};
-_.omit   = require('lodash.omit');
-_.values = require('lodash.values');
+var logger = require('loglevel');
+
+var _      = {};
+_.omit     = require('lodash.omit');
+_.values   = require('lodash.values');
 
 module.exports = function(socket, $rootScope) {
 
@@ -11979,8 +12182,8 @@ module.exports = function(socket, $rootScope) {
   */
 
   socket.on('user-conversation-list', function(conversationsFromServer) {
-    log.trace('user-conversation-list');
-    log.trace(JSON.stringify(conversationsFromServer, null, 2));
+    logger.trace('user-conversation-list');
+    logger.trace(JSON.stringify(conversationsFromServer, null, 2));
     for (var c in conversationsFromServer) {
       conversationsFromServer[c].participates = true;
     }
@@ -11992,8 +12195,8 @@ module.exports = function(socket, $rootScope) {
   });
 
   socket.on('public-conversation-list', function(conversationsFromServer) {
-    log.trace('public-conversation-list');
-    log.trace(JSON.stringify(conversationsFromServer, null, 2));
+    logger.trace('public-conversation-list');
+    logger.trace(JSON.stringify(conversationsFromServer, null, 2));
     for (var c in conversationsFromServer) {
       conversationsFromServer[c].public = true;
     }
@@ -12076,8 +12279,10 @@ module.exports = function(socket, $rootScope) {
   }
 };
 
-},{"lodash.omit":21,"lodash.values":97}],107:[function(require,module,exports){
+},{"lodash.omit":21,"lodash.values":97,"loglevel":104}],108:[function(require,module,exports){
 'use strict';
+
+var logger = require('loglevel');
 
 module.exports = function(socket,
   $rootScope,
@@ -12203,13 +12408,13 @@ module.exports = function(socket,
   this.addLocally = function(message) {
     var conversationId = message.conversation;
     if (!conversationId) {
-      log.error('Message without conversation id:');
-      log.error(JSON.stringify(message));
+      logger.error('Message without conversation id:');
+      logger.error(JSON.stringify(message));
       return;
     }
     format(message);
-    log.debug('adding message:');
-    log.debug(JSON.stringify(message, null, 2));
+    logger.debug('adding message:');
+    logger.debug(JSON.stringify(message, null, 2));
     var convLog = messages[conversationId];
     if (!convLog) {
       convLog = [];
@@ -12245,8 +12450,10 @@ module.exports = function(socket,
   });
 };
 
-},{}],108:[function(require,module,exports){
+},{"loglevel":104}],109:[function(require,module,exports){
 'use strict';
+
+var logger = require('loglevel');
 
 module.exports = function (socket, $rootScope) {
 
@@ -12273,12 +12480,12 @@ module.exports = function (socket, $rootScope) {
   };
 
   this.notify = function(message) {
-    log.debug('notfiy(' + JSON.stringify(message) +')');
+    logger.debug('notfiy(' + JSON.stringify(message) +')');
     notifyLater(message);
   };
 
   function notifyLater(message) {
-    log.debug('notificationsEnabled: ' + notificationsEnabled);
+    logger.debug('notificationsEnabled: ' + notificationsEnabled);
     if (!notificationsEnabled) { return; }
     if (!notificationsChecked) {
       if (!notificationsEnabled) { return; }
@@ -12342,8 +12549,10 @@ module.exports = function (socket, $rootScope) {
   }
 };
 
-},{}],109:[function(require,module,exports){
+},{"loglevel":104}],110:[function(require,module,exports){
 'use strict';
+
+var logger = require('loglevel');
 
 module.exports = function (socket) {
 
@@ -12365,8 +12574,8 @@ module.exports = function (socket) {
   // TODO make this more angular-ish and less jquery-ish
   // Should live in a controller
   this.playSound = function(filename) {
-    log.debug('playSound(' + filename + ')');
-    log.debug('soundEnabled: ' + soundEnabled);
+    logger.debug('playSound(' + filename + ')');
+    logger.debug('soundEnabled: ' + soundEnabled);
     $('#sound').empty();
     if (soundEnabled) {
       var mp3 = $('<source src="/sounds/' + filename +
@@ -12385,12 +12594,14 @@ module.exports = function (socket) {
   };
 };
 
-},{}],110:[function(require,module,exports){
+},{"loglevel":104}],111:[function(require,module,exports){
 'use strict';
 
-var _    = {};
-_.omit   = require('lodash.omit');
-_.values = require('lodash.values');
+var logger = require('loglevel');
+
+var _      = {};
+_.omit     = require('lodash.omit');
+_.values   = require('lodash.values');
 
 module.exports = function(
   socket,
@@ -12404,13 +12615,13 @@ module.exports = function(
   var usersPerConversation = {};
 
   this.getUser = function() {
-    log.trace('getUser');
-    log.trace(JSON.stringify(user, null, 2));
+    logger.trace('getUser');
+    logger.trace(JSON.stringify(user, null, 2));
     return user;
   };
 
   this.getParticipants = function(conversation) {
-    log.trace('getParticipants');
+    logger.trace('getParticipants');
     if (!conversation) {
       return [];
     }
@@ -12421,8 +12632,8 @@ module.exports = function(
   };
 
   this.getAllUsers = function() {
-    log.trace('getAllUsers');
-    log.trace(JSON.stringify(allUsers, null, 2));
+    logger.trace('getAllUsers');
+    logger.trace(JSON.stringify(allUsers, null, 2));
     return sort(_.values(allUsers));
   };
 
@@ -12448,14 +12659,14 @@ module.exports = function(
 
   socket.on('set-name-result', function(result) {
     var text;
-    log.debug('set-name-result');
-    log.debug(JSON.stringify(result, null, 2));
+    logger.debug('set-name-result');
+    logger.debug(JSON.stringify(result, null, 2));
     if (result.success) {
-      log.debug('set-name-result: success');
+      logger.debug('set-name-result: success');
       user.nick = result.name;
       text = 'You are now known as ' + user.nick + '.';
     } else {
-      log.debug('set-name-result: failure');
+      logger.debug('set-name-result: failure');
       text = result.message;
     }
 
@@ -12467,8 +12678,8 @@ module.exports = function(
 
   socket.on('init-user-result', function(_user) {
     var message;
-    log.debug('init-user-result');
-    log.debug(JSON.stringify(_user, null, 2));
+    logger.debug('init-user-result');
+    logger.debug(JSON.stringify(_user, null, 2));
     user = _user;
     allUsers[user.id] = user;
     replaceUserInAllCollections(user);
@@ -12478,8 +12689,8 @@ module.exports = function(
   });
 
   socket.on('user-joined', function(userJoinedData) {
-    log.debug('user-joined');
-    log.debug(JSON.stringify(userJoinedData, null, 2));
+    logger.debug('user-joined');
+    logger.debug(JSON.stringify(userJoinedData, null, 2));
     var _user = userJoinedData.user;
     var conversationId = userJoinedData.conversationId;
     usersPerConversation[conversationId][_user.id] = _user;
@@ -12491,8 +12702,8 @@ module.exports = function(
   });
 
   socket.on('user-left', function(userLeftData) {
-    log.debug('user-left');
-    log.debug(JSON.stringify(userLeftData, null, 2));
+    logger.debug('user-left');
+    logger.debug(JSON.stringify(userLeftData, null, 2));
     var _user = userLeftData.user;
     var conversationId = userLeftData.conversationId;
     delete
@@ -12504,8 +12715,8 @@ module.exports = function(
   });
 
   socket.on('user-went-offline', function(id) {
-    log.debug('user-went-offline');
-    log.debug(id);
+    logger.debug('user-went-offline');
+    logger.debug(id);
     var u = allUsers[id];
     if (u) {
       u.online = false;
@@ -12513,8 +12724,8 @@ module.exports = function(
   });
 
   socket.on('user-coming-online', function(id) {
-    log.debug('user-coming-online');
-    log.debug(id);
+    logger.debug('user-coming-online');
+    logger.debug(id);
     var u = allUsers[id];
     if (u) {
       u.online = true;
@@ -12522,14 +12733,14 @@ module.exports = function(
   });
 
   socket.on('user-changed', function(_user) {
-    log.debug('user-changed');
-    log.debug(JSON.stringify(_user, null, 2));
+    logger.debug('user-changed');
+    logger.debug(JSON.stringify(_user, null, 2));
     replaceUserInAllCollections(_user);
     /*
     var id = _user.id;
     var userNow = allUsers[id];
     if (userNow) {
-      log.debug('user-changed - user is present');
+      logger.debug('user-changed - user is present');
       var previousName = u.nick;
       u.nick = result.name;
       $rootScope.$emit('display-system-message', {
@@ -12541,15 +12752,15 @@ module.exports = function(
   });
 
   socket.on('user-list', function(users) {
-    log.debug('user-list');
-    log.debug(JSON.stringify(users, null, 2));
+    logger.debug('user-list');
+    logger.debug(JSON.stringify(users, null, 2));
     allUsers = users;
     replaceAllUsersInAllCollections(allUsers);
   });
 
   socket.on('participant-list', function(participantData) {
-    log.debug('participant-list');
-    log.debug(JSON.stringify(participantData, null, 2));
+    logger.debug('participant-list');
+    logger.debug(JSON.stringify(participantData, null, 2));
     usersPerConversation[participantData.conversationId] =
       participantData.participants;
     replaceAllUsersInAllCollections(
@@ -12588,7 +12799,7 @@ module.exports = function(
   }
 };
 
-},{"lodash.omit":21,"lodash.values":97}],111:[function(require,module,exports){
+},{"lodash.omit":21,"lodash.values":97,"loglevel":104}],112:[function(require,module,exports){
 /*!
  * jQuery Cookie Plugin v1.4.0
  * https://github.com/carhartl/jquery-cookie
@@ -12707,7 +12918,7 @@ module.exports = function(
 
 }));
 
-},{}],112:[function(require,module,exports){
+},{}],113:[function(require,module,exports){
 module.exports={
   "name": "plowderye",
   "version": "0.0.0",
@@ -12730,4 +12941,4 @@ module.exports={
   }
 }
 
-},{}]},{},[104]);
+},{}]},{},[105]);

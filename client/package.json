@@ -10,7 +10,8 @@
     "angularjs-scroll-glue": "git://github.com/Luegg/angularjs-scroll-glue.git#d7e73097fa96aa27ba5123ba879addbdeb68db21",
     "lodash.omit": "~2.4.1",
     "lodash.values": "~2.4.1",
-    "jquery": "~2.1.0"
+    "jquery": "~2.1.0",
+    "loglevel": "~0.6.0"
   },
   "devDependencies": {
     "browserify": "^3.38.0",

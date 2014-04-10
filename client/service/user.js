@@ -1,8 +1,10 @@
 'use strict';
 
-var _    = {};
-_.omit   = require('lodash.omit');
-_.values = require('lodash.values');
+var logger = require('loglevel');
+
+var _      = {};
+_.omit     = require('lodash.omit');
+_.values   = require('lodash.values');
 
 module.exports = function(
   socket,
@@ -16,13 +18,13 @@ module.exports = function(
   var usersPerConversation = {};
 
   this.getUser = function() {
-    log.trace('getUser');
-    log.trace(JSON.stringify(user, null, 2));
+    logger.trace('getUser');
+    logger.trace(JSON.stringify(user, null, 2));
     return user;
   };
 
   this.getParticipants = function(conversation) {
-    log.trace('getParticipants');
+    logger.trace('getParticipants');
     if (!conversation) {
       return [];
     }
@@ -33,8 +35,8 @@ module.exports = function(
   };
 
   this.getAllUsers = function() {
-    log.trace('getAllUsers');
-    log.trace(JSON.stringify(allUsers, null, 2));
+    logger.trace('getAllUsers');
+    logger.trace(JSON.stringify(allUsers, null, 2));
     return sort(_.values(allUsers));
   };
 
@@ -60,14 +62,14 @@ module.exports = function(
 
   socket.on('set-name-result', function(result) {
     var text;
-    log.debug('set-name-result');
-    log.debug(JSON.stringify(result, null, 2));
+    logger.debug('set-name-result');
+    logger.debug(JSON.stringify(result, null, 2));
     if (result.success) {
-      log.debug('set-name-result: success');
+      logger.debug('set-name-result: success');
       user.nick = result.name;
       text = 'You are now known as ' + user.nick + '.';
     } else {
-      log.debug('set-name-result: failure');
+      logger.debug('set-name-result: failure');
       text = result.message;
     }
 
@@ -79,8 +81,8 @@ module.exports = function(
 
   socket.on('init-user-result', function(_user) {
     var message;
-    log.debug('init-user-result');
-    log.debug(JSON.stringify(_user, null, 2));
+    logger.debug('init-user-result');
+    logger.debug(JSON.stringify(_user, null, 2));
     user = _user;
     allUsers[user.id] = user;
     replaceUserInAllCollections(user);
@@ -90,8 +92,8 @@ module.exports = function(
   });
 
   socket.on('user-joined', function(userJoinedData) {
-    log.debug('user-joined');
-    log.debug(JSON.stringify(userJoinedData, null, 2));
+    logger.debug('user-joined');
+    logger.debug(JSON.stringify(userJoinedData, null, 2));
     var _user = userJoinedData.user;
     var conversationId = userJoinedData.conversationId;
     usersPerConversation[conversationId][_user.id] = _user;
@@ -103,8 +105,8 @@ module.exports = function(
   });
 
   socket.on('user-left', function(userLeftData) {
-    log.debug('user-left');
-    log.debug(JSON.stringify(userLeftData, null, 2));
+    logger.debug('user-left');
+    logger.debug(JSON.stringify(userLeftData, null, 2));
     var _user = userLeftData.user;
     var conversationId = userLeftData.conversationId;
     delete
@@ -116,8 +118,8 @@ module.exports = function(
   });
 
   socket.on('user-went-offline', function(id) {
-    log.debug('user-went-offline');
-    log.debug(id);
+    logger.debug('user-went-offline');
+    logger.debug(id);
     var u = allUsers[id];
     if (u) {
       u.online = false;
@@ -125,8 +127,8 @@ module.exports = function(
   });
 
   socket.on('user-coming-online', function(id) {
-    log.debug('user-coming-online');
-    log.debug(id);
+    logger.debug('user-coming-online');
+    logger.debug(id);
     var u = allUsers[id];
     if (u) {
       u.online = true;
@@ -134,14 +136,14 @@ module.exports = function(
   });
 
   socket.on('user-changed', function(_user) {
-    log.debug('user-changed');
-    log.debug(JSON.stringify(_user, null, 2));
+    logger.debug('user-changed');
+    logger.debug(JSON.stringify(_user, null, 2));
     replaceUserInAllCollections(_user);
     /*
     var id = _user.id;
     var userNow = allUsers[id];
     if (userNow) {
-      log.debug('user-changed - user is present');
+      logger.debug('user-changed - user is present');
       var previousName = u.nick;
       u.nick = result.name;
       $rootScope.$emit('display-system-message', {
@@ -153,15 +155,15 @@ module.exports = function(
   });
 
   socket.on('user-list', function(users) {
-    log.debug('user-list');
-    log.debug(JSON.stringify(users, null, 2));
+    logger.debug('user-list');
+    logger.debug(JSON.stringify(users, null, 2));
     allUsers = users;
     replaceAllUsersInAllCollections(allUsers);
   });
 
   socket.on('participant-list', function(participantData) {
-    log.debug('participant-list');
-    log.debug(JSON.stringify(participantData, null, 2));
+    logger.debug('participant-list');
+    logger.debug(JSON.stringify(participantData, null, 2));
     usersPerConversation[participantData.conversationId] =
       participantData.participants;
     replaceAllUsersInAllCollections(

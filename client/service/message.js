@@ -1,5 +1,7 @@
 'use strict';
 
+var logger = require('loglevel');
+
 module.exports = function(socket,
   $rootScope,
   ConversationService,
@@ -124,13 +126,13 @@ module.exports = function(socket,
   this.addLocally = function(message) {
     var conversationId = message.conversation;
     if (!conversationId) {
-      log.error('Message without conversation id:');
-      log.error(JSON.stringify(message));
+      logger.error('Message without conversation id:');
+      logger.error(JSON.stringify(message));
       return;
     }
     format(message);
-    log.debug('adding message:');
-    log.debug(JSON.stringify(message, null, 2));
+    logger.debug('adding message:');
+    logger.debug(JSON.stringify(message, null, 2));
     var convLog = messages[conversationId];
     if (!convLog) {
       convLog = [];
