@@ -1,5 +1,7 @@
 'use strict';
 
+window.$ = window.jQuery = require('jquery');
+
 var angular = require('angular');
 
 require('angular-socket-io');
