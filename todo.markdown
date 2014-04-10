@@ -1,16 +1,17 @@
 TODOs
 =====
 
-- When coming online, fetch the message log for all conversations (asynchronously).
+- Browserify es5-shim
+- Include ng-min in grunt build
+
+- When coming online, fetch the message log for all conversations (asynchronously). Currently the server just sends all messages in all conversations without being asked.
 
 - show number of unread messages per conversations, clear unread counter when switching to conversation
 
 - objects, especially user, is stored to often and at random times
   - dirty flag?
 
-- There are still some client side libs (es5-shim, socket.io, jquery, jquery-cookie,
-  notify and loglevel) which are used via script tag - include them into the
-  browserify build.
+- wasn't able to browserify notify.js last time I tried. Try again. Or use another Notification API wrapper, maybe on that's on npm.
 
 - attach user list to conversation object - should make ugly "full-table-scan" approach when fetching users participating in a conversation unecessary.
 - update user-conversation relations (in both directions) lists when
