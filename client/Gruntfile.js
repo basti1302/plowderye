@@ -24,6 +24,16 @@ module.exports = function(grunt) {
     },
 
     browserify: {
+      dev: {
+        src: [ '<%= pkg.name %>.js' ],
+        dest: '../public/js/<%= pkg.name %>.dev.js',
+        options: {
+          bundleOptions: {
+            // Embed browserify source map for dev build
+            debug: true
+          }
+        }
+      },
       dist: {
         src: [ '<%= pkg.name %>.js' ],
         dest: '../public/js/<%= pkg.name %>.js',

@@ -8,10 +8,11 @@
     "angular-animate": "0.0.2",
     "angular-socket-io": "^0.4.1",
     "angularjs-scroll-glue": "git://github.com/Luegg/angularjs-scroll-glue.git#d7e73097fa96aa27ba5123ba879addbdeb68db21",
-    "lodash.omit": "~2.4.1",
-    "lodash.values": "~2.4.1",
-    "jquery": "~2.1.0",
-    "loglevel": "~0.6.0"
+    "lodash.omit": "^2.4.1",
+    "lodash.values": "^2.4.1",
+    "jquery": "^2.1.0",
+    "loglevel": "^0.6.0",
+    "es5-shim": "^2.3.0"
   },
   "devDependencies": {
     "browserify": "^3.38.0",
@@ -24,6 +25,8 @@
   },
   "browser": {
     "angularjs-scroll-glue": "./node_modules/angularjs-scroll-glue/src/scrollglue.js",
+    "es5-sham": "./node_modules/es5-shim/es5-sham.min.js",
+    "es5-shim": "./node_modules/es5-shim/es5-shim.min.js",
     "jquery-cookie": "./third-party/jquery-cookie/jquery.cookie.js"
   }
 }

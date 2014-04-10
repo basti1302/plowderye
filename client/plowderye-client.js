@@ -1,10 +1,12 @@
 'use strict';
 
+require('es5-shim');
+require('es5-sham');
+
 window.$ = window.jQuery = require('jquery');
 require ('jquery-cookie');
 
 var angular = require('angular');
-
 require('angular-socket-io');
 require('angular-animate');
 require('angularjs-scroll-glue');
