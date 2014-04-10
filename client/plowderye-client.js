@@ -1,6 +1,7 @@
 'use strict';
 
 window.$ = window.jQuery = require('jquery');
+require ('jquery-cookie');
 
 var angular = require('angular');
 

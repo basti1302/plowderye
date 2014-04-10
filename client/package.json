@@ -22,6 +22,7 @@
     "grunt-contrib-watch": "^0.6.1"
   },
   "browser": {
-    "angularjs-scroll-glue": "./node_modules/angularjs-scroll-glue/src/scrollglue.js"
+    "angularjs-scroll-glue": "./node_modules/angularjs-scroll-glue/src/scrollglue.js",
+    "jquery-cookie": "./third-party/jquery-cookie/jquery.cookie.js"
   }
 }
