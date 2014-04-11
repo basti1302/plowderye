@@ -1,8 +1,9 @@
 TODOs
 =====
 
-- Browserify es5-shim
-- Include ng-min in grunt build
+- The minified version still does not work because the inter-module dependency to
+  'btford.socket-io' breaks somehow and client/factory/socket.js does not receive
+  a value for socketFactory.
 
 - When coming online, fetch the message log for all conversations (asynchronously). Currently the server just sends all messages in all conversations without being asked.
 
