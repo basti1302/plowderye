@@ -25,6 +25,7 @@
     "grunt-ngmin": "0.0.3"
   },
   "browser": {
+    "angular-socket-io": "./node_modules/angular-socket-io/socket.min.js",
     "angularjs-scroll-glue": "./node_modules/angularjs-scroll-glue/src/scrollglue.js",
     "es5-sham": "./node_modules/es5-shim/es5-sham.min.js",
     "es5-shim": "./node_modules/es5-shim/es5-shim.min.js",
