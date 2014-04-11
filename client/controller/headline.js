@@ -1,6 +1,10 @@
 'use strict';
 
-module.exports = function ($scope, ConversationService) {
+var angular = require('angular');
+
+angular
+  .module('plowderye')
+  .controller('HeadlineCtrl', function ($scope, ConversationService) {
   $scope.getCurrentConversationName = function() {
     var conv = ConversationService.getCurrentConversation();
     if (conv && conv.name) {
@@ -9,4 +13,4 @@ module.exports = function ($scope, ConversationService) {
       return '?';
     }
   };
-};
+});

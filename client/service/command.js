@@ -1,6 +1,10 @@
 'use strict';
 
-module.exports = function(
+var angular = require('angular');
+
+angular
+  .module('plowderye')
+  .service('CommandService', function(
   socket,
   MessageService,
   ConversationService,
@@ -46,4 +50,4 @@ module.exports = function(
         break;
     }
   }
-};
+});

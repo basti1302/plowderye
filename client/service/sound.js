@@ -1,8 +1,12 @@
 'use strict';
 
-var logger = require('loglevel');
+var angular = require('angular')
+  , logger = require('loglevel')
+  ;
 
-module.exports = function (socket) {
+angular
+  .module('plowderye')
+  .service('SoundService', function (socket) {
 
   var soundEnabled = true;
 
@@ -40,4 +44,4 @@ module.exports = function (socket) {
       $('#sound').append(audio);
     }
   };
-};
+});

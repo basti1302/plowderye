@@ -2,7 +2,11 @@
 
 var logger = require('loglevel');
 
-module.exports = function (socket, $rootScope) {
+var angular = require('angular');
+
+angular
+  .module('plowderye')
+  .service('NotificationService', function(socket, $rootScope) {
 
   var notificationsChecked = false;
   var notificationsEnabled = false;
@@ -94,4 +98,4 @@ module.exports = function (socket, $rootScope) {
     notification.show();
     notificationMessageCount = 0;
   }
-};
+});

@@ -1,6 +1,10 @@
 'use strict';
 
-module.exports = function(
+var angular = require('angular');
+
+angular
+  .module('plowderye')
+  .controller('CreateConversationCtrl', function(
   $scope,
   $timeout,
   ConversationService) {
@@ -36,4 +40,4 @@ module.exports = function(
     $scope.inputHasFocus = false;
     $scope.buttonHasFocus = false;
   }
-};
+});

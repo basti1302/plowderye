@@ -1,10 +1,15 @@
 'use strict';
 
-module.exports = function (
+var angular = require('angular');
+
+angular
+  .module('plowderye')
+  .controller('ConfigCtrl', function(
   $scope,
   ConversationService,
   SoundService,
-  NotificationService) {
+  NotificationService
+) {
 
   $scope.leaveConversation = function() {
     ConversationService.leave();
@@ -48,4 +53,4 @@ module.exports = function (
       return 'currently muted - click to unmute';
     }
   };
-};
+});

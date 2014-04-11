@@ -1,8 +1,13 @@
 'use strict';
 
+var angular = require('angular');
+
 var userListStyle = require('./user_list_style');
 
-module.exports = function ($scope, socket, ConversationService, UserService) {
+angular
+  .module('plowderye')
+  .controller('ParticipantListCtrl',
+  function($scope, socket, ConversationService, UserService) {
 
   $scope.getParticipants = function() {
     return UserService.getParticipants(
@@ -14,4 +19,4 @@ module.exports = function ($scope, socket, ConversationService, UserService) {
   };
 
   $scope.getDisplayName = userListStyle.getDisplayName;
-};
+});

@@ -1,15 +1,20 @@
 'use strict';
 
+
 /* jshint -W106 */
 module.exports = function(grunt) {
 
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
 
+    jsTarget: '../public/js/',
+    ngminDir: './ngmin/',
+
     jshint: {
       files: [
         '**/*.js',
         'Gruntfile.js',
+        '!ngmin/**/*',
         '!node_modules/**/*',
         '!third-party/**/*',
       ],
@@ -18,15 +23,52 @@ module.exports = function(grunt) {
       }
     },
 
-    // remove all previous browserified builds
+    // remove all previous build artifacts
     clean: {
-      dist: ['../public/js/plowderye.js'],
+      options: {
+        force: true
+      },
+      all: [
+        '<%= jsTarget %><%= pkg.name %>*.js',
+        '<%= ngminDir %>/**/*',
+      ],
+    },
+
+    ngmin: {
+      controllers: {
+        expand: true,
+        src: ['./controller/**/*.js'],
+        dest: '<%= ngminDir %>',
+      },
+      directives: {
+        expand: true,
+        src: ['./directive/**/*.js'],
+        dest: '<%= ngminDir %>',
+      },
+      factory: {
+        expand: true,
+        src: ['./factory/**/*.js'],
+        dest: '<%= ngminDir %>',
+      },
+      service: {
+        expand: true,
+        src: ['./service/**/*.js'],
+        dest: '<%= ngminDir %>',
+      },
+      main: {
+        src: [ '<%= pkg.name %>.js' ],
+        dest: '<%= ngminDir %>/<%= pkg.name %>.js',
+      },
+      init: {
+        src: [ 'init.js' ],
+        dest: '<%= ngminDir %>/init.js',
+      },
     },
 
     browserify: {
       dev: {
         src: [ '<%= pkg.name %>.js' ],
-        dest: '../public/js/<%= pkg.name %>.dev.js',
+        dest: '<%= jsTarget %><%= pkg.name %>.dev.js',
         options: {
           bundleOptions: {
             // Embed browserify source map for dev build
@@ -35,16 +77,15 @@ module.exports = function(grunt) {
         }
       },
       dist: {
-        src: [ '<%= pkg.name %>.js' ],
-        dest: '../public/js/<%= pkg.name %>.js',
+        src: [ '<%= ngmin.main.dest %>' ],
+        dest: '<%= jsTarget %><%= pkg.name %>.js',
       },
     },
 
-    // Uglify browser libs
     uglify: {
       dist: {
         files: {
-          '../public/js/<%= pkg.name %>.min.js':
+          '<%= jsTarget %><%= pkg.name %>.min.js':
             ['<%= browserify.dist.dest %>'],
         }
       }
@@ -58,6 +99,7 @@ module.exports = function(grunt) {
 
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-contrib-jshint');
+  grunt.loadNpmTasks('grunt-ngmin');
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
@@ -65,6 +107,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', [
     'jshint',
     'clean',
+    'ngmin',
     'browserify',
     'uglify',
   ]);

@@ -1,8 +1,12 @@
 'use strict';
 
+var angular = require('angular');
+
 var getCssClasses = require('./conversation_list_style');
 
-module.exports = function ($scope, ConversationService) {
+angular
+  .module('plowderye')
+  .controller('PublicConvListCtrl', function($scope, ConversationService) {
 
   $scope.getPublicConversations = ConversationService.getPublicConversations;
 
@@ -10,4 +14,4 @@ module.exports = function ($scope, ConversationService) {
 
   $scope.getCssClasses = getCssClasses;
 
-};
+});

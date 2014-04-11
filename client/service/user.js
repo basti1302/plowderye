@@ -1,12 +1,16 @@
 'use strict';
 
-var logger = require('loglevel');
+var angular = require('angular')
+  , logger = require('loglevel')
+  ;
 
 var _      = {};
 _.omit     = require('lodash.omit');
 _.values   = require('lodash.values');
 
-module.exports = function(
+angular
+  .module('plowderye')
+  .service('UserService', function(
   socket,
   $rootScope,
   ConversationService,
@@ -200,4 +204,4 @@ module.exports = function(
       fn(usersPerConversation[c]);
     }
   }
-};
+});

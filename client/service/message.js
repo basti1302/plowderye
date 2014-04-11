@@ -1,8 +1,12 @@
 'use strict';
 
-var logger = require('loglevel');
+var angular = require('angular')
+  , logger = require('loglevel')
+  ;
 
-module.exports = function(socket,
+angular
+  .module('plowderye')
+  .service('MessageService', function(socket,
   $rootScope,
   ConversationService,
   UserService,
@@ -166,4 +170,4 @@ module.exports = function(socket,
         message.conversation);
     }
   });
-};
+});

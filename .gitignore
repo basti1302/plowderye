@@ -9,3 +9,5 @@ plowderye.json
 
 # logs
 *.log
+
+client/ngmin

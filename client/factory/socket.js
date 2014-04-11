@@ -1,5 +1,9 @@
 'use strict';
 
-module.exports = function(socketFactory) {
+var angular = require('angular');
+
+angular
+  .module('plowderye')
+ .factory('socket', function(socketFactory) {
   return socketFactory();
-};
+});

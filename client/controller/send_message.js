@@ -1,6 +1,11 @@
 'use strict';
 
-module.exports = function ($scope, MessageService, CommandService) {
+var angular = require('angular');
+
+angular
+  .module('plowderye')
+  .controller('SendMessageCtrl',
+  function($scope, MessageService, CommandService) {
 
   $scope.sendMessage = function() {
     var text = $scope.messageText;
@@ -13,4 +18,4 @@ module.exports = function ($scope, MessageService, CommandService) {
       MessageService.send(text);
     }
   };
-};
+});

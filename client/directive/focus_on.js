@@ -4,7 +4,12 @@
  * Set focus to the element this directive is declared upon when the given
  * expression evaluates to true.
  */
-module.exports = function($timeout) {
+
+var angular = require('angular');
+
+angular
+  .module('plowderye')
+  .directive('focusOn', function($timeout) {
   return {
     link: function(scope, element, attrs) {
       scope.$watch(attrs.focusOn, function(value) {
@@ -17,4 +22,4 @@ module.exports = function($timeout) {
       });
     }
   };
-};
+});

@@ -1,12 +1,16 @@
 'use strict';
 
-var logger = require('loglevel');
+var angular = require('angular')
+  , logger = require('loglevel')
+  ;
 
 var _      = {};
 _.omit     = require('lodash.omit');
 _.values   = require('lodash.values');
 
-module.exports = function(socket, $rootScope) {
+angular
+  .module('plowderye')
+  .service('ConversationService', function(socket, $rootScope) {
 
   var self = this;
   var conversations = {};
@@ -238,4 +242,4 @@ module.exports = function(socket, $rootScope) {
       currentConversation.active = true;
     }
   }
-};
+});
