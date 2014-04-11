@@ -12,7 +12,7 @@ TODOs
 - objects, especially user, is stored to often and at random times
   - dirty flag?
 
-- wasn't able to browserify notify.js last time I tried. Try again. Or use another Notification API wrapper, maybe on that's on npm.
+- wasn't able to browserify notify.js last time I tried. Try again. Or use another Notification API wrapper, maybe one that's on npm.
 
 - attach user list to conversation object - should make ugly "full-table-scan" approach when fetching users participating in a conversation unecessary.
 - update user-conversation relations (in both directions) lists when
@@ -27,8 +27,6 @@ TODOs
 
 - remove nick name from leveldb used names file when user disconnects if that user does not have a registered account
 
-- show only user's conversations in conversation list in client
-- show public rooms in separate list
 - enable users to add other users to conversations
 - closed/private conversations, see below
 
