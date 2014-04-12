@@ -1,25 +1,25 @@
 TODOs
 =====
 
-- The minified version still does not work because the inter-module dependency to
-  'btford.socket-io' breaks somehow and client/factory/socket.js does not receive
-  a value for socketFactory.
+- minimal html templating to control wether plowderye-client.min.js or
+  plowderye-client.dev.js is used. Can be controlled via nconf.
+
+- add users to conversation via command
+
+- create one on one conversation by clicking on user name
+
+- add users to conversations via drag'n'drop
+
+- https
+
+- register account with permanent nick name
 
 - When coming online, fetch the message log for all conversations (asynchronously). Currently the server just sends all messages in all conversations without being asked.
-
-- show number of unread messages per conversations, clear unread counter when switching to conversation
 
 - objects, especially user, is stored to often and at random times
   - dirty flag?
 
 - wasn't able to browserify notify.js last time I tried. Try again. Or use another Notification API wrapper, maybe one that's on npm.
-
-- attach user list to conversation object - should make ugly "full-table-scan" approach when fetching users participating in a conversation unecessary.
-- update user-conversation relations (in both directions) lists when
-  - user joins a conversation or
-  - user is added to a conversation or
-  - user leaves a conversation or
-  - a conversation is removed
 
 - make conversations linkable - read conversation id from url and open conversation
 
