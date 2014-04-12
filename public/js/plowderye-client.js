@@ -7,12 +7,8 @@ angular.module('plowderye').controller('ConfigCtrl', [
   'SoundService',
   'NotificationService',
   function ($scope, ConversationService, SoundService, NotificationService) {
-    $scope.leaveConversation = function () {
-      ConversationService.leave();
-    };
-    $scope.toggleNotifications = function () {
-      NotificationService.toggleNotificationsEnabled();
-    };
+    $scope.leaveConversation = ConversationService.leave.bind(ConversationService);
+    $scope.toggleNotifications = NotificationService.toggleNotificationsEnabled.bind(NotificationService);
     $scope.getNotificationsImage = function () {
       if (NotificationService.areNotificationsEnabled()) {
         return 'notifications-enabled.png';
@@ -27,9 +23,7 @@ angular.module('plowderye').controller('ConfigCtrl', [
         return 'currently not showing desktop notifications - click to enable';
       }
     };
-    $scope.toggleSound = function () {
-      SoundService.toggleSoundEnabled();
-    };
+    $scope.toggleSound = SoundService.toggleSoundEnabled.bind(SoundService);
     $scope.getSoundImage = function () {
       if (SoundService.isSoundEnabled()) {
         return 'sound-enabled.png';
@@ -123,13 +117,13 @@ angular.module('plowderye').controller('HeadlineCtrl', [
 },{"angular":28}],5:[function(require,module,exports){
 'use strict';
 require('./config');
-require('./user_conversation_list');
-require('./public_conversation_list');
 require('./create_conversation');
 require('./headline');
 require('./message_log');
-require('./send_message');
 require('./participant_list');
+require('./public_conversation_list');
+require('./send_message');
+require('./user_conversation_list');
 require('./user_list');
 },{"./config":1,"./create_conversation":3,"./headline":4,"./message_log":6,"./participant_list":7,"./public_conversation_list":8,"./send_message":9,"./user_conversation_list":10,"./user_list":11}],6:[function(require,module,exports){
 'use strict';
@@ -139,7 +133,7 @@ angular.module('plowderye').controller('MessageLogCtrl', [
   'MessageService',
   function ($scope, MessageService) {
     $scope.glued = true;
-    $scope.getMessages = MessageService.getMessages;
+    $scope.getMessages = MessageService.getMessages.bind(MessageService);
   }
 ]);
 },{"angular":28}],7:[function(require,module,exports){
@@ -169,8 +163,8 @@ angular.module('plowderye').controller('PublicConvListCtrl', [
   '$scope',
   'ConversationService',
   function ($scope, ConversationService) {
-    $scope.getPublicConversations = ConversationService.getPublicConversations;
-    $scope.join = ConversationService.join;
+    $scope.getPublicConversations = ConversationService.getPublicConversations.bind(ConversationService);
+    $scope.join = ConversationService.join.bind(ConversationService);
     $scope.getCssClasses = getCssClasses;
   }
 ]);
@@ -201,9 +195,12 @@ var getCssClasses = require('./conversation_list_style');
 angular.module('plowderye').controller('UserConvListCtrl', [
   '$scope',
   'ConversationService',
-  function ($scope, ConversationService) {
-    $scope.getUserConversations = ConversationService.getUserConversations;
-    $scope.switchTo = ConversationService.switchTo;
+  'MessageService',
+  function ($scope, ConversationService, MessageService) {
+    $scope.getUserConversations = ConversationService.getUserConversations.bind(ConversationService);
+    $scope.switchTo = ConversationService.switchTo.bind(ConversationService);
+    $scope.unreadMessagesCount = MessageService.unreadMessageCount.bind(MessageService);
+    $scope.hasUnreadMessages = MessageService.hasUnreadMessages.bind(MessageService);
     $scope.getCssClasses = getCssClasses;
   }
 ]);
@@ -216,7 +213,7 @@ angular.module('plowderye').controller('UserListCtrl', [
   'socket',
   'UserService',
   function ($scope, socket, UserService) {
-    $scope.getAllUsers = UserService.getAllUsers;
+    $scope.getAllUsers = UserService.getAllUsers.bind(UserService);
     $scope.getCssClasses = function (user) {
       return userListStyle.getCssClasses(user, UserService.getUser());
     };
@@ -322,6 +319,9 @@ var angular = require('angular');
 require('angular-socket-io');
 require('angular-animate');
 require('angularjs-scroll-glue');
+angular.isUndefinedOrNull = function (val) {
+  return angular.isUndefined(val) || val === null;
+};
 angular.module('plowderye', [
   'btford.socket-io',
   'ngAnimate',
@@ -584,9 +584,8 @@ angular.module('plowderye').service('ConversationService', [
       }
     }
     function activateCurrentConversation() {
-      if (currentConversation) {
-        currentConversation.active = true;
-      }
+      currentConversation.active = true;
+      $rootScope.$emit('switched-to-conversation', currentConversation);
     }
   }
 ]);
@@ -612,9 +611,10 @@ angular.module('plowderye').service('MessageService', [
   function (socket, $rootScope, ConversationService, UserService, SoundService, NotificationService) {
     var self = this;
     var messages = {};
+    var currentConversation;
+    var unreadCount = {};
     function createMessage(text) {
       var clientTime = Date.now();
-      var currentConversation = ConversationService.getCurrentConversation();
       if (!currentConversation) {
         return;
       }
@@ -630,7 +630,6 @@ angular.module('plowderye').service('MessageService', [
     }
     function createSystemMessage(text) {
       var clientTime = Date.now();
-      var currentConversation = ConversationService.getCurrentConversation();
       if (!currentConversation) {
         return;
       }
@@ -684,13 +683,24 @@ angular.module('plowderye').service('MessageService', [
       return ('' + Math.random()).substr(2, 4);
     }
     this.getMessages = function () {
-      var currentConversation = ConversationService.getCurrentConversation();
-      if (!currentConversation) {
+      return getMessagesFor(currentConversation);
+    };
+    function getMessagesFor(conversation) {
+      if (!conversation) {
         return [];
       }
-      var conversationId = currentConversation.id;
-      return messages[conversationId];
-    };
+      return messages[conversation.id];
+    }
+    /*
+  function getLastMessageFor(conversation) {
+    var messageArray = getMessagesFor(conversation);
+    if (messageArray && messageArray.length > 0) {
+      return messageArray[messageArray.length - 1];
+    } else {
+      return null;
+    }
+  };
+  */
     this.send = function (text) {
       var message = createMessage(text);
       this.addLocally(angular.copy(message));
@@ -722,10 +732,68 @@ angular.module('plowderye').service('MessageService', [
       }
       convLog.push(message);
     };
+    this.unreadMessageCount = function (conversation) {
+      if (!conversation) {
+        return 0;
+      }
+      if (angular.isUndefinedOrNull(unreadCount[conversation.id])) {
+        return 0;
+      }
+      return unreadCount[conversation.id];  /*
+    if (!this.hasUnreadMessages) {
+      return '';
+    }
+    var msgs = getMessageFor(conversation);
+    var lastMessage = getLastMessageFor(conversation);
+    var lastRead = readUntil[conversation.id];
+    var foundLastRead = false;
+    var unreadCount = 0;
+    for (var i = 0; i < msgs.length; i++) {
+      var msg = msgs[i];
+      if (!foundLastRead) {
+        if (lastRead === msg.id || lastRead === msg.clientId) {
+          foundLastRead = true;
+        }
+      } else {
+        unreadCount++;
+      }
+    }
+    */
+    };
+    this.hasUnreadMessages = function (conversation) {
+      return this.unreadMessageCount(conversation) > 0;  /*
+    // How to meaningfull calculating meaningfull unread messages count for
+    // current conversation? Would need to check scrolling position
+    // (glued or not, at which message) and if browser window has focus etc.
+    if (currentConversation && currentConversation.id === conversation.id) {
+      return false;
+    }
+    if (!readUntil[conversation.id] ||
+        readUntil[conversation.id] === readLowVal) {
+      return false;
+    }
+    var lastMessage = getLastMessageFor(conversation);
+    if (!lastMessage) {
+      return false;
+    }
+    if (readUntil[conversation.id] === lastMessage.id ||
+      readUntil[conversation.id] === lastMessage.clientId) {
+      return false;
+    }
+    return true;
+    */
+    };
     socket.on('message', function (message) {
       self.addLocally(message);
       SoundService.playSound('ping');
       NotificationService.notify(message);
+      if (currentConversation.id !== message.conversation) {
+        if (angular.isUndefinedOrNull(unreadCount[message.conversation])) {
+          unreadCount[message.conversation] = 1;
+        } else {
+          unreadCount[message.conversation]++;
+        }
+      }
     });
     socket.on('message-old', function (message) {
       self.addLocally(message);
@@ -742,6 +810,21 @@ angular.module('plowderye').service('MessageService', [
       } else {
         self.displaySystemMessageInConversation(message.text, message.conversation);
       }
+    });
+    $rootScope.$on('switched-to-conversation', function (event, conversation) {
+      currentConversation = conversation;
+      if (!currentConversation) {
+        return;
+      }
+      unreadCount[currentConversation.id] = 0;  /*
+    var lastMessage =  getLastMessageFor(currentConversation);
+    if (lastMessage) {
+      readUntil[currentConversation.id] =
+        lastMessage.id || lastMessage.clientId;
+    } else {
+      readUntil[currentConversation.id] = readLowVal;
+    }
+    */
     });
   }
 ]);
@@ -1094,86 +1177,7 @@ e(c,"-add"),d)},beforeRemoveClass:function(a,c,d){var f=L(a,e(c,"-remove"),funct
  * (c) 2014 Brian Ford http://briantford.com
  * License: MIT
  */
-
-'use strict';
-
-angular.module('btford.socket-io', []).
-  provider('socketFactory', function () {
-
-    // when forwarding events, prefix the event name
-    var defaultPrefix = 'socket:',
-      ioSocket;
-
-    // expose to provider
-    this.$get = function ($rootScope, $timeout) {
-
-      var asyncAngularify = function (socket, callback) {
-        return callback ? function () {
-          var args = arguments;
-          $timeout(function () {
-            callback.apply(socket, args);
-          }, 0);
-        } : angular.noop;
-      };
-
-      return function socketFactory (options) {
-        options = options || {};
-        var socket = options.ioSocket || io.connect();
-        var prefix = options.prefix || defaultPrefix;
-        var defaultScope = options.scope || $rootScope;
-
-        var addListener = function (eventName, callback) {
-          socket.on(eventName, callback.__ng = asyncAngularify(socket, callback));
-        };
-
-        var wrappedSocket = {
-          on: addListener,
-          addListener: addListener,
-
-          emit: function (eventName, data, callback) {
-            var lastIndex = arguments.length - 1;
-            var callback = arguments[lastIndex];
-            if(typeof callback == 'function') {
-              callback = asyncAngularify(socket, callback);
-              arguments[lastIndex] = callback;
-            }
-            return socket.emit.apply(socket, arguments);
-          },
-
-          removeListener: function (ev, fn) {
-            if (fn && fn.__ng) {
-              arguments[1] = fn.__ng;
-            }
-            return socket.removeListener.apply(socket, arguments);
-          },
-
-          // when socket.on('someEvent', fn (data) { ... }),
-          // call scope.$broadcast('someEvent', data)
-          forward: function (events, scope) {
-            if (events instanceof Array === false) {
-              events = [events];
-            }
-            if (!scope) {
-              scope = defaultScope;
-            }
-            events.forEach(function (eventName) {
-              var prefixedEvent = prefix + eventName;
-              var forwardBroadcast = asyncAngularify(socket, function (data) {
-                scope.$broadcast(prefixedEvent, data);
-              });
-              scope.$on('$destroy', function () {
-                socket.removeListener(eventName, forwardBroadcast);
-              });
-              socket.on(eventName, forwardBroadcast);
-            });
-          }
-        };
-
-        return wrappedSocket;
-      };
-    };
-  });
-
+"use strict";angular.module("btford.socket-io",[]).provider("socketFactory",function(){var n="socket:";this.$get=["$rootScope","$timeout",function(t,o){var r=function(n,t){return t?function(){var r=arguments;o(function(){t.apply(n,r)},0)}:angular.noop};return function(o){o=o||{};var e=o.ioSocket||io.connect(),u=o.prefix||n,i=o.scope||t,a=function(n,t){e.on(n,t.__ng=r(e,t))},c={on:a,addListener:a,emit:function(n,t,o){var u=arguments.length-1,o=arguments[u];return"function"==typeof o&&(o=r(e,o),arguments[u]=o),e.emit.apply(e,arguments)},removeListener:function(n,t){return t&&t.__ng&&(arguments[1]=t.__ng),e.removeListener.apply(e,arguments)},forward:function(n,t){n instanceof Array==!1&&(n=[n]),t||(t=i),n.forEach(function(n){var o=u+n,i=r(e,function(n){t.$broadcast(o,n)});t.$on("$destroy",function(){e.removeListener(n,i)}),e.on(n,i)})}};return c}}]});
 },{}],28:[function(require,module,exports){
 require('./lib/angular.min.js');
 
@@ -12729,6 +12733,7 @@ module.exports={
     "grunt-ngmin": "0.0.3"
   },
   "browser": {
+    "angular-socket-io": "./node_modules/angular-socket-io/socket.min.js",
     "angularjs-scroll-glue": "./node_modules/angularjs-scroll-glue/src/scrollglue.js",
     "es5-sham": "./node_modules/es5-shim/es5-sham.min.js",
     "es5-shim": "./node_modules/es5-shim/es5-shim.min.js",
