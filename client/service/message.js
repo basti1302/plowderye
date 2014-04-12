@@ -112,17 +112,6 @@ angular
     return messages[conversation.id];
   }
 
-  /*
-  function getLastMessageFor(conversation) {
-    var messageArray = getMessagesFor(conversation);
-    if (messageArray && messageArray.length > 0) {
-      return messageArray[messageArray.length - 1];
-    } else {
-      return null;
-    }
-  };
-  */
-
   this.send = function(text) {
     var message = createMessage(text);
     this.addLocally(angular.copy(message));
@@ -166,53 +155,10 @@ angular
       return 0;
     }
     return unreadCount[conversation.id];
-
-    /*
-    if (!this.hasUnreadMessages) {
-      return '';
-    }
-    var msgs = getMessageFor(conversation);
-    var lastMessage = getLastMessageFor(conversation);
-    var lastRead = readUntil[conversation.id];
-    var foundLastRead = false;
-    var unreadCount = 0;
-    for (var i = 0; i < msgs.length; i++) {
-      var msg = msgs[i];
-      if (!foundLastRead) {
-        if (lastRead === msg.id || lastRead === msg.clientId) {
-          foundLastRead = true;
-        }
-      } else {
-        unreadCount++;
-      }
-    }
-    */
   };
 
   this.hasUnreadMessages = function(conversation) {
     return this.unreadMessageCount(conversation) > 0;
-
-    /*
-    // How to meaningfull calculating meaningfull unread messages count for
-    // current conversation? Would need to check scrolling position
-    // (glued or not, at which message) and if browser window has focus etc.
-    if (currentConversation && currentConversation.id === conversation.id) {
-      return false;
-    }
-    if (!readUntil[conversation.id] ||
-        readUntil[conversation.id] === readLowVal) {
-      return false;
-    }
-    var lastMessage = getLastMessageFor(conversation);
-    if (!lastMessage) {
-      return false;
-    }
-    if (readUntil[conversation.id] === lastMessage.id ||
-      readUntil[conversation.id] === lastMessage.clientId) {
-      return false;
-    }
-    return true;
-    */
   };
 
   socket.on('message', function (message) {
@@ -254,14 +200,5 @@ angular
       return;
     }
     unreadCount[currentConversation.id] = 0;
-    /*
-    var lastMessage =  getLastMessageFor(currentConversation);
-    if (lastMessage) {
-      readUntil[currentConversation.id] =
-        lastMessage.id || lastMessage.clientId;
-    } else {
-      readUntil[currentConversation.id] = readLowVal;
-    }
-    */
   });
 });
