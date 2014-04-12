@@ -1,9 +1,6 @@
 TODOs
 =====
 
-- minimal html templating to control wether plowderye-client.min.js or
-  plowderye-client.dev.js is used. Can be controlled via nconf.
-
 - add users to conversation via command
 
 - create one on one conversation by clicking on user name
@@ -13,6 +10,8 @@ TODOs
 - https
 
 - register account with permanent nick name
+
+- versioning for assets, emit max-age headers, enable browser caching, etc.
 
 - When coming online, fetch the message log for all conversations (asynchronously). Currently the server just sends all messages in all conversations without being asked.
 
