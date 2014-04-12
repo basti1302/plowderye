@@ -7,6 +7,7 @@
   "dependencies": {
     "async": "^0.2.10",
     "cookie": "^0.1.1",
+    "ejs": "^1.0.0",
     "express": "^3.4.8",
     "gen-id": "^0.1.1",
     "level": "^0.18.0",
