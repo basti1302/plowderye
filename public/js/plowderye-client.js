@@ -367,14 +367,11 @@ angular.module('plowderye').service('CommandService', [
       case 'leave':
         ConversationService.leave();
         break;
-      /*
-      TODO Makes no sense unless a user can join multiple conversations!
       case 'add':
-        ConversationService.addUserToConversation(argument);
+        ConversationService.addUserToCurrentConversation(argument);
         break;
-      */
       default:
-        MessageService.displaySystemMessage('Unknown command: ' + command);
+        MessageService.displaySystemMessageInCurrentConversation('Unknown command: ' + command);
         break;
       }
     }
@@ -494,15 +491,12 @@ angular.module('plowderye').service('ConversationService', [
     this.create = function (conversationName) {
       socket.emit('create-conversation', { name: conversationName });
     };
-    /*
-  TODO Makes no sense unless a user can join multiple conversations!
-  this.addUserToCurrentConversation = function(user) {
-    socket.emit('add-user-to-conversation', {
-      user: user,
-      conversation: currentConversation.name,
-    });
-  };
-  */
+    this.addUserToCurrentConversation = function (userName) {
+      socket.emit('add-user-to-conversation-by-name', {
+        userName: userName,
+        conversationId: currentConversation.id
+      });
+    };
     socket.on('user-conversation-list', function (conversationsFromServer) {
       logger.trace('user-conversation-list');
       logger.trace(JSON.stringify(conversationsFromServer, null, 2));
@@ -691,16 +685,6 @@ angular.module('plowderye').service('MessageService', [
       }
       return messages[conversation.id];
     }
-    /*
-  function getLastMessageFor(conversation) {
-    var messageArray = getMessagesFor(conversation);
-    if (messageArray && messageArray.length > 0) {
-      return messageArray[messageArray.length - 1];
-    } else {
-      return null;
-    }
-  };
-  */
     this.send = function (text) {
       var message = createMessage(text);
       this.addLocally(angular.copy(message));
@@ -739,49 +723,10 @@ angular.module('plowderye').service('MessageService', [
       if (angular.isUndefinedOrNull(unreadCount[conversation.id])) {
         return 0;
       }
-      return unreadCount[conversation.id];  /*
-    if (!this.hasUnreadMessages) {
-      return '';
-    }
-    var msgs = getMessageFor(conversation);
-    var lastMessage = getLastMessageFor(conversation);
-    var lastRead = readUntil[conversation.id];
-    var foundLastRead = false;
-    var unreadCount = 0;
-    for (var i = 0; i < msgs.length; i++) {
-      var msg = msgs[i];
-      if (!foundLastRead) {
-        if (lastRead === msg.id || lastRead === msg.clientId) {
-          foundLastRead = true;
-        }
-      } else {
-        unreadCount++;
-      }
-    }
-    */
+      return unreadCount[conversation.id];
     };
     this.hasUnreadMessages = function (conversation) {
-      return this.unreadMessageCount(conversation) > 0;  /*
-    // How to meaningfull calculating meaningfull unread messages count for
-    // current conversation? Would need to check scrolling position
-    // (glued or not, at which message) and if browser window has focus etc.
-    if (currentConversation && currentConversation.id === conversation.id) {
-      return false;
-    }
-    if (!readUntil[conversation.id] ||
-        readUntil[conversation.id] === readLowVal) {
-      return false;
-    }
-    var lastMessage = getLastMessageFor(conversation);
-    if (!lastMessage) {
-      return false;
-    }
-    if (readUntil[conversation.id] === lastMessage.id ||
-      readUntil[conversation.id] === lastMessage.clientId) {
-      return false;
-    }
-    return true;
-    */
+      return this.unreadMessageCount(conversation) > 0;
     };
     socket.on('message', function (message) {
       self.addLocally(message);
@@ -816,15 +761,7 @@ angular.module('plowderye').service('MessageService', [
       if (!currentConversation) {
         return;
       }
-      unreadCount[currentConversation.id] = 0;  /*
-    var lastMessage =  getLastMessageFor(currentConversation);
-    if (lastMessage) {
-      readUntil[currentConversation.id] =
-        lastMessage.id || lastMessage.clientId;
-    } else {
-      readUntil[currentConversation.id] = readLowVal;
-    }
-    */
+      unreadCount[currentConversation.id] = 0;
     });
   }
 ]);
