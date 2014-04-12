@@ -11,13 +11,11 @@ angular
   NotificationService
 ) {
 
-  $scope.leaveConversation = function() {
-    ConversationService.leave();
-  };
+  $scope.leaveConversation =
+    ConversationService.leave.bind(ConversationService);
 
-  $scope.toggleNotifications = function() {
-    NotificationService.toggleNotificationsEnabled();
-  };
+  $scope.toggleNotifications =
+    NotificationService.toggleNotificationsEnabled.bind(NotificationService);
 
   $scope.getNotificationsImage = function() {
     if (NotificationService.areNotificationsEnabled()) {
@@ -35,9 +33,7 @@ angular
     }
   };
 
-  $scope.toggleSound = function() {
-    SoundService.toggleSoundEnabled();
-  };
+  $scope.toggleSound = SoundService.toggleSoundEnabled.bind(SoundService);
 
   $scope.getSoundImage = function() {
     if (SoundService.isSoundEnabled()) {

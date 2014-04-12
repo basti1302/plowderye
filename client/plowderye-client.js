@@ -11,6 +11,10 @@ require('angular-socket-io');
 require('angular-animate');
 require('angularjs-scroll-glue');
 
+angular.isUndefinedOrNull = function(val) {
+  return angular.isUndefined(val) || val === null;
+};
+
 angular.module('plowderye', [
   'btford.socket-io',
   'ngAnimate',

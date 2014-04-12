@@ -238,8 +238,7 @@ angular
   }
 
   function activateCurrentConversation() {
-    if (currentConversation) {
-      currentConversation.active = true;
-    }
+    currentConversation.active = true;
+    $rootScope.$emit('switched-to-conversation', currentConversation);
   }
 });

@@ -18,4 +18,5 @@ angular
       MessageService.send(text);
     }
   };
+
 });

@@ -1,7 +1,7 @@
 'use strict';
 
 var angular = require('angular')
-  , logger = require('loglevel')
+  , logger  = require('loglevel')
   ;
 
 angular
@@ -15,10 +15,11 @@ angular
 
   var self = this;
   var messages = {};
+  var currentConversation;
+  var unreadCount = {};
 
   function createMessage(text) {
     var clientTime = Date.now();
-    var currentConversation = ConversationService.getCurrentConversation();
     if (!currentConversation) {
       return;
     }
@@ -35,7 +36,6 @@ angular
 
   function createSystemMessage(text) {
     var clientTime = Date.now();
-    var currentConversation = ConversationService.getCurrentConversation();
     if (!currentConversation) {
       return;
     }
@@ -102,13 +102,26 @@ angular
   }
 
   this.getMessages = function() {
-    var currentConversation = ConversationService.getCurrentConversation();
-    if (!currentConversation) {
+    return getMessagesFor(currentConversation);
+  };
+
+  function getMessagesFor(conversation) {
+    if (!conversation) {
       return [];
     }
-    var conversationId = currentConversation.id;
-    return messages[conversationId];
+    return messages[conversation.id];
+  }
+
+  /*
+  function getLastMessageFor(conversation) {
+    var messageArray = getMessagesFor(conversation);
+    if (messageArray && messageArray.length > 0) {
+      return messageArray[messageArray.length - 1];
+    } else {
+      return null;
+    }
   };
+  */
 
   this.send = function(text) {
     var message = createMessage(text);
@@ -145,10 +158,74 @@ angular
     convLog.push(message);
   };
 
+  this.unreadMessageCount = function(conversation) {
+    if (!conversation) {
+      return 0;
+    }
+    if (angular.isUndefinedOrNull(unreadCount[conversation.id])) {
+      return 0;
+    }
+    return unreadCount[conversation.id];
+
+    /*
+    if (!this.hasUnreadMessages) {
+      return '';
+    }
+    var msgs = getMessageFor(conversation);
+    var lastMessage = getLastMessageFor(conversation);
+    var lastRead = readUntil[conversation.id];
+    var foundLastRead = false;
+    var unreadCount = 0;
+    for (var i = 0; i < msgs.length; i++) {
+      var msg = msgs[i];
+      if (!foundLastRead) {
+        if (lastRead === msg.id || lastRead === msg.clientId) {
+          foundLastRead = true;
+        }
+      } else {
+        unreadCount++;
+      }
+    }
+    */
+  };
+
+  this.hasUnreadMessages = function(conversation) {
+    return this.unreadMessageCount(conversation) > 0;
+
+    /*
+    // How to meaningfull calculating meaningfull unread messages count for
+    // current conversation? Would need to check scrolling position
+    // (glued or not, at which message) and if browser window has focus etc.
+    if (currentConversation && currentConversation.id === conversation.id) {
+      return false;
+    }
+    if (!readUntil[conversation.id] ||
+        readUntil[conversation.id] === readLowVal) {
+      return false;
+    }
+    var lastMessage = getLastMessageFor(conversation);
+    if (!lastMessage) {
+      return false;
+    }
+    if (readUntil[conversation.id] === lastMessage.id ||
+      readUntil[conversation.id] === lastMessage.clientId) {
+      return false;
+    }
+    return true;
+    */
+  };
+
   socket.on('message', function (message) {
     self.addLocally(message);
     SoundService.playSound('ping');
     NotificationService.notify(message);
+    if (currentConversation.id !== message.conversation) {
+      if (angular.isUndefinedOrNull(unreadCount[message.conversation])) {
+        unreadCount[message.conversation] = 1;
+      } else {
+        unreadCount[message.conversation]++;
+      }
+    }
   });
 
   socket.on('message-old', function (message) {
@@ -169,5 +246,22 @@ angular
       self.displaySystemMessageInConversation(message.text,
         message.conversation);
     }
+  });
+
+  $rootScope.$on('switched-to-conversation', function(event, conversation) {
+    currentConversation = conversation;
+    if (!currentConversation) {
+      return;
+    }
+    unreadCount[currentConversation.id] = 0;
+    /*
+    var lastMessage =  getLastMessageFor(currentConversation);
+    if (lastMessage) {
+      readUntil[currentConversation.id] =
+        lastMessage.id || lastMessage.clientId;
+    } else {
+      readUntil[currentConversation.id] = readLowVal;
+    }
+    */
   });
 });

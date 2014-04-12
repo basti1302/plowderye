@@ -394,6 +394,16 @@ a:hover.sidebar-item-active {
   display: none;
 }
 
+.pill-unread {
+  color: white;
+  text-shadow: none;
+  background: #405060;
+  margin-left: 10px;
+  padding-left: 4px;
+  padding-right: 4px;
+  border-radius: 4px;
+}
+
 .create-conv-anim.ng-hide-add, .create-conv-anim.ng-hide-remove {
   -webkit-transition:all linear 0.4s;
      -moz-transition:all linear 0.4s;

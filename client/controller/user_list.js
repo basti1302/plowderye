@@ -7,7 +7,8 @@ var userListStyle = require('./user_list_style');
 angular
   .module('plowderye')
   .controller('UserListCtrl', function ($scope, socket, UserService) {
-  $scope.getAllUsers = UserService.getAllUsers;
+
+  $scope.getAllUsers = UserService.getAllUsers.bind(UserService);
 
   $scope.getCssClasses = function(user) {
     return userListStyle.getCssClasses(user, UserService.getUser());

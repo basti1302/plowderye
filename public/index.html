@@ -22,10 +22,14 @@
         class="margin-below"
       >
         <a href="#" ng-repeat="conversation in getUserConversations()"
-          ng-bind="conversation.name"
           ng-click="switchTo(conversation)"
           ng-class="getCssClasses(conversation)"
-        ></a>
+          ><span ng-bind="conversation.name"></span>
+          <span
+            ng-bind="unreadMessagesCount(conversation)"
+            ng-show="hasUnreadMessages(conversation)"
+            class="pill-unread"></span>
+        </a>
       </div>
     </div>
 
