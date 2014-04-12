@@ -1,7 +1,8 @@
 TODOs
 =====
 
-- add users to conversation via command
+- [BUG] you can add yourself to a conversation you already participate in and receive all old messags again
+- [BUG] leaving a conversation displays a leaving message in other clients, but does not remove the user from the participant list in the client
 
 - create one on one conversation by clicking on user name
 
