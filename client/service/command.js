@@ -39,14 +39,12 @@ angular
       case 'leave':
         ConversationService.leave();
         break;
-      /*
-      TODO Makes no sense unless a user can join multiple conversations!
       case 'add':
-        ConversationService.addUserToConversation(argument);
+        ConversationService.addUserToCurrentConversation(argument);
         break;
-      */
       default:
-        MessageService.displaySystemMessage('Unknown command: ' + command);
+        MessageService.displaySystemMessageInCurrentConversation(
+          'Unknown command: ' + command);
         break;
     }
   }

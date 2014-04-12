@@ -136,15 +136,12 @@ angular
     socket.emit('create-conversation', { name: conversationName });
   };
 
-  /*
-  TODO Makes no sense unless a user can join multiple conversations!
-  this.addUserToCurrentConversation = function(user) {
-    socket.emit('add-user-to-conversation', {
-      user: user,
-      conversation: currentConversation.name,
+  this.addUserToCurrentConversation = function(userName) {
+    socket.emit('add-user-to-conversation-by-name', {
+      userName: userName,
+      conversationId: currentConversation.id,
     });
   };
-  */
 
   socket.on('user-conversation-list', function(conversationsFromServer) {
     logger.trace('user-conversation-list');
