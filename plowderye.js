@@ -25,8 +25,12 @@ app.engine('ejs', require('ejs').renderFile);
 var jsFile = nconf.get('dev') ?
              'plowderye-client.dev.js' :
              'plowderye-client.min.js';
+var plowderyeVersion = require('./package.json').version;
 app.get('/', function(req, res) {
-  res.render('index.ejs', { jsFile: jsFile, });
+  res.render('index.ejs', {
+    jsFile: jsFile,
+    plowderyeVersion: plowderyeVersion,
+  });
 });
 
 var port = nconf.get('port');

@@ -1,6 +1,6 @@
 {
   "name": "plowderye",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Yet another chat implementation with Node.js and Socket.io",
   "repository": "https://github.com/basti1302/plowderye.git",
   "main": "plowderye.js",
