@@ -1,10 +1,6 @@
 TODOs
 =====
 
-- [BUG!!!] TypeError: Object #<Object> has no method 'setClass'
-  at Object.Gb.$updateClass (http://localhost:3000/js/plowderye-client.dev.js:493:186)
-  when ever another user disconnects/comes online
-
 - [BUG] you can add yourself to a conversation you already participate in and receive all old messags again
 - [BUG] leaving a conversation displays a leaving message in other clients, but does not remove the user from the participant list in the client
 
