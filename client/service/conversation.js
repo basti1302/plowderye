@@ -143,6 +143,13 @@ angular
     });
   };
 
+  this.createOneOnOneConversation = function(otherUser) {
+    if (!otherUser) {
+      return;
+    }
+    socket.emit('create-one-on-one-conversation', otherUser.id);
+  };
+
   socket.on('user-conversation-list', function(conversationsFromServer) {
     logger.trace('user-conversation-list');
     logger.trace(JSON.stringify(conversationsFromServer, null, 2));
@@ -171,6 +178,10 @@ angular
 
   socket.on('conversation-removed', function(conversationId) {
     delete conversations[conversationId];
+  });
+
+  socket.on('switch-to-conversation', function(conversationId) {
+    self.switchToById(conversationId);
   });
 
   function merge(conversationsFromServer) {

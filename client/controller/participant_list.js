@@ -11,7 +11,8 @@ angular
 
   $scope.getParticipants = function() {
     return UserService.getParticipants(
-      ConversationService.getCurrentConversation());
+      ConversationService.getCurrentConversation()
+    );
   };
 
   $scope.getCssClasses = function(user) {
@@ -19,4 +20,7 @@ angular
   };
 
   $scope.getDisplayName = userListStyle.getDisplayName;
+
+  $scope.createConversationWith =
+    ConversationService.createOneOnOneConversation.bind(ConversationService);
 });

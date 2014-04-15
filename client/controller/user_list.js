@@ -6,7 +6,8 @@ var userListStyle = require('./user_list_style');
 
 angular
   .module('plowderye')
-  .controller('UserListCtrl', function ($scope, socket, UserService) {
+  .controller('UserListCtrl',
+  function ($scope, socket, ConversationService, UserService) {
 
   $scope.getAllUsers = UserService.getAllUsers.bind(UserService);
 
@@ -15,4 +16,7 @@ angular
   };
 
   $scope.getDisplayName = userListStyle.getDisplayName;
+
+  $scope.createConversationWith =
+    ConversationService.createOneOnOneConversation.bind(ConversationService);
 });
