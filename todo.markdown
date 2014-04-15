@@ -3,6 +3,7 @@ TODOs
 
 BUGS
 ----
+- [BUG] Joining a public conv via /join command is broken
 - [BUG] A new public conversation is not added to the list of public conversations for other clients anymore
 - [BUG] you can add yourself to a conversation you already participate in and receive all old messags again
 - [BUG] you can add another user to a conversation he/she is already participating in and he/she will receive all old messags again
