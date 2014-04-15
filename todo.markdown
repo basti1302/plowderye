@@ -8,6 +8,7 @@ BUGS
 - [BUG] you can add yourself to a conversation you already participate in and receive all old messags again
 - [BUG] you can add another user to a conversation he/she is already participating in and he/she will receive all old messags again
 - [BUG] leaving a conversation displays a leaving message in other clients, but does not remove the user from the participant list in the client
+- [BUG] Handling of one on one conversations needs to be tested thoroughly, probably still whacky
 
 - remove non-public conversations when last participant has left
 - add users to conversations via drag'n'drop
