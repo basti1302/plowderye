@@ -1,18 +1,18 @@
 TODOs
 =====
 
+BUGS
+----
+- [BUG] A new public conversation is not added to the list of public conversations for other clients anymore
 - [BUG] you can add yourself to a conversation you already participate in and receive all old messags again
 - [BUG] you can add another user to a conversation he/she is already participating in and he/she will receive all old messags again
 - [BUG] leaving a conversation displays a leaving message in other clients, but does not remove the user from the participant list in the client
 
-- create one on one conversation by clicking on user name
-
+- remove non-public conversations when last participant has left
 - add users to conversations via drag'n'drop
-
 - https
-
 - register account with permanent nick name
-
+- convert build to gulp
 - versioning for assets, emit max-age headers, enable browser caching, etc.
 
 - When coming online, fetch the message log for all conversations (asynchronously). Currently the server just sends all messages in all conversations without being asked.
